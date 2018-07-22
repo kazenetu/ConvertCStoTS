@@ -23,7 +23,7 @@ namespace DataTransferObjects.Response.OrderList
       /// <summary>
       /// 検索結果
       /// </summary>
-      public List<CustomTOrder> List { get; } = new List<CustomTOrder>();
+      public List<CustomTOrder> Results { get; } = new List<CustomTOrder>();
     }
   }
 }
