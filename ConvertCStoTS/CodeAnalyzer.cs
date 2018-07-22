@@ -104,10 +104,47 @@ namespace ConvertCStoTS
       var result = new StringBuilder();
 
       result.Append($"{GetSpace(index)}{item.Modifiers.ToString()} {item.Identifier.ValueText}: {GetTypeScriptType(item.Type)}");
-      if(item.Initializer != null)
+
+      // 初期化処理を追加
+      if (item.Initializer != null)
       {
         result.Append($" {GetEqualsValue(item.Initializer)}");
       }
+      else
+      {
+        switch (item.Type)
+        {
+          case NullableTypeSyntax nts:
+            result.Append(" = null");
+            break;
+          case GenericNameSyntax gts:
+            result.Append($" = new {GetTypeScriptType(item.Type)}()");
+            break;
+          case PredefinedTypeSyntax ps:
+            switch (ps.ToString())
+            {
+              case "int":
+              case "float":
+              case "double":
+              case "decimal":
+                result.Append(" = 0");
+                break;
+              case "bool":
+                result.Append(" = false");
+                break;
+            }
+            break;
+          case IdentifierNameSyntax ins:
+            switch (ins.ToString())
+            {
+              case "DateTime":
+                result.Append(" = new DateTime(0)");
+                break;
+            }
+            break;
+        }
+      }
+
       result.AppendLine(";");
 
       return result.ToString();
