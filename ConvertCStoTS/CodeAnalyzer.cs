@@ -54,25 +54,20 @@ namespace ConvertCStoTS
     {
       var result = new StringBuilder();
 
-      var lineIndex = string.Empty;
-      var spaceCount = index;
-      while (spaceCount > 0)
-      {
-        lineIndex += " ";
-        spaceCount--;
-      }
-
       var className = item.Identifier.ValueText;
       if (item.BaseList != null)
       {
-        className += $" extends {item.BaseList.Types.ToString()}";
+#pragma warning disable CA1307 // Specify StringComparison
+        className += $" extends {item.BaseList.Types.ToString().Replace(".","_")}";
+#pragma warning restore CA1307 // Specify StringComparison
       }
-      var exportKeyword = "export ";
-      if(item.Parent is ClassDeclarationSyntax)
+
+      // 親クラスがある場合はクラス名に付加する
+      if(item.Parent is ClassDeclarationSyntax parentClass)
       {
-        exportKeyword = string.Empty;
+        className = parentClass.Identifier.ValueText + "_" + className;
       }
-      result.AppendLine($"{lineIndex}{exportKeyword}class {className} {item.OpenBraceToken.ValueText}");
+      result.AppendLine($"{GetSpace(index)}export class {className} {item.OpenBraceToken.ValueText}");
 
       // 子要素を設定
       foreach(var childItem in item.Members)
@@ -81,11 +76,28 @@ namespace ConvertCStoTS
         {
           result.Append(GetItemText(ci, index + 2));
         }
-        
       }
 
-      result.AppendLine($"{lineIndex}{item.CloseBraceToken.ValueText}");
+      result.AppendLine($"{GetSpace(index)}{item.CloseBraceToken.ValueText}");
       return result.ToString();
+    }
+
+    /// <summary>
+    /// インデックススペースを取得
+    /// </summary>
+    /// <param name="index">インデックス数</param>
+    /// <returns>index数分の半角スペース</returns>
+    private string GetSpace(int index)
+    {
+      var result = string.Empty;
+      var spaceCount = index;
+      while (spaceCount > 0)
+      {
+        result += " ";
+        spaceCount--;
+      }
+
+      return result;
     }
 
   }
