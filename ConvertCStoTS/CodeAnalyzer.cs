@@ -30,20 +30,15 @@ namespace ConvertCStoTS
       {
         switch (item.Kind())
         {
+          case SyntaxKind.ClassDeclaration:
+            result.Append(GetItemText(item as ClassDeclarationSyntax));
+            break;
+
           case SyntaxKind.NamespaceDeclaration:
             var nsItem = item as NamespaceDeclarationSyntax;
             Console.Write("namespace ");
             Console.Write(nsItem.Name.ToString());
             Console.WriteLine();
-
-            foreach (var childItem in nsItem.Members)
-            {
-              if (childItem is ClassDeclarationSyntax ci)
-              {
-                result.Append(GetItemText(ci));
-              }
-
-            }
             break;
         }
       }
@@ -78,11 +73,6 @@ namespace ConvertCStoTS
       // 子要素を設定
       foreach(var childItem in item.Members)
       {
-        if (childItem is ClassDeclarationSyntax ci)
-        {
-          result.Append(GetItemText(ci, index + 2));
-        }
-
         if (childItem is PropertyDeclarationSyntax pi)
         {
           result.Append(GetItemText(pi, index + 2));
