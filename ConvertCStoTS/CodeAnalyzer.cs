@@ -128,7 +128,7 @@ namespace ConvertCStoTS
             switch (ins.ToString())
             {
               case "DateTime":
-                result.Append(" = new DateTime(0)");
+                result.Append(" = new Date(0)");
                 break;
             }
             break;
