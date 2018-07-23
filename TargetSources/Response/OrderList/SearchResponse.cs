@@ -1,5 +1,6 @@
 ﻿using DataTransferObjects.CustomTables;
 using Framework.DataTransferObject.BaseClasses;
+using System;
 using System.Collections.Generic;
 
 namespace DataTransferObjects.Response.OrderList
@@ -27,11 +28,11 @@ namespace DataTransferObjects.Response.OrderList
 
       // TypeScript変換確認用
       public DateTime dt{set;get;}
-      public Dictionary<int,int> test{set;}
-      public Dictionary<int,List<string>> test2{set;}
+      public Dictionary<int,int> test{set;get;}
+      public Dictionary<int,List<string>> test2{set;get;}
 
       public int? a{set;get;}
-      public CustomTOrder? b{set;get;}
+      public CustomTOrder b{set;get;}
       public int c{set;get;}=1;
       public float c1{set;get;}
       public double c2{set;get;}
