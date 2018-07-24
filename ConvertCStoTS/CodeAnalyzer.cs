@@ -61,7 +61,7 @@ namespace ConvertCStoTS
     /// <param name="item">C#ソースを解析したインスタンス</param>
     /// <param name="index">インデックス数(半角スペース数)</param>
     /// <returns>TypeScriptのクラスに変換した文字列</returns>
-    private string GetItemText(ClassDeclarationSyntax item,int index = 0)
+    private string GetItemText(ClassDeclarationSyntax item, int index = 0)
     {
       var result = new StringBuilder();
 
