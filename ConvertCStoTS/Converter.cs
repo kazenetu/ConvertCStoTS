@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace ConvertCStoTS
 {
@@ -22,6 +23,9 @@ namespace ConvertCStoTS
       {
         var analyzeResult = codeAnalyzer.Analyze(sr.ReadToEnd());
         Console.Write(analyzeResult.SourceCode);
+
+        Console.WriteLine("-- 未知の参照 --");
+        analyzeResult.UnknownReferences.ToList().ForEach(item=> Console.WriteLine(item.Key));
       }
     }
   }
