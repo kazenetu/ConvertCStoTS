@@ -1,12 +1,19 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Text;
+using System.Linq;
 
 namespace ConvertCStoTS
 {
   public class CodeAnalyzer
   {
+    /// <summary>
+    /// 解析結果
+    /// </summary>
+    public AnalyzeResult Result { get; } = new AnalyzeResult();
+
     /// <summary>
     /// 解析処理
     /// </summary>
@@ -14,6 +21,10 @@ namespace ConvertCStoTS
     /// <returns>TypeScript情報</returns>
     public string Analyze(string targetCode)
     {
+      // クリア
+      Result.Clear();
+
+      // C#解析
       var tree = CSharpSyntaxTree.ParseText(targetCode) as CSharpSyntaxTree;
 
       // 構文エラーチェック
@@ -22,6 +33,7 @@ namespace ConvertCStoTS
         return string.Empty;
       }
 
+      // ルート取得
       var root = tree.GetRoot();
 
       // ソース変換
@@ -42,6 +54,11 @@ namespace ConvertCStoTS
             break;
         }
       }
+
+      // 暫定で出力結果に「未知の参照」を設定
+      result.AppendLine("-- 未知の参照 --");
+      Result.UnknownReferences.Keys.ToList().ForEach(item => result.AppendLine(item));
+
       return result.ToString();
     }
 
@@ -56,22 +73,27 @@ namespace ConvertCStoTS
       var result = new StringBuilder();
 
       var className = item.Identifier.ValueText;
+      var superClass = string.Empty;
       if (item.BaseList != null)
       {
-#pragma warning disable CA1307 // Specify StringComparison
-        className += $" extends {item.BaseList.Types.ToString().Replace(".","_")}";
-#pragma warning restore CA1307 // Specify StringComparison
+        superClass = $" extends {GetTypeScriptType(item.BaseList.Types[0].Type)}";
       }
 
       // 親クラスがある場合はクラス名に付加する
-      if(item.Parent is ClassDeclarationSyntax parentClass)
+      if (item.Parent is ClassDeclarationSyntax parentClass)
       {
-        className = parentClass.Identifier.ValueText + "_" + className;
+        className = parentClass.Identifier + "_" + className;
       }
-      result.AppendLine($"{GetSpace(index)}export class {className} {item.OpenBraceToken.ValueText}");
+      result.AppendLine($"{GetSpace(index)}export class {className}{superClass} {item.OpenBraceToken.ValueText}");
+
+      // クラス名を追加
+      if (!Result.ClassNames.Contains(className))
+      {
+        Result.ClassNames.Add(className);
+      }
 
       // 子要素を設定
-      foreach(var childItem in item.Members)
+      foreach (var childItem in item.Members)
       {
         if (childItem is PropertyDeclarationSyntax pi)
         {
@@ -160,7 +182,7 @@ namespace ConvertCStoTS
             arguments.Append(GetTypeScriptType(arg) + ", ");
           }
           var args = arguments.ToString();
-          result = $"{gs.Identifier.ToString() }<{args.Remove(args.Length - 2, 2)}>";
+          result = $"{GetGenericClass(gs.Identifier)}<{args.Remove(args.Length - 2, 2)}>";
           break;
         case PredefinedTypeSyntax ps:
           switch (ps.ToString())
@@ -182,10 +204,48 @@ namespace ConvertCStoTS
             case "DateTime":
               result = "Date";
               break;
+            default:
+              result = result.Replace(".", "_", StringComparison.CurrentCulture);
+              if (!Result.UnknownReferences.ContainsKey(ins.ToString()))
+              {
+                Result.UnknownReferences.Add(ins.ToString(), null);
+              }
+              break;
+          }
+          break;
+        default:
+          result = result.Replace(".", "_", StringComparison.CurrentCulture);
+          if (!Result.UnknownReferences.ContainsKey(result))
+          {
+            Result.UnknownReferences.Add(result, null);
           }
           break;
       }
       return result;
+    }
+
+    /// <summary>
+    /// ジェネリッククラスの変換
+    /// </summary>
+    /// <param name="token">対象</param>
+    /// <returns>変換結果</returns>
+    private string GetGenericClass(SyntaxToken token)
+    {
+      switch (token.ValueText)
+      {
+        case "List":
+          return "Array";
+        case "Dictionary":
+          return "Map";
+        default:
+          if (!Result.UnknownReferences.ContainsKey(token.ValueText))
+          {
+            Result.UnknownReferences.Add(token.ValueText, null);
+          }
+          break;
+      }
+
+      return token.ValueText;
     }
 
     /// <summary>
