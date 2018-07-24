@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Text;
-using System.Linq;
 
 namespace ConvertCStoTS
 {
@@ -19,7 +18,7 @@ namespace ConvertCStoTS
     /// </summary>
     /// <param name="targetCode">C#ソース</param>
     /// <returns>TypeScript情報</returns>
-    public string Analyze(string targetCode)
+    public AnalyzeResult Analyze(string targetCode)
     {
       // クリア
       Result.Clear();
@@ -30,7 +29,7 @@ namespace ConvertCStoTS
       // 構文エラーチェック
       foreach (var item in tree.GetDiagnostics())
       {
-        return string.Empty;
+        return Result;
       }
 
       // ルート取得
@@ -48,11 +47,11 @@ namespace ConvertCStoTS
         }
       }
 
-      // 暫定で出力結果に「未知の参照」を設定
-      result.AppendLine("-- 未知の参照 --");
-      Result.UnknownReferences.Keys.ToList().ForEach(item => result.AppendLine(item));
-
-      return result.ToString();
+      var analyzeResult = new AnalyzeResult();
+      analyzeResult.SourceCode = result.ToString();
+      Result.CopyUnknownReferences(ref analyzeResult);
+      analyzeResult.ClassNames.AddRange(Result.ClassNames);
+      return analyzeResult;
     }
 
     /// <summary>

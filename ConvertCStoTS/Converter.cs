@@ -1,9 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Text;
 
 namespace ConvertCStoTS
 {
@@ -24,8 +20,8 @@ namespace ConvertCStoTS
 
       using(var sr = new StreamReader($"{SrcPath}/{targetFileName}"))
       {
-        var sourceCode = codeAnalyzer.Analyze(sr.ReadToEnd());
-        Console.Write(sourceCode);
+        var analyzeResult = codeAnalyzer.Analyze(sr.ReadToEnd());
+        Console.Write(analyzeResult.SourceCode);
       }
     }
   }
