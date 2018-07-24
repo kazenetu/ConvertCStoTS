@@ -36,7 +36,7 @@ namespace ConvertCStoTS
       // ルート取得
       var root = tree.GetRoot();
 
-      // ソース変換
+      // ソース解析
       var result = new StringBuilder();
       foreach (CSharpSyntaxNode item in root.DescendantNodes())
       {
