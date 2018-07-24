@@ -45,13 +45,6 @@ namespace ConvertCStoTS
           case SyntaxKind.ClassDeclaration:
             result.Append(GetItemText(item as ClassDeclarationSyntax));
             break;
-
-          case SyntaxKind.NamespaceDeclaration:
-            var nsItem = item as NamespaceDeclarationSyntax;
-            Console.Write("namespace ");
-            Console.Write(nsItem.Name.ToString());
-            Console.WriteLine();
-            break;
         }
       }
 
