@@ -15,11 +15,11 @@ namespace ConvertCStoTS
     /// <summary>
     /// 変換対象C＃ファイルの入力ディレクトリ
     /// </summary>
-    private string SrcPath;
+    private readonly string SrcPath;
     /// <summary>
     /// 変換結果TSファイルの出力ディレクトリ
     /// </summary>
-    private string DescPath;
+    private readonly string DescPath;
 
     /// <summary>
     /// コンストラクタ
@@ -221,19 +221,21 @@ namespace ConvertCStoTS
     /// <param name="analyzeResults">対象ファイルの解析結果リスト</param>
     private void CreateTSFiles(List<AnalyzeResult> analyzeResults)
     {
+      var descPath = DescPath;
+
       // 出力先が設定されていない場合は暫定ディレクトリを設定する
       if (string.IsNullOrEmpty(DescPath))
       {
-        DescPath = Path.Combine(SrcPath, "dist");
+        descPath = Path.Combine(SrcPath, "dist");
       }
 
       // C#のディレクトリ構成でTSファイルを作成する
       foreach (var analyzeResult in analyzeResults)
       {
-        var filePath = $"{DescPath}/{analyzeResult.ImportPath}.ts";
+        var filePath = $"{descPath}/{analyzeResult.ImportPath}.ts";
         Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-        using (var sw = File.CreateText($"{DescPath}/{analyzeResult.ImportPath}.ts"))
+        using (var sw = File.CreateText(filePath))
         {
           sw.Write(analyzeResult.SourceCode);
         }
