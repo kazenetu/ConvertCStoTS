@@ -7,17 +7,35 @@ using System.Text;
 
 namespace ConvertCStoTS
 {
+  /// <summary>
+  /// C＃ファイルをTSファイルに変換
+  /// </summary>
   public class Converter
   {
+    /// <summary>
+    /// 変換対象C＃ファイルの入力ディレクトリ
+    /// </summary>
     private string SrcPath;
+    /// <summary>
+    /// 変換結果TSファイルの出力ディレクトリ
+    /// </summary>
     private string DescPath;
 
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    /// <param name="srcPath">C＃ファイルの入力ディレクトリ</param>
+    /// <param name="descPath">TSファイルの出力ディレクトリ</param>
     public Converter(string srcPath,string descPath)
     {
       SrcPath = srcPath;
       DescPath = descPath;
     }
 
+    /// <summary>
+    /// C＃ファイルをTSファイルに変換
+    /// </summary>
+    /// <param name="targetFileName">対象C＃ファイル</param>
     public void ConvertTS(string targetFileName)
     {
       var codeAnalyzer = new CodeAnalyzer();
@@ -32,11 +50,16 @@ namespace ConvertCStoTS
       }
     }
 
+    /// <summary>
+    /// C＃ファイル一括変換
+    /// </summary>
+    /// <param name="otherReferencesPath">未参照クラスが格納されたTSファイル</param>
     public void ConvertAll(string otherReferencesPath="base")
     {
       // 対象ファイルを取得
       var targetFilePaths = GetTargetCSFilePaths();
 
+      // 参照結果リスト作成
       var analyzeResults = new List<AnalyzeResult>();
 
       // 解析
@@ -74,15 +97,20 @@ namespace ConvertCStoTS
     /// <summary>
     /// C#ソースを解析し、TypeScript情報を取得する
     /// </summary>
-    /// <param name="targetFiles"></param>
+    /// <param name="targetFiles">変換対象のC#ファイルリスト</param>
+    /// <param name="analyzeResults">対象ファイルの解析結果リスト</param>
     private void Analyze(List<string> targetFiles, ref List<AnalyzeResult> analyzeResults)
     {
       var codeAnalyzer = new CodeAnalyzer();
+
+      // ファイル単位でソース解析
       foreach (var filePath in targetFiles)
       {
+        // TS用importパスを作成
         var importPath = Path.GetRelativePath(SrcPath, filePath).Replace(".cs", string.Empty, StringComparison.CurrentCulture).ToLower(CultureInfo.CurrentCulture);
         importPath = importPath.Replace(Path.DirectorySeparatorChar, '/');
 
+        // C＃ファイル読み込み
         using (var sr = new StreamReader(filePath))
         {
           var tsInfo = codeAnalyzer.Analyze(sr.ReadToEnd());
@@ -106,9 +134,11 @@ namespace ConvertCStoTS
           continue;
         }
 
+        // 未解決の参照の設定を行う
         SetReference(analyzeResult);
       }
 
+      // 変換済のTSファイル情報リストから検索・設定する
       void SetReference(AnalyzeResult target)
       {
         foreach (var searchName in target.UnknownReferences.Keys.ToList())
@@ -116,6 +146,7 @@ namespace ConvertCStoTS
           var refrences = results.Where(item => item.ClassNames.Contains(searchName));
           if (refrences.Any())
           {
+            // 変換済のTSファイル情報に未解決の参照がある場合は設定する
             target.UnknownReferences[searchName] = refrences.First().ImportPath;
           }
         }
@@ -136,29 +167,39 @@ namespace ConvertCStoTS
           continue;
         }
 
+        // ソースに参照を追加する
         AddReference(analyzeResult);
       }
 
+      // ソースに参照の追加
       void AddReference(AnalyzeResult target)
       {
         var sb = new StringBuilder();
+
+        // 参照ごとにimportを追加する
         foreach (var referenceName in target.UnknownReferences.Keys.ToList())
         {
+          // ディレクトリの深さを取得
           var directoryLevel = target.ImportPath.Where(c => c == '/').Count();
 
+          // 「未解決の参照」の解決結果を取得
           var impoertPath = target.UnknownReferences[referenceName];
           if (impoertPath == null)
           {
+            // 解決していない場合は「未参照クラスが格納されたTSファイル」に投げる
             sb.AppendLine($"import {{{referenceName}}} from '{setImportPath(directoryLevel, otherReferencesPath)}'");
           }
           else
           {
+            // 解決した場合はその結果を設定する
             sb.AppendLine($"import {{{referenceName}}} from '{setImportPath(directoryLevel, impoertPath)}'");
           }
         }
 
+        // ソースファイルの冒頭に参照情報を追記する
         target.SourceCode = sb.ToString() + Environment.NewLine + target.SourceCode;
 
+        // ディレクトリの深さに合わせたパスを作成する
         string setImportPath(int directoryLevel, string importPath)
         {
           var result = string.Empty;
@@ -180,11 +221,13 @@ namespace ConvertCStoTS
     /// <param name="analyzeResults">対象ファイルの解析結果リスト</param>
     private void CreateTSFiles(List<AnalyzeResult> analyzeResults)
     {
+      // 出力先が設定されていない場合は暫定ディレクトリを設定する
       if (string.IsNullOrEmpty(DescPath))
       {
         DescPath = Path.Combine(SrcPath, "dist");
       }
 
+      // C#のディレクトリ構成でTSファイルを作成する
       foreach (var analyzeResult in analyzeResults)
       {
         var filePath = $"{DescPath}/{analyzeResult.ImportPath}.ts";
