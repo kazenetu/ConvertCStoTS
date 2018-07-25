@@ -7,7 +7,7 @@ namespace ConvertCStoTS
     static void Main(string[] args)
     {
       var targetDirectory = AppDomain.CurrentDomain.BaseDirectory;
-      targetDirectory = targetDirectory.Substring(0, targetDirectory.LastIndexOf("ConvertCStoTS"));
+      targetDirectory = targetDirectory.Substring(0, targetDirectory.LastIndexOf("ConvertCStoTS", StringComparison.CurrentCulture));
       var srcPath = $"{targetDirectory}TargetSources";
       var descPath = "";
 
