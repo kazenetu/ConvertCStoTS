@@ -14,6 +14,7 @@ namespace ConvertCStoTS
       var converter = new Converter(srcPath, descPath);
 
       converter.ConvertTS("Response/OrderList/SearchResponse.cs");
+      converter.ConvertAll();
 
       Console.ReadKey();
     }
