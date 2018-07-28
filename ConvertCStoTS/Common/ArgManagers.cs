@@ -125,5 +125,35 @@ namespace Common
       }
       return result;
     }
+
+    /// <summary>
+    /// オプションパラメータ名の存在確認
+    /// </summary>
+    /// <param name="paramName">パラメータ名</param>
+    /// <returns>確認結果</returns>
+    public bool ExistsOptionArg(string paramName)
+    {
+      return OptionPramArgs.ContainsKey(paramName);
+    }
+
+    /// <summary>
+    /// オプションパラメータ名の存在確認
+    /// </summary>
+    /// <param name="paramName">パラメータ名リスト</param>
+    /// <returns>確認結果</returns>
+    public bool ExistsOptionArg(List<string> paramNames)
+    {
+      var result = false;
+      foreach (var pramName in paramNames)
+      {
+        result = ExistsOptionArg(pramName);
+        if (result)
+        {
+          break;
+        }
+      }
+      return result;
+    }
+
   }
 }
