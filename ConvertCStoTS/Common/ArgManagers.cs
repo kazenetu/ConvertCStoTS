@@ -31,8 +31,15 @@ namespace Common
         {
           case '-':
           case '/':
+            if (!string.IsNullOrEmpty(paramName))
+            {
+              // パラメータ名だけの場合はパラメータ名だけ追加
+              OptionPramArgs.Add(paramName, null);
+            }
+
             // パラメータ名を設定
-            paramName = arg.Substring(1, arg.Length - 1);
+            paramName = arg.Substring(0, 1).Replace("/", "-", System.StringComparison.CurrentCulture) +
+                        arg.Substring(1);
             break;
           default:
 
@@ -52,6 +59,12 @@ namespace Common
             paramName = string.Empty;
             break;
         }
+      }
+
+      // パラメータ名だけの場合はパラメータ名だけ追加
+      if (!string.IsNullOrEmpty(paramName))
+      {
+        OptionPramArgs.Add(paramName, null);
       }
     }
 
