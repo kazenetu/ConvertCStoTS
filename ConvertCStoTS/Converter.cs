@@ -35,19 +35,28 @@ namespace ConvertCStoTS
     /// <summary>
     /// C＃ファイルをTSファイルに変換
     /// </summary>
-    /// <param name="targetFileName">対象C＃ファイル</param>
-    public void ConvertTS(string targetFileName)
+    /// <param name="otherReferencesPath">未参照クラスが格納されたTSファイル</param>
+    public void ConvertTS(string otherReferencesPath = "base")
     {
-      var codeAnalyzer = new CodeAnalyzer();
+      // 対象ファイルを取得
+      var targetFilePaths = new List<string>() { SrcPath };
 
-      using(var sr = new StreamReader($"{SrcPath}/{targetFileName}"))
-      {
-        var analyzeResult = codeAnalyzer.Analyze(sr.ReadToEnd());
-        Console.Write(analyzeResult.SourceCode);
+      // 参照結果リスト作成
+      var analyzeResults = new List<AnalyzeResult>();
 
-        Console.WriteLine("-- 未知の参照 --");
-        analyzeResult.UnknownReferences.ToList().ForEach(item=> Console.WriteLine(item.Key));
-      }
+      // 解析
+      Analyze(targetFilePaths, ref analyzeResults);
+
+      // 未解決の参照を修正
+      FixUnknownReferences(ref analyzeResults);
+
+      // 参照を追加
+      AddReferences(otherReferencesPath, ref analyzeResults);
+
+      // ファイル作成
+      //CreateTSFiles(analyzeResults);
+
+      Console.Write(analyzeResults[0].SourceCode);
     }
 
     /// <summary>
