@@ -106,5 +106,24 @@ namespace Common
 
       return OptionPramArgs[paramName];
     }
+
+    /// <summary>
+    /// オプションパラメータの取得
+    /// </summary>
+    /// <param name="paramName">パラメータ名リスト</param>
+    /// <returns>対象パラメータの値(パラメータ名が存在しない場合はnull)</returns>
+    public string GetOptionArg(List<string> paramNames)
+    {
+      string result = null;
+      foreach (var pramName in paramNames)
+      {
+        result = GetOptionArg(pramName);
+        if(result != null)
+        {
+          continue;
+        }
+      }
+      return result;
+    }
   }
 }
