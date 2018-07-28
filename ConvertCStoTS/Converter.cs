@@ -19,17 +19,17 @@ namespace ConvertCStoTS
     /// <summary>
     /// 変換結果TSファイルの出力ディレクトリ
     /// </summary>
-    private readonly string DescPath;
+    private readonly string DestPath;
 
     /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="srcPath">C＃ファイルの入力ディレクトリ</param>
-    /// <param name="descPath">TSファイルの出力ディレクトリ</param>
-    public Converter(string srcPath,string descPath)
+    /// <param name="destPath">TSファイルの出力ディレクトリ</param>
+    public Converter(string srcPath,string destPath)
     {
       SrcPath = srcPath;
-      DescPath = descPath;
+      DestPath = destPath;
     }
 
     /// <summary>
@@ -221,10 +221,10 @@ namespace ConvertCStoTS
     /// <param name="analyzeResults">対象ファイルの解析結果リスト</param>
     private void CreateTSFiles(List<AnalyzeResult> analyzeResults)
     {
-      var descPath = DescPath;
+      var descPath = DestPath;
 
       // 出力先が設定されていない場合は暫定ディレクトリを設定する
-      if (string.IsNullOrEmpty(DescPath))
+      if (string.IsNullOrEmpty(DestPath))
       {
         descPath = Path.Combine(SrcPath, "dist");
       }
