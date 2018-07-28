@@ -75,7 +75,7 @@ namespace Common
     /// <returns>対象パラメータの値(インデックスが存在しない場合はnull)</returns>
     public string GetRequiredArg(int index)
     {
-      if(RequiredPramArgs.Count >= index)
+      if(RequiredPramArgs.Count <= index)
       {
         return null;
       }
