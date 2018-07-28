@@ -120,7 +120,7 @@ namespace Common
         result = GetOptionArg(pramName);
         if(result != null)
         {
-          continue;
+          break;
         }
       }
       return result;
