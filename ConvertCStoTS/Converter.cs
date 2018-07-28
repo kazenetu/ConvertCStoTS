@@ -36,10 +36,10 @@ namespace ConvertCStoTS
     /// C＃ファイルをTSファイルに変換
     /// </summary>
     /// <param name="otherReferencesPath">未参照クラスが格納されたTSファイル</param>
-    public void ConvertTS(string otherReferencesPath = "base")
+    public void ConvertTS(string filePath, string otherReferencesPath = "base")
     {
       // 対象ファイルを取得
-      var targetFilePaths = new List<string>() { SrcPath };
+      var targetFilePaths = GetTargetCSFilePaths();
 
       // 参照結果リスト作成
       var analyzeResults = new List<AnalyzeResult>();
@@ -50,13 +50,49 @@ namespace ConvertCStoTS
       // 未解決の参照を修正
       FixUnknownReferences(ref analyzeResults);
 
+      // 対象C#ファイルを取得
+      var targetImportPath = filePath.Replace(".cs", string.Empty, StringComparison.CurrentCulture).ToLower(CultureInfo.CurrentCulture);
+      var targetFileReult = analyzeResults.Where(result => result.ImportPath.Contains(targetImportPath)).FirstOrDefault();
+      if(targetFileReult == null)
+      {
+        return;
+      }
+
+      // 作成対象のTSファイルリストを作成
+      var targetReults = new List<AnalyzeResult>();
+      targetReults.Add(targetFileReult);
+
+      // 参照設定しているTSファイルを設定
+      AddTargetFile(targetFileReult);
+
       // 参照を追加
-      AddReferences(otherReferencesPath, ref analyzeResults);
+      AddReferences(otherReferencesPath, ref targetReults);
 
       // ファイル作成
-      //CreateTSFiles(analyzeResults);
+      //CreateTSFiles(targetReults);
 
-      Console.Write(analyzeResults[0].SourceCode);
+      // 一時的にconsoleに出力
+      foreach(var res in targetReults)
+      {
+        Console.WriteLine($"-----{res.ImportPath}-----");
+        Console.Write(res.SourceCode);
+        Console.WriteLine();
+      }
+
+      // 作成対象のTSファイルリストに参照設定しているファイルを追加
+      void AddTargetFile(AnalyzeResult target)
+      {
+        foreach (var unknownReferenceKey in target.UnknownReferences.Keys)
+        {
+          var reference = target.UnknownReferences[unknownReferenceKey];
+          if (reference != null)
+          {
+            var sub = analyzeResults.Where(result => result.ImportPath == reference).FirstOrDefault();
+            targetReults.Add(sub);
+            AddTargetFile(sub);
+          }
+        }
+      }
     }
 
     /// <summary>
