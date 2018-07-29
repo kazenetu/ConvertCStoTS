@@ -1,6 +1,9 @@
 # ConvertCStoTS
 C#のクラスをTypeScriptのクラスに変換する
 
+# 実行環境
+* .NET Core 2.0以上
+
 # 使用方法
 ## ```ConvertCStoTS <SourcePath> [options]```  
 
