@@ -10,4 +10,11 @@
     <PackageReference Include="Microsoft.NetCore.Analyzers" Version="2.6.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <MySourceFiles Include="$(OutDir)ConvertCStoTS.dll" />
+  </ItemGroup>
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild" Condition="$(Configuration)=='Release' ">
+    <Copy SourceFiles="@(MySourceFiles)" DestinationFolder="../" />
+  </Target>
+
 </Project>
