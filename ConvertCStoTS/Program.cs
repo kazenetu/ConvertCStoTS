@@ -71,7 +71,9 @@ namespace ConvertCStoTS
         converter.ConvertTS(filePath, otherReferencesPath);
       }
 
+#if DEBUG
       Console.ReadKey();
+#endif
     }
   }
 }
