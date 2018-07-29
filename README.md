@@ -5,7 +5,7 @@ C#のクラスをTypeScriptのクラスに変換する
 * .NET Core 2.0以上
 
 # 使用方法
-## ```ConvertCStoTS <SourcePath> [options]```  
+## ```dotnet ConvertCStoTS <SourcePath> [options]```  
 
 ### ```<SourcePath>``` C#ファイルのベースディレクトリ
 
