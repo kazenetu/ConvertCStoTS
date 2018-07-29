@@ -2,10 +2,15 @@
 C#のクラスをTypeScriptのクラスに変換する
 
 # 実行環境
-* .NET Core 2.0以上
+* .NET Core SDK 2.0以上
+
+# 前準備
+1. リポジトリのルートディレクトリで下記を実行  
+```dotnet publish ConvertCStoTS -c Release -o ../publish```  
+※ルートディレクトリ直下に「publish」フォルダが作成される
 
 # 使用方法
-## ```dotnet ConvertCStoTS.dll <SourcePath> [options]```  
+## ```dotnet publish/ConvertCStoTS.dll <SourcePath> [options]```  
 
 ### ```<SourcePath>``` C#ファイルのベースディレクトリ
 
@@ -26,9 +31,9 @@ C#のクラスをTypeScriptのクラスに変換する
   (TargetSources/dist/base)  
   ※デフォルト設定
 
-```dotnet ConvertCStoTS.dll TargetSources --out TargetSources/dist --file Response/OrderList/SearchResponse.cs```  
+```dotnet publish/ConvertCStoTS.dll TargetSources --out TargetSources/dist --file Response/OrderList/SearchResponse.cs```  
 または  
-```dotnet ConvertCStoTS.dll TargetSources -o TargetSources/dist -f Response/OrderList/SearchResponse.cs```
+```dotnet publish/ConvertCStoTS.dll TargetSources -o TargetSources/dist -f Response/OrderList/SearchResponse.cs```
 
 
 ## C#ファイルのTypeScript一括変換
@@ -37,6 +42,6 @@ C#のクラスをTypeScriptのクラスに変換する
 * 参照TSファイルパス:**baseclass**  
   (TargetSources/dist/baseclass)
 
-```dotnet ConvertCStoTS.dll TargetSources --out TargetSources/dist --ref baseclass```  
+```dotnet publish/ConvertCStoTS.dll TargetSources --out TargetSources/dist --ref baseclass```  
 または  
-```dotnet ConvertCStoTS.dll TargetSources -o TargetSources/dist -r baseclass```
+```dotnet publish/ConvertCStoTS.dll TargetSources -o TargetSources/dist -r baseclass```
