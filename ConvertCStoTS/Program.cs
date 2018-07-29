@@ -9,9 +9,6 @@ namespace ConvertCStoTS
   {
     static void Main(string[] args)
     {
-      // カレントディレクトリを実行ファイルのパスに設定
-      Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-
       // パラメータ取得
       var argManager = new ArgManagers(args);
 
