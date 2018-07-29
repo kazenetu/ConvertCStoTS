@@ -69,15 +69,7 @@ namespace ConvertCStoTS
       AddReferences(otherReferencesPath, ref targetReults);
 
       // ファイル作成
-      //CreateTSFiles(targetReults);
-
-      // 一時的にconsoleに出力
-      foreach(var res in targetReults)
-      {
-        Console.WriteLine($"-----{res.ImportPath}-----");
-        Console.Write(res.SourceCode);
-        Console.WriteLine();
-      }
+      CreateTSFiles(targetReults);
 
       // 作成対象のTSファイルリストに参照設定しているファイルを追加
       void AddTargetFile(AnalyzeResult target)
