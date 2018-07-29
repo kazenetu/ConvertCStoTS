@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <MySourceFiles Include="$(OutDir)ConvertCStoTS.dll" />
+    <MySourceFiles Include="$(OutDir)ConvertCStoTS.dll;$(OutDir)ConvertCStoTS.runtimeconfig.json" />
   </ItemGroup>
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild" Condition="$(Configuration)=='Release' ">
     <Copy SourceFiles="@(MySourceFiles)" DestinationFolder="../" />
