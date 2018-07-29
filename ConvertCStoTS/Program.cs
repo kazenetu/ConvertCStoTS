@@ -61,6 +61,7 @@ namespace ConvertCStoTS
       // FilePath
       var filePath = argManager.GetOptionArg(new List<string>() { "--file", " -f" });
 
+      Console.WriteLine("---Convert Start---");
       var converter = new Converter(srcPath, destPath);
       if (string.IsNullOrEmpty(filePath))
       {
@@ -70,6 +71,7 @@ namespace ConvertCStoTS
       {
         converter.ConvertTS(filePath, otherReferencesPath);
       }
+      Console.WriteLine("---Convert End---");
 
 #if DEBUG
       Console.ReadKey();
