@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace ConvertCStoTS
@@ -12,6 +13,11 @@ namespace ConvertCStoTS
   /// </summary>
   public class Converter
   {
+    /// <summary>
+    /// 実行中のメソッド名
+    /// </summary>
+    public string RunMethodName { get; private set; } = "";
+
     /// <summary>
     /// 変換対象C＃ファイルの入力ディレクトリ
     /// </summary>
@@ -38,52 +44,59 @@ namespace ConvertCStoTS
     /// <param name="otherReferencesPath">未参照クラスが格納されたTSファイル</param>
     public void ConvertTS(string filePath, string otherReferencesPath = "base")
     {
-      // 対象ファイルを取得
-      var targetFilePaths = GetTargetCSFilePaths();
-
-      // 参照結果リスト作成
-      var analyzeResults = new List<AnalyzeResult>();
-
-      // 解析
-      Analyze(targetFilePaths, ref analyzeResults);
-
-      // 未解決の参照を修正
-      FixUnknownReferences(ref analyzeResults);
-
-      // 対象C#ファイルを取得
-      var targetImportPath = filePath.Replace(".cs", string.Empty, StringComparison.CurrentCulture).ToLower(CultureInfo.CurrentCulture);
-      var targetFileReult = analyzeResults.Where(result => result.ImportPath.Contains(targetImportPath)).FirstOrDefault();
-      if(targetFileReult == null)
+      try
       {
-        return;
-      }
+        // 対象ファイルを取得
+        var targetFilePaths = GetTargetCSFilePaths();
 
-      // 作成対象のTSファイルリストを作成
-      var targetReults = new List<AnalyzeResult>();
-      targetReults.Add(targetFileReult);
+        // 参照結果リスト作成
+        var analyzeResults = new List<AnalyzeResult>();
 
-      // 参照設定しているTSファイルを設定
-      AddTargetFile(targetFileReult);
+        // 解析
+        Analyze(targetFilePaths, ref analyzeResults);
 
-      // 参照を追加
-      AddReferences(otherReferencesPath, ref targetReults);
+        // 未解決の参照を修正
+        FixUnknownReferences(ref analyzeResults);
 
-      // ファイル作成
-      CreateTSFiles(targetReults);
-
-      // 作成対象のTSファイルリストに参照設定しているファイルを追加
-      void AddTargetFile(AnalyzeResult target)
-      {
-        foreach (var unknownReferenceKey in target.UnknownReferences.Keys)
+        // 対象C#ファイルを取得
+        var targetImportPath = filePath.Replace(".cs", string.Empty, StringComparison.CurrentCulture).ToLower(CultureInfo.CurrentCulture);
+        var targetFileReult = analyzeResults.Where(result => result.ImportPath.Contains(targetImportPath)).FirstOrDefault();
+        if (targetFileReult == null)
         {
-          var reference = target.UnknownReferences[unknownReferenceKey];
-          if (reference != null)
+          return;
+        }
+
+        // 作成対象のTSファイルリストを作成
+        var targetReults = new List<AnalyzeResult>();
+        targetReults.Add(targetFileReult);
+
+        // 参照設定しているTSファイルを設定
+        AddTargetFile(targetFileReult);
+
+        // 参照を追加
+        AddReferences(otherReferencesPath, ref targetReults);
+
+        // ファイル作成
+        CreateTSFiles(targetReults);
+
+        // 作成対象のTSファイルリストに参照設定しているファイルを追加
+        void AddTargetFile(AnalyzeResult target)
+        {
+          foreach (var unknownReferenceKey in target.UnknownReferences.Keys)
           {
-            var sub = analyzeResults.Where(result => result.ImportPath == reference).FirstOrDefault();
-            targetReults.Add(sub);
-            AddTargetFile(sub);
+            var reference = target.UnknownReferences[unknownReferenceKey];
+            if (reference != null)
+            {
+              var sub = analyzeResults.Where(result => result.ImportPath == reference).FirstOrDefault();
+              targetReults.Add(sub);
+              AddTargetFile(sub);
+            }
           }
         }
+      }
+      catch
+      {
+        throw;
       }
     }
 
@@ -93,23 +106,30 @@ namespace ConvertCStoTS
     /// <param name="otherReferencesPath">未参照クラスが格納されたTSファイル</param>
     public void ConvertAll(string otherReferencesPath="base")
     {
-      // 対象ファイルを取得
-      var targetFilePaths = GetTargetCSFilePaths();
+      try
+      {
+        // 対象ファイルを取得
+        var targetFilePaths = GetTargetCSFilePaths();
 
-      // 参照結果リスト作成
-      var analyzeResults = new List<AnalyzeResult>();
+        // 参照結果リスト作成
+        var analyzeResults = new List<AnalyzeResult>();
 
-      // 解析
-      Analyze(targetFilePaths, ref analyzeResults);
+        // 解析
+        Analyze(targetFilePaths, ref analyzeResults);
 
-      // 未解決の参照を修正
-      FixUnknownReferences(ref analyzeResults);
+        // 未解決の参照を修正
+        FixUnknownReferences(ref analyzeResults);
 
-      // 参照を追加
-      AddReferences(otherReferencesPath, ref analyzeResults);
+        // 参照を追加
+        AddReferences(otherReferencesPath, ref analyzeResults);
 
-      // ファイル作成
-      CreateTSFiles(analyzeResults);
+        // ファイル作成
+        CreateTSFiles(analyzeResults);
+      }
+      catch
+      {
+        throw;
+      }
     }
 
     /// <summary>
@@ -118,6 +138,9 @@ namespace ConvertCStoTS
     /// <returns>参照ファイルパスリスト</returns>
     private List<string> GetTargetCSFilePaths()
     {
+      // 実行中のメソッド名を設定する
+      RunMethodName = MethodBase.GetCurrentMethod().Name;
+
       // 除外フォルダ
       var exclusionKeywords = new List<string>() {
         $"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}",
@@ -138,6 +161,9 @@ namespace ConvertCStoTS
     /// <param name="analyzeResults">対象ファイルの解析結果リスト</param>
     private void Analyze(List<string> targetFiles, ref List<AnalyzeResult> analyzeResults)
     {
+      // 実行中のメソッド名を設定する
+      RunMethodName = MethodBase.GetCurrentMethod().Name;
+
       var codeAnalyzer = new CodeAnalyzer();
 
       // ファイル単位でソース解析
@@ -163,6 +189,9 @@ namespace ConvertCStoTS
     /// <param name="analyzeResults">対象ファイルの解析結果リスト</param>
     private void FixUnknownReferences(ref List<AnalyzeResult> analyzeResults)
     {
+      // 実行中のメソッド名を設定する
+      RunMethodName = MethodBase.GetCurrentMethod().Name;
+
       var results = analyzeResults;
       foreach (var analyzeResult in analyzeResults)
       {
@@ -197,6 +226,9 @@ namespace ConvertCStoTS
     /// <param name="analyzeResults">対象ファイルの解析結果リスト</param>
     private void AddReferences(string otherReferencesPath, ref List<AnalyzeResult> analyzeResults)
     {
+      // 実行中のメソッド名を設定する
+      RunMethodName = MethodBase.GetCurrentMethod().Name;
+
       foreach (var analyzeResult in analyzeResults)
       {
         if (!analyzeResult.UnknownReferences.Any())
@@ -258,6 +290,9 @@ namespace ConvertCStoTS
     /// <param name="analyzeResults">対象ファイルの解析結果リスト</param>
     private void CreateTSFiles(List<AnalyzeResult> analyzeResults)
     {
+      // 実行中のメソッド名を設定する
+      RunMethodName = MethodBase.GetCurrentMethod().Name;
+
       var descPath = DestPath;
 
       // 出力先が設定されていない場合は暫定ディレクトリを設定する
