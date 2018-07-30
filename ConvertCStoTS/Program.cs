@@ -7,7 +7,7 @@ namespace ConvertCStoTS
 {
   class Program
   {
-    static void Main(string[] args)
+    static int Main(string[] args)
     {
       // パラメータ取得
       var argManager = new ArgManagers(args);
@@ -37,7 +37,7 @@ namespace ConvertCStoTS
         Console.WriteLine("-o, --out   <OutputPath>     Output TypeScript Path");
         Console.WriteLine("-r, --ref   <ReferencesPath> References TypeScript Path");
         Console.WriteLine("-h, --help  view this page");
-        return;
+        return 0;
       }
 
       var srcPath = Path.GetFullPath(argManager.GetRequiredArg(0));
@@ -81,11 +81,15 @@ namespace ConvertCStoTS
         Console.WriteLine($"ErrorMethod[{converter.RunMethodName}]");
 
         Console.WriteLine("---Convert Fail---");
+
+        return 1;
       }
 
 #if DEBUG
       Console.ReadKey();
 #endif
+
+      return 0;
     }
   }
 }
