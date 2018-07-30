@@ -63,15 +63,25 @@ namespace ConvertCStoTS
 
       Console.WriteLine("---Convert Start---");
       var converter = new Converter(srcPath, destPath);
-      if (string.IsNullOrEmpty(filePath))
+      try
       {
-        converter.ConvertAll(otherReferencesPath);
+        if (string.IsNullOrEmpty(filePath))
+        {
+          converter.ConvertAll(otherReferencesPath);
+        }
+        else
+        {
+          converter.ConvertTS(filePath, otherReferencesPath);
+        }
+        Console.WriteLine("---Convert End---");
       }
-      else
+      catch (Exception ex)
       {
-        converter.ConvertTS(filePath, otherReferencesPath);
+        Console.WriteLine(ex.Message);
+        Console.WriteLine($"ErrorMethod[{converter.RunMethodName}]");
+
+        Console.WriteLine("---Convert Fail---");
       }
-      Console.WriteLine("---Convert End---");
 
 #if DEBUG
       Console.ReadKey();
