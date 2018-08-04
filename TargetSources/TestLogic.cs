@@ -24,24 +24,26 @@ namespace DataTransferObjects
         prop = local.ToString();
         local = 1;
       }
-      else{
+      else
+      {
         int test = 0;
       }
 
-      switch(local){
+      switch (local)
+      {
         case 1:
           prop = "1";
-        break;
+          break;
         case 2:
           prop = "2";
-        break;
+          break;
         case 3:
         case 4:
           prop = "34";
-        break;
+          break;
         default:
-          prop ="333";
-        break;
+          prop = "333";
+          break;
       }
     }
 
