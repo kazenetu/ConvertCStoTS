@@ -35,6 +35,13 @@ namespace DataTransferObjects
         case 2:
           prop = "2";
         break;
+        case 3:
+        case 4:
+          prop = "34";
+        break;
+        default:
+          prop ="333";
+        break;
       }
     }
 
