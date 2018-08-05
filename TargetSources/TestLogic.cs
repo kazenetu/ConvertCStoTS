@@ -45,6 +45,12 @@ namespace DataTransferObjects
           prop = "333";
           break;
       }
+
+      for (var i = 0; i < 10; i++)
+      {
+        local = i;
+        prop = local.ToString();
+      }
     }
 
     /// <summary>
