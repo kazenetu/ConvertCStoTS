@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace ConvertCStoTS
@@ -91,11 +92,281 @@ namespace ConvertCStoTS
         {
           result.Append(GetItemText(pi, index + 2));
         }
+        if (childItem is ConstructorDeclarationSyntax ci)
+        {
+          result.Append(GetItemText(ci, index + 2));
+        }
       }
 
       result.AppendLine($"{GetSpace(index)}{item.CloseBraceToken.ValueText}");
       return result.ToString();
     }
+
+    /// <summary>
+    /// コンストラクタメソッドの取得
+    /// </summary>
+    /// <param name="item">C#ソースを解析したインスタンス</param>
+    /// <param name="index">インデックス数(半角スペース数)</param>
+    /// <returns>TypeScriptのコンストラクタに変換した文字列</returns>
+    private string GetItemText(ConstructorDeclarationSyntax item, int index = 0)
+    {
+      var result = new StringBuilder();
+
+      var spaceIndex = GetSpace(index);
+
+      // コンストラクタ宣言
+      result.Append($"{spaceIndex}{item.Modifiers.ToString()} {item.Identifier.ValueText}(");
+      result.Append(GetParameterList(item.ParameterList, true));
+      result.Append(")");
+      result.AppendLine(" {");
+
+      // メソッド内処理を変換
+      result.Append(GetMethodText(item.Body, index + 2));
+
+      result.AppendLine(spaceIndex + "}");
+
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// パラメータの文字列を設定
+    /// </summary>
+    /// <param name="list">解析結果パラメータリスト</param>
+    /// <param name="settingType">型宣言するか否か</param>
+    /// <returns>C#パラメータをTypeScriptに変換した文字列</returns>
+    private string GetParameterList(ParameterListSyntax list, bool settingType)
+    {
+      var result = new StringBuilder();
+
+      var isFirst = true;
+      foreach (var param in list.Parameters)
+      {
+        if (!isFirst)
+        {
+          result.Append(", ");
+        }
+
+        result.Append($"{param.Identifier.ValueText}");
+        if (settingType)
+        {
+          result.Append($":{GetTypeScriptType(param.Type)}");
+        }
+
+        isFirst = false;
+      }
+
+      return result.ToString();
+    }
+
+    #region メソッド内処理の取得
+
+    /// <summary>
+    /// メソッド内処理を取得
+    /// </summary>
+    /// <param name="logic">BlockSyntaxインスタンス</param>
+    /// <param name="index">インデックス数(半角スペース数)</param>
+    /// <param name="parentLocalDeclarationStatements">親GetMethodTextのローカル変数リスト</param>
+    private string GetMethodText(BlockSyntax logic, int index = 0, List<string> parentLocalDeclarationStatements = null)
+    {
+      if (logic == null)
+      {
+        return string.Empty;
+      }
+      return GetMethodText(logic.Statements,index,parentLocalDeclarationStatements);
+    }
+
+    /// <summary>
+    /// メソッド内処理を取得
+    /// </summary>
+    /// <param name="statements">BlockSyntaxインスタンス</param>
+    /// <param name="index">インデックス数(半角スペース数)</param>
+    /// <param name="parentLocalDeclarationStatements">親GetMethodTextのローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string GetMethodText(SyntaxList<StatementSyntax> statements, int index = 0, List<string> parentLocalDeclarationStatements = null)
+    {
+      // 宣言されたローカル変数
+      var localDeclarationStatements = new List<string>();
+      if(parentLocalDeclarationStatements != null)
+      {
+        localDeclarationStatements.AddRange(parentLocalDeclarationStatements);
+      }
+
+      var result = new StringBuilder();
+
+      var spaceIndex = GetSpace(index);
+
+      foreach(var statement in statements)
+      {
+        if (statement is LocalDeclarationStatementSyntax lds)
+        {
+          if (lds.Declaration.Type.IsVar)
+          {
+            result.AppendLine($"{spaceIndex}let {lds.Declaration.Variables};");
+            foreach (var v in lds.Declaration.Variables)
+            {
+              localDeclarationStatements.Add(v.Identifier.ValueText);
+            }
+          }
+          else
+          {
+            var tsType = GetTypeScriptType(lds.Declaration.Type);
+            foreach (var v in lds.Declaration.Variables)
+            {
+              result.AppendLine($"{spaceIndex}let {v.Identifier}:{tsType} {v.Initializer};");
+              localDeclarationStatements.Add(v.Identifier.ValueText);
+            }
+          }
+          continue;
+        }
+
+        if (statement is IfStatementSyntax ifss)
+        {
+          result.AppendLine($"{spaceIndex}if({GetExpression(ifss.Condition, localDeclarationStatements)})" + " {");
+          result.Append(GetMethodText(ifss.Statement as BlockSyntax, index + 2, localDeclarationStatements));
+          result.AppendLine($"{spaceIndex}" + "}");
+
+          // ElseStatement
+          if(ifss.Else != null)
+          {
+            result.AppendLine($"{spaceIndex}" + "else {");
+            result.Append(GetMethodText(ifss.Else.Statement as BlockSyntax, index + 2));
+            result.AppendLine($"{spaceIndex}" + "}");
+          }
+          continue;
+        }
+        if (statement is ExpressionStatementSyntax ess)
+        {
+          result.AppendLine($"{spaceIndex}{GetExpression(ess.Expression, localDeclarationStatements)};");
+          continue;
+        }
+        if(statement is SwitchStatementSyntax sss)
+        {
+          result.Append(spaceIndex);
+          result.AppendLine($"switch({GetExpression(sss.Expression, localDeclarationStatements)})" + " {");
+          foreach(var section in sss.Sections)
+          {
+            foreach(var label in section.Labels)
+            {
+              result.AppendLine($"{GetSpace(index + 2)}{label}");
+            }
+            result.Append(GetMethodText(section.Statements, index + 4,localDeclarationStatements));
+          }
+
+          result.AppendLine(spaceIndex + "}");
+          continue;
+        }
+        if (statement is BreakStatementSyntax bss)
+        {
+          result.AppendLine($"{spaceIndex}break;");
+          continue;
+        }
+        if (statement is ForStatementSyntax fss)
+        {
+          foreach (var v in fss.Declaration.Variables)
+          {
+            localDeclarationStatements.Add(v.Identifier.ValueText);
+          }
+
+          result.AppendLine($"{spaceIndex}for(let {fss.Declaration.Variables}; {GetExpression(fss.Condition, localDeclarationStatements)}; {fss.Incrementors})" + " {");
+          result.Append(GetMethodText(fss.Statement as BlockSyntax, index + 2, localDeclarationStatements));
+          result.AppendLine(spaceIndex+"}");
+
+          continue;
+        }
+
+        var a = 123;
+      }
+
+      return result.ToString();
+    }
+
+    #region 条件式を取得
+
+    /// <summary>
+    /// 条件を取得
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string GetExpression(ExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      var left = string.Empty;
+      var keyword = string.Empty;
+      var right = string.Empty;
+      switch (condition)
+      {
+        case BinaryExpressionSyntax bss:
+          left = bss.Left.ToString();
+          if (!IsLocalDeclarationStatement(bss.Left, localDeclarationStatements))
+          {
+            left = "this." + left;
+          }
+
+          keyword = bss.OperatorToken.ToString();
+
+          right = GetExpression(bss.Right, localDeclarationStatements);
+
+          break;
+        case AssignmentExpressionSyntax ass:
+          left = ass.Left.ToString();
+          if (!IsLocalDeclarationStatement(ass.Left, localDeclarationStatements))
+          {
+            left = "this." + left;
+          }
+
+          keyword = ass.OperatorToken.ToString();
+
+          right = GetExpression(ass.Right, localDeclarationStatements);
+
+          break;
+        case IdentifierNameSyntax ins:
+        case InvocationExpressionSyntax ies:
+        case LiteralExpressionSyntax les:
+          if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
+          {
+            return "this." + condition.ToString();
+          }
+          return condition.ToString();
+        default:
+          return string.Empty;
+      }
+
+      return $"{left} {keyword} {right}";
+    }
+
+    /// <summary>
+    /// ローカル変数か判定
+    /// </summary>
+    /// <param name="es">対象インスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>ローカル変数か否か</returns>
+    private bool IsLocalDeclarationStatement(ExpressionSyntax es, List<string> localDeclarationStatements)
+    {
+      var localDeclarationStatement = string.Empty;
+      if (es is InvocationExpressionSyntax ies)
+      {
+        var memberAccessExpressionSyntax = ies.Expression as MemberAccessExpressionSyntax;
+        if (memberAccessExpressionSyntax != null)
+        {
+          localDeclarationStatement = memberAccessExpressionSyntax.Expression.ToString();
+        }
+      }
+      if (es is IdentifierNameSyntax ins)
+      {
+        localDeclarationStatement = ins.ToString();
+      }
+
+      if (string.IsNullOrEmpty(localDeclarationStatement))
+      {
+        return true;
+      }
+      
+      return localDeclarationStatements.Contains(localDeclarationStatement);
+    }
+
+    #endregion
+
+    #endregion
 
     /// <summary>
     /// プロパティ取得
