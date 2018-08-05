@@ -13,6 +13,8 @@ namespace DataTransferObjects
     /// <value></value>
     public string prop { set; get; } = "";
 
+    public int propInt { set; get; } = 50;
+
     /// <summary>
     /// コンストラクタ
     /// /// </summary>
@@ -59,6 +61,13 @@ namespace DataTransferObjects
 
       // for分確認
       for (var i = 0; i < 10; i++)
+      {
+        local = i;
+        prop = local.ToString();
+      }
+
+      // for分確認(プロパティ)
+      for (var i = 0; i < propInt; i++)
       {
         local = i;
         prop = local.ToString();
