@@ -72,6 +72,12 @@ namespace DataTransferObjects
         local = i;
         prop = local.ToString();
       }
+
+      // 計算代入式1
+      local += local *3;
+
+      // 計算代入式2
+      local -= local /propInt;
     }
 
     /// <summary>
