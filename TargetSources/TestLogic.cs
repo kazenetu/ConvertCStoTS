@@ -28,6 +28,10 @@ namespace DataTransferObjects
       {
         int test = 0;
       }
+      if(prop == "123"){
+        var localString = "";
+        localString = prop;
+      }
 
       switch (local)
       {
