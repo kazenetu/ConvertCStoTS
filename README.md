@@ -45,3 +45,9 @@ C#のクラスをTypeScriptのクラスに変換する
 ```dotnet publish/ConvertCStoTS.dll TargetSources --out TargetSources/dist --ref baseclass```  
 または  
 ```dotnet publish/ConvertCStoTS.dll TargetSources -o TargetSources/dist -r baseclass```
+
+# 未実装
+- [ ] メソッドのTS変換
+- [ ] 内部処理：whileのTS変換
+- [ ] 内部処理：foreachのTS変換
+
