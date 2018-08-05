@@ -18,7 +18,10 @@ namespace DataTransferObjects
     /// /// </summary>
     public TestLogic()
     {
+      // ローカル変数宣言確認(型推論)
       var local = 123;
+
+      // ローカル変数の値分岐
       if (local >= 10)
       {
         prop = local.ToString();
@@ -26,13 +29,17 @@ namespace DataTransferObjects
       }
       else
       {
+        // ローカル変数宣言確認(型指定)
         int test = 0;
       }
+
+      // プロパティの値分岐
       if(prop == "123"){
         var localString = "";
         localString = prop;
       }
 
+      // ローカル変数でのswitch
       switch (local)
       {
         case 1:
@@ -50,6 +57,7 @@ namespace DataTransferObjects
           break;
       }
 
+      // for分確認
       for (var i = 0; i < 10; i++)
       {
         local = i;
