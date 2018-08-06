@@ -115,7 +115,7 @@ namespace ConvertCStoTS
       var spaceIndex = GetSpace(index);
 
       // コンストラクタ宣言
-      result.Append($"{spaceIndex}{item.Modifiers.ToString()} {item.Identifier.ValueText}(");
+      result.Append($"{spaceIndex}{item.Modifiers.ToString()} constructor(");
       result.Append(GetParameterList(item.ParameterList, true));
       result.Append(")");
       result.AppendLine(" {");
