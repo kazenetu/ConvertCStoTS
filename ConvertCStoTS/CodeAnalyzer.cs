@@ -14,6 +14,8 @@ namespace ConvertCStoTS
     /// </summary>
     public AnalyzeResult Result { get; } = new AnalyzeResult();
 
+    private Dictionary<string, string> RenameClasseNames = new Dictionary<string, string>();
+
     /// <summary>
     /// 解析処理
     /// </summary>
@@ -23,6 +25,7 @@ namespace ConvertCStoTS
     {
       // クリア
       Result.Clear();
+      RenameClasseNames.Clear();
 
       // C#解析
       var tree = CSharpSyntaxTree.ParseText(targetCode) as CSharpSyntaxTree;
@@ -35,6 +38,19 @@ namespace ConvertCStoTS
 
       // ルート取得
       var root = tree.GetRoot();
+
+      // クラス名取得
+      foreach (CSharpSyntaxNode item in root.DescendantNodes())
+      {
+        if(item is ClassDeclarationSyntax cds)
+        {
+          if (cds.Parent is ClassDeclarationSyntax parentClass)
+          {
+            var renameClassName = parentClass.Identifier + "_" + cds.Identifier.ValueText;
+            RenameClasseNames.Add(cds.Identifier.ValueText, renameClassName);
+          }
+        }
+      }
 
       // ソース解析
       var result = new StringBuilder();
@@ -468,6 +484,11 @@ namespace ConvertCStoTS
               result = "Date";
               break;
             default:
+              if (RenameClasseNames.ContainsKey(result))
+              {
+                return RenameClasseNames[result];
+              }
+
               result = result.Replace(".", "_", StringComparison.CurrentCulture);
               if (!Result.UnknownReferences.ContainsKey(ins.ToString()))
               {
@@ -477,6 +498,11 @@ namespace ConvertCStoTS
           }
           break;
         default:
+          if (RenameClasseNames.ContainsKey(result))
+          {
+            return RenameClasseNames[result];
+          }
+
           result = result.Replace(".", "_", StringComparison.CurrentCulture);
           if (!Result.UnknownReferences.ContainsKey(result))
           {
