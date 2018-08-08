@@ -14,6 +14,10 @@ namespace ConvertCStoTS
     /// </summary>
     public AnalyzeResult Result { get; } = new AnalyzeResult();
 
+    /// <summary>
+    /// 内部クラスの名称変更情報
+    /// </summary>
+    /// <remarks>「親クラス_内部クラス」で表現する</remarks>
     private Dictionary<string, string> RenameClasseNames = new Dictionary<string, string>();
 
     /// <summary>
