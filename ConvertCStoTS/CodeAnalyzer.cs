@@ -2,8 +2,10 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using static ConvertCStoTS.MethodData;
 
 namespace ConvertCStoTS
 {
@@ -19,6 +21,11 @@ namespace ConvertCStoTS
     /// </summary>
     /// <remarks>「親クラス_内部クラス」で表現する</remarks>
     private Dictionary<string, string> RenameClasseNames = new Dictionary<string, string>();
+
+    /// <summary>
+    /// メソッド管理クラスインスタンス
+    /// </summary>
+    private MethodDataManager MethodDataManager = new MethodDataManager();
 
     /// <summary>
     /// 解析処理
@@ -118,6 +125,9 @@ namespace ConvertCStoTS
         }
       }
 
+      // メソッドを出力
+      result.Append(MethodDataManager.GetMethodText());
+
       result.AppendLine($"{GetSpace(index)}{item.CloseBraceToken.ValueText}");
       return result.ToString();
     }
@@ -130,6 +140,19 @@ namespace ConvertCStoTS
     /// <returns>TypeScriptのコンストラクタに変換した文字列</returns>
     private string GetItemText(ConstructorDeclarationSyntax item, int index = 0)
     {
+      var parameterDataList = new List<ParameterData>();
+      foreach(var param in item.ParameterList.Parameters)
+      {
+        parameterDataList.Add(new ParameterData(param.Identifier.ValueText, GetTypeScriptType(param.Type)));
+      }
+
+      var methodData = new MethodData(index, item.Modifiers.ToString(), parameterDataList,
+        GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()));
+
+      MethodDataManager.AddMethodData("constructor", methodData);
+
+      return string.Empty;
+/*
       var result = new StringBuilder();
 
       var spaceIndex = GetSpace(index);
@@ -141,11 +164,12 @@ namespace ConvertCStoTS
       result.AppendLine(" {");
 
       // メソッド内処理を変換
-      result.Append(GetMethodText(item.Body, index + 2));
+      result.Append();
 
       result.AppendLine(spaceIndex + "}");
 
       return result.ToString();
+*/
     }
 
     /// <summary>
