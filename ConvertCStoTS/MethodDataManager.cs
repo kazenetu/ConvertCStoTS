@@ -134,7 +134,7 @@ namespace ConvertCStoTS
           summaryMethod.AppendLine(") {");
           summaryMethod.Append($"{spaceIndex}{spaceIndex}");
 
-          summaryMethod.Append($"{spaceIndex}{tempMethodName}(");
+          summaryMethod.Append($"{spaceIndex}this.{tempMethodName}(");
           var tempIndex = 0;
           while(tempIndex < methodData.PramCount)
           {
