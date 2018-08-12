@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -62,40 +63,149 @@ namespace ConvertCStoTS
       {
         // メソッドが重複しない場合はそのまま出力
         var item = methodDataList.FirstOrDefault();
-        if(item == null)
+        if (item == null)
         {
           return string.Empty;
         }
 
-        result.Append($"{spaceIndex}{item.Scope} {methodName}(");
-
-        var isFirst = true;
-        foreach(var param in item.ParamList)
-        {
-          if (!isFirst)
-          {
-            result.Append(", ");
-          }
-
-          result.Append(GetParam(param.Name, new List<string>() { param.LocalDeclaration }));
-
-          isFirst = false;
-        }
-
-        result.Append(")");
-        result.AppendLine(" {");
-
-        // メソッド内処理を変換
-        result.Append(item.SourceCode);
-
-        result.AppendLine(spaceIndex + "}");
+        // メソッド作成
+        result.Append(CreateMethodText(methodName, spaceIndex, item));
       }
       else
       {
-        // TODO 複数メソッド名が重複している場合
-       
+        // 複数メソッド名が重複している場合
 
+        // 初期化
+        var paramCount = methodDataList.Max(item => item.PramCount);
+        var paramLists = new List<List<string>>();
+        for(var index = 0; index < paramCount; index++)
+        {
+          var dataList = new List<string>();
+          for(var dataIndex = 0; dataIndex < methodDataList.Count; dataIndex++)
+          {
+            dataList.Add("null");
+          }
+          paramLists.Add(dataList);
+        }
+
+        // 仮メソッドを作成
+        var summaryMethod = new StringBuilder();
+        var dataListIndex = 0;
+        foreach(var methodData in methodDataList)
+        {
+          var paramIndex = 0;
+          foreach(var paramData in methodData.ParamList)
+          {
+            paramLists[paramIndex][dataListIndex] = paramData.LocalDeclaration;
+            paramIndex++;
+          }
+
+          // 仮メソッド作成
+          var tempMethodName = $"{methodName}{dataListIndex}";
+          result.Append(CreateMethodText(tempMethodName, spaceIndex, methodData));
+
+          // 集約メソッド用処理を追加
+          summaryMethod.Append($"{spaceIndex}{spaceIndex}");
+          summaryMethod.Append("if(");
+          for(paramIndex = 0; paramIndex < paramCount; paramIndex++)
+          {
+            var paramType = paramLists[paramIndex][dataListIndex];
+            if(paramType == paramType.ToLower(CultureInfo.CurrentCulture))
+            {
+              if(paramType == "null")
+              {
+                summaryMethod.Append($"p{paramIndex} === null");
+              }
+              else
+              {
+                summaryMethod.Append($"typeof p{paramIndex} === '{paramType}'");
+              }
+            }
+            else
+            {
+              summaryMethod.Append($"p{paramIndex} instanceof {paramType}");
+            }
+
+            if(paramCount>1 && paramIndex < paramCount - 1)
+            {
+              summaryMethod.Append(" && ");
+            }
+          }
+          summaryMethod.AppendLine(") {");
+          summaryMethod.Append($"{spaceIndex}{spaceIndex}");
+
+          summaryMethod.Append($"{spaceIndex}{tempMethodName}(");
+          var tempIndex = 0;
+          while(tempIndex < methodData.PramCount)
+          {
+            if(tempIndex > 0)
+            {
+              summaryMethod.Append(", ");
+            }
+            summaryMethod.Append($"p{tempIndex}");
+            tempIndex++;
+          }
+
+          summaryMethod.AppendLine(");");
+          summaryMethod.AppendLine($"{spaceIndex}{spaceIndex}" + "}");
+          
+          dataListIndex++;
+        }
+
+        // 集約メソッド作成
+        result.Append($"{spaceIndex}public {methodName}(");
+        var summaryParamIndex = 0;
+        while (summaryParamIndex < paramCount)
+        {
+          if (summaryParamIndex > 0 && summaryParamIndex < paramCount)
+          {
+            result.Append(", ");
+          }
+          result.Append(GetParam($"p{summaryParamIndex}", paramLists[summaryParamIndex]));
+
+          summaryParamIndex++;
+        }
+
+        result.AppendLine(") {");
+        result.Append(summaryMethod.ToString());
+        result.AppendLine($"{spaceIndex}"+"}");
       }
+
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// メソッド生成
+    /// </summary>
+    /// <param name="methodName">メソッド名</param>
+    /// <param name="spaceIndex">スペース</param>
+    /// <param name="item">変換中メソッド情報</param>
+    /// <returns>返還後のTypeScriptソースコード</returns>
+    private string CreateMethodText(string methodName, string spaceIndex, MethodData item)
+    {
+      var result = new StringBuilder();
+      result.Append($"{spaceIndex}{item.Scope} {methodName}(");
+
+      var isFirst = true;
+      foreach (var param in item.ParamList)
+      {
+        if (!isFirst)
+        {
+          result.Append(", ");
+        }
+
+        result.Append(GetParam(param.Name, new List<string>() { param.LocalDeclaration }));
+
+        isFirst = false;
+      }
+
+      result.Append(")");
+      result.AppendLine(" {");
+
+      // メソッド内処理を変換
+      result.Append(item.SourceCode);
+
+      result.AppendLine(spaceIndex + "}");
 
       return result.ToString();
     }
