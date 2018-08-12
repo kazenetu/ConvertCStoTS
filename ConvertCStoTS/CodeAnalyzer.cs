@@ -12,6 +12,15 @@ namespace ConvertCStoTS
   public class CodeAnalyzer
   {
     /// <summary>
+    /// C#とTypeScriptの変換リスト
+    /// </summary>
+    private readonly Dictionary<string, string> ConvertMethodNames = new Dictionary<string, string>()
+    {
+      {".ToString(",".toString(" },
+      {".Length",".length" }
+    };
+
+    /// <summary>
     /// 解析結果
     /// </summary>
     public AnalyzeResult Result { get; } = new AnalyzeResult();
@@ -152,24 +161,6 @@ namespace ConvertCStoTS
       MethodDataManager.AddMethodData("constructor", methodData);
 
       return string.Empty;
-/*
-      var result = new StringBuilder();
-
-      var spaceIndex = GetSpace(index);
-
-      // コンストラクタ宣言
-      result.Append($"{spaceIndex}{item.Modifiers.ToString()} constructor(");
-      result.Append(GetParameterList(item.ParameterList, true));
-      result.Append(")");
-      result.AppendLine(" {");
-
-      // メソッド内処理を変換
-      result.Append();
-
-      result.AppendLine(spaceIndex + "}");
-
-      return result.ToString();
-*/
     }
 
     /// <summary>
@@ -363,8 +354,38 @@ namespace ConvertCStoTS
           right = GetExpression(ass.Right, localDeclarationStatements);
 
           break;
-        case IdentifierNameSyntax ins:
         case InvocationExpressionSyntax ies:
+        case MemberAccessExpressionSyntax mes:
+          var invocationExpressionResult = condition.ToString();
+
+          MemberAccessExpressionSyntax maes = null;
+          if(condition is InvocationExpressionSyntax)
+          {
+            maes = (condition as InvocationExpressionSyntax).Expression as MemberAccessExpressionSyntax;
+          }
+          if (condition is MemberAccessExpressionSyntax)
+          {
+            maes = condition as MemberAccessExpressionSyntax;
+          }
+
+          if (maes != null)
+          {
+            foreach(var convertMethodName in ConvertMethodNames.Keys)
+            {
+              if (invocationExpressionResult.Contains(convertMethodName))
+              {
+                invocationExpressionResult = invocationExpressionResult.Replace(convertMethodName, ConvertMethodNames[convertMethodName], StringComparison.CurrentCulture);
+              }
+            }
+          }
+
+          if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
+          {
+            return "this." + invocationExpressionResult;
+          }
+          return invocationExpressionResult;
+
+        case IdentifierNameSyntax ins:
         case LiteralExpressionSyntax les:
           if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
           {
