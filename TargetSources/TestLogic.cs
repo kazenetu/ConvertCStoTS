@@ -78,6 +78,43 @@ namespace DataTransferObjects
 
       // 計算代入式2
       local -= local /propInt;
+      local = local.ToString().Length;
+    }
+ 
+    /// <summary>
+    /// 複数コンストラクタ1
+    /// </summary>
+    /// <value></value>
+    public TestLogic(int paramValue)
+    {
+      prop = paramValue.ToString();
+    }
+
+    /// <summary>
+    /// 複数コンストラクタ2
+    /// </summary>
+    /// <value></value>
+    public TestLogic(string param)
+    {
+      prop = "コンストラクタ";
+    }
+
+    /// <summary>
+    /// 複数コンストラクタ3
+    /// </summary>
+    /// <value></value>
+    public TestLogic(string param,bool boolValue)
+    {
+      prop = "コンストラクタ";
+    }
+
+    /// <summary>
+    /// 複数コンストラクタ4
+    /// </summary>
+    /// <value></value>
+    public TestLogic(string param,DateTime dateValue)
+    {
+      param = "コンストラクタ";
     }
 
     /// <summary>
