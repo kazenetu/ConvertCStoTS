@@ -97,6 +97,7 @@ namespace ConvertCStoTS
         }
 
         // 仮メソッドを作成
+        var retunValue = string.Empty;
         var summaryMethod = new StringBuilder();
         var dataListIndex = 0;
         foreach(var methodData in methodDataList)
@@ -111,6 +112,7 @@ namespace ConvertCStoTS
           // 仮メソッド作成
           var tempMethodName = $"{methodName}{dataListIndex}";
           result.Append(CreateMethodText(tempMethodName, spaceIndex, methodData));
+          retunValue = methodData.ReturnValue;
 
           // 集約メソッド用処理を追加
           summaryMethod.Append($"{spaceIndex}{spaceIndex}");
@@ -142,7 +144,12 @@ namespace ConvertCStoTS
           summaryMethod.AppendLine(") {");
           summaryMethod.Append($"{spaceIndex}{spaceIndex}");
 
-          summaryMethod.Append($"{spaceIndex}this.{tempMethodName}(");
+          summaryMethod.Append($"{spaceIndex}");
+          if (!string.IsNullOrEmpty(methodData.ReturnValue) && methodData.ReturnValue != "void")
+          {
+            summaryMethod.Append("return ");
+          }
+          summaryMethod.Append($"this.{tempMethodName}(");
           var tempIndex = 0;
           while(tempIndex < methodData.PramCount)
           {
@@ -174,7 +181,13 @@ namespace ConvertCStoTS
           summaryParamIndex++;
         }
 
-        result.AppendLine(") {");
+        result.Append(")");
+        if (!string.IsNullOrEmpty(retunValue) && retunValue!="void")
+        {
+          result.Append($": {retunValue}");
+        }
+        result.AppendLine(" {");
+
         result.Append(summaryMethod.ToString());
         result.AppendLine($"{spaceIndex}"+"}");
       }
@@ -208,6 +221,10 @@ namespace ConvertCStoTS
       }
 
       result.Append(")");
+      if (!string.IsNullOrEmpty(item.ReturnValue))
+      {
+        result.Append($": {item.ReturnValue }");
+      }
       result.AppendLine(" {");
 
       // メソッド内処理を変換
