@@ -142,15 +142,20 @@ namespace ConvertCStoTS
     }
 
     /// <summary>
-    /// コンストラクタメソッドの取得
+    /// メソッドの取得
     /// </summary>
     /// <param name="item">C#ソースを解析したインスタンス</param>
     /// <param name="index">インデックス数(半角スペース数)</param>
     /// <returns>TypeScriptのコンストラクタに変換した文字列</returns>
-    private string GetItemText(ConstructorDeclarationSyntax item, int index = 0)
+    private string GetItemText(BaseMethodDeclarationSyntax item, int index = 0)
     {
       var returnValue = string.Empty;
       var methodName = "constructor";
+      if (item is MethodDeclarationSyntax mi)
+      {
+        methodName = mi.Identifier.Text;
+        returnValue = GetTypeScriptType(mi.ReturnType);
+      }
 
       var parameterDataList = new List<ParameterData>();
       foreach (var param in item.ParameterList.Parameters)
