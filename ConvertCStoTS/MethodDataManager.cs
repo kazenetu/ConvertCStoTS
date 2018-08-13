@@ -180,7 +180,7 @@ namespace ConvertCStoTS
     /// <param name="methodName">メソッド名</param>
     /// <param name="spaceIndex">スペース</param>
     /// <param name="item">変換中メソッド情報</param>
-    /// <returns>返還後のTypeScriptソースコード</returns>
+    /// <returns>変換後のTypeScriptソースコード</returns>
     private string CreateMethodText(string methodName, string spaceIndex, MethodData item)
     {
       var result = new StringBuilder();
