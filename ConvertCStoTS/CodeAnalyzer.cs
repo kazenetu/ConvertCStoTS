@@ -17,7 +17,8 @@ namespace ConvertCStoTS
     private readonly Dictionary<string, string> ConvertMethodNames = new Dictionary<string, string>()
     {
       {".ToString(",".toString(" },
-      {".Length",".length" }
+      {".Length",".length" },
+      {"int.Parse(","parseInt(" }
     };
 
     /// <summary>
