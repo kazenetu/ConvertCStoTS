@@ -21,6 +21,11 @@ namespace ConvertCStoTS
     public List<ParameterData> ParamList { get; }
 
     /// <summary>
+    /// 戻り値の型
+    /// </summary>
+    public string ReturnValue { get; }
+
+    /// <summary>
     /// TypeScriptに変換したソースコード
     /// </summary>
     public string SourceCode { get; }
@@ -41,12 +46,13 @@ namespace ConvertCStoTS
     /// </summary>
     /// <param name="paramList">パラメータリスト情報</param>
     /// <param name="sourceCode">TypeScriptに変換したソースコード</param>
-    public MethodData(int indexSpaceCount, string scope, List<ParameterData> paramList, string sourceCode)
+    public MethodData(int indexSpaceCount, string scope, List<ParameterData> paramList, string sourceCode,string returnValue)
     {
       IndexSpaceCount = indexSpaceCount;
       Scope = scope;
       ParamList = paramList;
       SourceCode = sourceCode;
+      ReturnValue = returnValue;
     }
 
     /// <summary>

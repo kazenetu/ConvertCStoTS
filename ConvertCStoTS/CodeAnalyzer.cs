@@ -149,16 +149,19 @@ namespace ConvertCStoTS
     /// <returns>TypeScriptのコンストラクタに変換した文字列</returns>
     private string GetItemText(ConstructorDeclarationSyntax item, int index = 0)
     {
+      var returnValue = string.Empty;
+      var methodName = "constructor";
+
       var parameterDataList = new List<ParameterData>();
-      foreach(var param in item.ParameterList.Parameters)
+      foreach (var param in item.ParameterList.Parameters)
       {
         parameterDataList.Add(new ParameterData(param.Identifier.ValueText, GetTypeScriptType(param.Type)));
       }
 
       var methodData = new MethodData(index, item.Modifiers.ToString(), parameterDataList,
-        GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()));
+        GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()), returnValue);
 
-      MethodDataManager.AddMethodData("constructor", methodData);
+      MethodDataManager.AddMethodData(methodName, methodData);
 
       return string.Empty;
     }
