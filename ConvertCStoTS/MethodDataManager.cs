@@ -16,6 +16,14 @@ namespace ConvertCStoTS
     private readonly Dictionary<string, List<MethodData>> MethodLists = new Dictionary<string, List<MethodData>>();
 
     /// <summary>
+    /// クリア
+    /// </summary>
+    public void Clear()
+    {
+      MethodLists.Clear();
+    }
+
+    /// <summary>
     /// メソッドデータの追加
     /// </summary>
     /// <param name="methodName">メソッド名</param>
