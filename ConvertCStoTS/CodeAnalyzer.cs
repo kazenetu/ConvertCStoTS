@@ -433,6 +433,8 @@ namespace ConvertCStoTS
       return $"{left} {keyword} {right}";
     }
 
+    #region ローカル変数判定
+
     /// <summary>
     /// ローカル変数か判定
     /// </summary>
@@ -442,17 +444,24 @@ namespace ConvertCStoTS
     private bool IsLocalDeclarationStatement(ExpressionSyntax es, List<string> localDeclarationStatements)
     {
       var localDeclarationStatement = string.Empty;
+
       if (es is InvocationExpressionSyntax ies)
       {
-        var memberAccessExpressionSyntax = ies.Expression as MemberAccessExpressionSyntax;
-        if (memberAccessExpressionSyntax != null)
+        var ExpressionSyntaxResult = GetExpressionSyntax(ies);
+        if (ExpressionSyntaxResult is PredefinedTypeSyntax)
         {
-          if(memberAccessExpressionSyntax.Expression is PredefinedTypeSyntax)
-          {
-            return true;
-          }
-          localDeclarationStatement = memberAccessExpressionSyntax.Expression.ToString();
+          return true;
         }
+        localDeclarationStatement = ExpressionSyntaxResult.ToString();
+      }
+      if (es is MemberAccessExpressionSyntax maes)
+      {
+        var ExpressionSyntaxResult = GetExpressionSyntax(maes);
+        if (ExpressionSyntaxResult is PredefinedTypeSyntax)
+        {
+          return true;
+        }
+        localDeclarationStatement = ExpressionSyntaxResult.ToString();
       }
       if (es is IdentifierNameSyntax ins)
       {
@@ -467,6 +476,52 @@ namespace ConvertCStoTS
       return localDeclarationStatements.Contains(localDeclarationStatement);
     }
 
+    /// <summary>
+    /// ローカル変数判定：InvocationExpressionSyntax
+    /// </summary>
+    /// <param name="item">InvocationExpressionSyntaxインスタンス</param>
+    /// <returns>item.Expressionの値</returns>
+    private ExpressionSyntax GetExpressionSyntax(InvocationExpressionSyntax item)
+    {
+      if (item.Expression is IdentifierNameSyntax)
+      {
+        return item.Expression;
+      }
+      if (item.Expression is PredefinedTypeSyntax)
+      {
+        return item.Expression;
+      }
+      if (item.Expression is MemberAccessExpressionSyntax maes)
+      {
+        return GetExpressionSyntax(maes);
+      }
+      return item;
+    }
+
+    /// <summary>
+    /// ローカル変数判定：MemberAccessExpressionSyntax
+    /// </summary>
+    /// <param name="item">MemberAccessExpressionSyntaxインスタンス</param>
+    /// <returns>item.Expressionの値</returns>
+    private ExpressionSyntax GetExpressionSyntax(MemberAccessExpressionSyntax item)
+    {
+      if (item.Expression is IdentifierNameSyntax)
+      {
+        return item.Expression;
+      }
+      if (item.Expression is PredefinedTypeSyntax)
+      {
+        return item.Expression;
+      }
+      if (item.Expression is InvocationExpressionSyntax ies)
+      {
+        return GetExpressionSyntax(ies);
+      }
+      return item;
+    }
+
+    #endregion
+    
     #endregion
 
     #endregion
