@@ -46,6 +46,7 @@ namespace ConvertCStoTS
       // クリア
       Result.Clear();
       RenameClasseNames.Clear();
+      MethodDataManager.Clear();
 
       // C#解析
       var tree = CSharpSyntaxTree.ParseText(targetCode) as CSharpSyntaxTree;
@@ -101,6 +102,9 @@ namespace ConvertCStoTS
     {
       var result = new StringBuilder();
 
+      // TSメソッド管理クラスのクリア
+      MethodDataManager.Clear();
+
       var className = item.Identifier.ValueText;
       var superClass = string.Empty;
       if (item.BaseList != null)
@@ -132,6 +136,10 @@ namespace ConvertCStoTS
         {
           result.Append(GetItemText(ci, index + 2));
         }
+        if(childItem is MethodDeclarationSyntax mi)
+        {
+          result.Append(GetItemText(mi, index + 2));
+        }
       }
 
       // メソッドを出力
@@ -151,21 +159,21 @@ namespace ConvertCStoTS
     {
       var returnValue = string.Empty;
       var methodName = "constructor";
-      if (item is MethodDeclarationSyntax mi)
+      if(item is MethodDeclarationSyntax mi)
       {
         methodName = mi.Identifier.Text;
         returnValue = GetTypeScriptType(mi.ReturnType);
       }
 
       var parameterDataList = new List<ParameterData>();
-      foreach (var param in item.ParameterList.Parameters)
+      foreach(var param in item.ParameterList.Parameters)
       {
         parameterDataList.Add(new ParameterData(param.Identifier.ValueText, GetTypeScriptType(param.Type)));
       }
 
       var methodData = new MethodData(index, item.Modifiers.ToString(), parameterDataList,
         GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()), returnValue);
-
+                  
       MethodDataManager.AddMethodData(methodName, methodData);
 
       return string.Empty;
@@ -316,6 +324,11 @@ namespace ConvertCStoTS
 
           continue;
         }
+        if(statement is ReturnStatementSyntax rss)
+        {
+          result.AppendLine($"{spaceIndex}{rss.ToString()}");
+          continue;
+        }
 
         var a = 123;
       }
@@ -339,11 +352,7 @@ namespace ConvertCStoTS
       switch (condition)
       {
         case BinaryExpressionSyntax bss:
-          left = bss.Left.ToString();
-          if (!IsLocalDeclarationStatement(bss.Left, localDeclarationStatements))
-          {
-            left = "this." + left;
-          }
+          left = GetExpression(bss.Left, localDeclarationStatements);
 
           keyword = bss.OperatorToken.ToString();
 
@@ -369,7 +378,23 @@ namespace ConvertCStoTS
           MemberAccessExpressionSyntax maes = null;
           if(condition is InvocationExpressionSyntax)
           {
-            maes = (condition as InvocationExpressionSyntax).Expression as MemberAccessExpressionSyntax;
+            var localIes = condition as InvocationExpressionSyntax;
+            maes = localIes.Expression as MemberAccessExpressionSyntax;
+
+            invocationExpressionResult = $"{localIes.Expression.ToString()}(";
+            var isFrirst = true;
+            foreach (var arg in localIes.ArgumentList.Arguments)
+            {
+              if (!isFrirst)
+              {
+                invocationExpressionResult += ", ";
+              }
+
+              invocationExpressionResult += GetExpression(arg.Expression, localDeclarationStatements);
+
+              isFrirst = false;
+            }
+            invocationExpressionResult += ")";
           }
           if (condition is MemberAccessExpressionSyntax)
           {
@@ -421,6 +446,10 @@ namespace ConvertCStoTS
         var memberAccessExpressionSyntax = ies.Expression as MemberAccessExpressionSyntax;
         if (memberAccessExpressionSyntax != null)
         {
+          if(memberAccessExpressionSyntax.Expression is PredefinedTypeSyntax)
+          {
+            return true;
+          }
           localDeclarationStatement = memberAccessExpressionSyntax.Expression.ToString();
         }
       }
