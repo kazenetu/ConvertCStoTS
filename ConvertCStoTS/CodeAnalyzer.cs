@@ -253,11 +253,20 @@ namespace ConvertCStoTS
         {
           if (lds.Declaration.Type.IsVar)
           {
-            result.AppendLine($"{spaceIndex}let {lds.Declaration.Variables};");
             foreach (var v in lds.Declaration.Variables)
             {
               localDeclarationStatements.Add(v.Identifier.ValueText);
             }
+
+            var varStatement = lds.Declaration.Variables.First();
+            var intializeValue = GetExpression(varStatement.Initializer.Value, localDeclarationStatements);
+
+            result.Append($"{spaceIndex}let {varStatement.Identifier.ValueText}");
+            if (!intializeValue.Contains("="))
+            {
+              result.Append(" = ");
+            }
+            result.AppendLine($"{intializeValue};");
           }
           else
           {
@@ -352,6 +361,14 @@ namespace ConvertCStoTS
       var right = string.Empty;
       switch (condition)
       {
+        case ObjectCreationExpressionSyntax oces:
+          var equalsValueClauseSyntax = oces.Parent as EqualsValueClauseSyntax;
+          if(equalsValueClauseSyntax == null)
+          {
+            return oces.ToString();
+          }
+          return GetCreateInitializeValue(oces.Type, equalsValueClauseSyntax);
+
         case BinaryExpressionSyntax bss:
           left = GetExpression(bss.Left, localDeclarationStatements);
 
@@ -539,20 +556,33 @@ namespace ConvertCStoTS
       result.Append($"{GetSpace(index)}{item.Modifiers.ToString()} {item.Identifier.ValueText}: {GetTypeScriptType(item.Type)}");
 
       // 初期化処理を追加
-      if (item.Initializer != null)
+      result.Append(GetCreateInitializeValue(item.Type, item.Initializer));
+
+      result.AppendLine(";");
+
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// フィールド宣言時の初期化を設定する
+    /// </summary>
+    /// <param name="type">フィールドの型</param>
+    /// <param name="initializer">初期化情報</param>
+    /// <returns>TypeScriptの初期化文字列</returns>
+    private string GetCreateInitializeValue(TypeSyntax type, EqualsValueClauseSyntax initializer)
+    {
+      if (initializer != null)
       {
-        result.Append($" {GetEqualsValue(item.Initializer)}");
+        return $" {GetEqualsValue(initializer)}";
       }
       else
       {
-        switch (item.Type)
+        switch (type)
         {
           case NullableTypeSyntax nts:
-            result.Append(" = null");
-            break;
+            return " = null";
           case GenericNameSyntax gts:
-            result.Append($" = new {GetTypeScriptType(item.Type)}()");
-            break;
+            return $" = new {GetTypeScriptType(type)}()";
           case PredefinedTypeSyntax ps:
             switch (ps.ToString())
             {
@@ -560,27 +590,21 @@ namespace ConvertCStoTS
               case "float":
               case "double":
               case "decimal":
-                result.Append(" = 0");
-                break;
+                return " = 0";
               case "bool":
-                result.Append(" = false");
-                break;
+                return " = false";
             }
             break;
           case IdentifierNameSyntax ins:
             switch (ins.ToString())
             {
               case "DateTime":
-                result.Append(" = new Date(0)");
-                break;
+                return " = new Date(0)";
             }
             break;
         }
       }
-
-      result.AppendLine(";");
-
-      return result.ToString();
+      return string.Empty;
     }
 
     /// <summary>
