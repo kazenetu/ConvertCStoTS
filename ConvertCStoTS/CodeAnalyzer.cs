@@ -22,6 +22,15 @@ namespace ConvertCStoTS
     };
 
     /// <summary>
+    /// スコープキーワード
+    /// </summary>
+    private readonly List<string> ScopeKeywords = new List<string>()
+    {
+      "public","private","protected"
+    };
+
+
+    /// <summary>
     /// 解析結果
     /// </summary>
     public AnalyzeResult Result { get; } = new AnalyzeResult();
@@ -64,7 +73,7 @@ namespace ConvertCStoTS
       // クラス名取得
       foreach (CSharpSyntaxNode item in root.DescendantNodes())
       {
-        if(item is ClassDeclarationSyntax cds)
+        if (item is ClassDeclarationSyntax cds)
         {
           if (cds.Parent is ClassDeclarationSyntax parentClass)
           {
@@ -137,7 +146,7 @@ namespace ConvertCStoTS
         {
           result.Append(GetItemText(ci, index + 2));
         }
-        if(childItem is MethodDeclarationSyntax mi)
+        if (childItem is MethodDeclarationSyntax mi)
         {
           result.Append(GetItemText(mi, index + 2));
         }
@@ -160,14 +169,14 @@ namespace ConvertCStoTS
     {
       var returnValue = string.Empty;
       var methodName = "constructor";
-      if(item is MethodDeclarationSyntax mi)
+      if (item is MethodDeclarationSyntax mi)
       {
         methodName = mi.Identifier.Text;
         returnValue = GetTypeScriptType(mi.ReturnType);
       }
 
       var parameterDataList = new List<ParameterData>();
-      foreach(var param in item.ParameterList.Parameters)
+      foreach (var param in item.ParameterList.Parameters)
       {
         parameterDataList.Add(new ParameterData(param.Identifier.ValueText, GetTypeScriptType(param.Type)));
       }
@@ -180,13 +189,25 @@ namespace ConvertCStoTS
       }
 
       // TSメソッド管理クラスにメソッド情報を追加
-      var methodData = new MethodData(index, item.Modifiers.ToString(), parameterDataList,
-        GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()), 
+      var methodData = new MethodData(index, GetModifierText(item.Modifiers), parameterDataList,
+        GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()),
         returnValue, superMethodArgCount);
-                  
+
       MethodDataManager.AddMethodData(methodName, methodData);
 
       return string.Empty;
+    }
+
+    /// <summary>
+    /// スコープ取得
+    /// </summary>
+    /// <param name="modifiers">スコープキーワード</param>
+    /// <returns>public/private/protectedのキーワード</returns>
+    public string GetModifierText(SyntaxTokenList modifiers)
+    {
+      var scopeKeyword = modifiers.Where(modifier => ScopeKeywords.Contains(modifier.ValueText));
+
+      return string.Join(' ', scopeKeyword);
     }
 
     /// <summary>
@@ -605,7 +626,7 @@ namespace ConvertCStoTS
     {
       var result = new StringBuilder();
 
-      result.Append($"{GetSpace(index)}{item.Modifiers.ToString()} {item.Identifier.ValueText}: {GetTypeScriptType(item.Type)}");
+      result.Append($"{GetSpace(index)}{GetModifierText(item.Modifiers)} {item.Identifier.ValueText}: {GetTypeScriptType(item.Type)}");
 
       // 初期化処理を追加
       result.Append(GetCreateInitializeValue(item.Type, item.Initializer));
