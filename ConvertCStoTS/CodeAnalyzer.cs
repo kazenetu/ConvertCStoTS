@@ -172,8 +172,17 @@ namespace ConvertCStoTS
         parameterDataList.Add(new ParameterData(param.Identifier.ValueText, GetTypeScriptType(param.Type)));
       }
 
+      // スーパークラスのコンストラクタのパラメータ数を取得
+      var superMethodArgCount = 0;
+      if (item is ConstructorDeclarationSyntax cds && cds.Initializer != null && cds.Initializer.ArgumentList != null)
+      {
+        superMethodArgCount = cds.Initializer.ArgumentList.Arguments.Count;
+      }
+
+      // TSメソッド管理クラスにメソッド情報を追加
       var methodData = new MethodData(index, item.Modifiers.ToString(), parameterDataList,
-        GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()), returnValue);
+        GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()), 
+        returnValue, superMethodArgCount);
                   
       MethodDataManager.AddMethodData(methodName, methodData);
 
