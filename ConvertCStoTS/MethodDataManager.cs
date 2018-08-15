@@ -188,6 +188,27 @@ namespace ConvertCStoTS
         }
         result.AppendLine(" {");
 
+        // スーパークラスのコンストラクタを設定
+        var superMethodArgCount = methodDataList.Max(item => item.BaseArgCount);
+        if(superMethodArgCount >= 0)
+        {
+          result.Append($"{spaceIndex}{spaceIndex}super(");
+
+          summaryParamIndex = 0;
+          while (summaryParamIndex < superMethodArgCount)
+          {
+            if (summaryParamIndex > 0)
+            {
+              result.Append(", ");
+            }
+            result.Append($"p{summaryParamIndex}");
+
+            summaryParamIndex++;
+          }
+
+          result.AppendLine(");");
+        }
+
         result.Append(summaryMethod.ToString());
         result.AppendLine($"{spaceIndex}"+"}");
       }
