@@ -28,11 +28,19 @@ namespace DataTransferObjects
     }
 
     /// <summary>
-    /// メソッド例2
+    /// メソッド例2 A
     /// </summary>
     public int Method2(string src)
     {
       return int.Parse(src);
+    }
+
+    /// <summary>
+    /// メソッド例2 B
+    /// </summary>
+    public int Method2(int src)
+    {
+      return src * 2;
     }
 
     /// <summary>
