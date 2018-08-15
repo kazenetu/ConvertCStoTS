@@ -336,7 +336,7 @@ namespace ConvertCStoTS
         }
         if(statement is ReturnStatementSyntax rss)
         {
-          result.AppendLine($"{spaceIndex}{rss.ToString()}");
+          result.AppendLine($"{spaceIndex}return {GetExpression(rss.Expression, localDeclarationStatements)}");
           continue;
         }
 
@@ -399,7 +399,22 @@ namespace ConvertCStoTS
             var localIes = condition as InvocationExpressionSyntax;
             maes = localIes.Expression as MemberAccessExpressionSyntax;
 
-            invocationExpressionResult = $"{localIes.Expression.ToString()}(";
+            if (localIes.Expression is MemberAccessExpressionSyntax || localIes.Expression is InvocationExpressionSyntax)
+            {
+              if(maes.Expression is ThisExpressionSyntax)
+              {
+                invocationExpressionResult = $"{GetExpression(maes.Name, localDeclarationStatements)}(";
+              }
+              else
+              {
+                invocationExpressionResult = $"{GetExpression(maes, localDeclarationStatements)}(";
+              }
+            }
+            else
+            {
+              invocationExpressionResult = $"{localIes.Expression.ToString()}(";
+            }
+
             var isFrirst = true;
             foreach (var arg in localIes.ArgumentList.Arguments)
             {
@@ -417,6 +432,12 @@ namespace ConvertCStoTS
           if (condition is MemberAccessExpressionSyntax)
           {
             maes = condition as MemberAccessExpressionSyntax;
+
+            if(maes.Expression is IdentifierNameSyntax == false)
+            {
+              invocationExpressionResult = $"{GetExpression(maes.Expression, localDeclarationStatements)}{maes.OperatorToken}";
+              invocationExpressionResult += maes.Name;
+            }
           }
 
           if (maes != null)
@@ -432,7 +453,10 @@ namespace ConvertCStoTS
 
           if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
           {
-            return "this." + invocationExpressionResult;
+            if (!invocationExpressionResult.StartsWith("this.",StringComparison.CurrentCulture))
+            {
+              return "this." + invocationExpressionResult;
+            }
           }
           return invocationExpressionResult;
 
@@ -443,6 +467,11 @@ namespace ConvertCStoTS
             return "this." + condition.ToString();
           }
           return condition.ToString();
+        case PredefinedTypeSyntax pts:
+        case ThisExpressionSyntax tes:
+          return condition.ToString();
+        case BaseExpressionSyntax bes:
+          return "super";
         default:
           return string.Empty;
       }
@@ -464,7 +493,17 @@ namespace ConvertCStoTS
 
       if (es is InvocationExpressionSyntax ies)
       {
-        var ExpressionSyntaxResult = GetExpressionSyntax(ies);
+        var localMaes = ies.Expression as MemberAccessExpressionSyntax;
+        ExpressionSyntax ExpressionSyntaxResult = null;
+        if (localMaes?.Expression is ThisExpressionSyntax)
+        {
+          ExpressionSyntaxResult = GetExpressionSyntax(localMaes);
+        }
+        else
+        {
+          ExpressionSyntaxResult = GetExpressionSyntax(ies);
+        }
+
         if (ExpressionSyntaxResult is PredefinedTypeSyntax)
         {
           return true;
@@ -522,6 +561,10 @@ namespace ConvertCStoTS
     /// <returns>item.Expressionの値</returns>
     private ExpressionSyntax GetExpressionSyntax(MemberAccessExpressionSyntax item)
     {
+      if (item.Expression is ThisExpressionSyntax)
+      {
+        return item.Name;
+      }
       if (item.Expression is IdentifierNameSyntax)
       {
         return item.Expression;
