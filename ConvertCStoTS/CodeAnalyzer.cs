@@ -173,7 +173,7 @@ namespace ConvertCStoTS
       }
 
       // スーパークラスのコンストラクタのパラメータ数を取得
-      var superMethodArgCount = 0;
+      var superMethodArgCount = -1;
       if (item is ConstructorDeclarationSyntax cds && cds.Initializer != null && cds.Initializer.ArgumentList != null)
       {
         superMethodArgCount = cds.Initializer.ArgumentList.Arguments.Count;

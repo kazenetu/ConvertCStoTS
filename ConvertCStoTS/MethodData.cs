@@ -57,7 +57,7 @@ namespace ConvertCStoTS
     /// <param name="sourceCode">TypeScriptに変換したソースコード</param>
     /// <param name="returnValue">戻り値の型</param>
     /// <param name="baseArgCount">コンストラクタで設定されたスーパークラスのパラメータ数</param>
-    public MethodData(int indentSpaceCount, string scope, List<ParameterData> paramList, string sourceCode, string returnValue, int baseArgCount = 0)
+    public MethodData(int indentSpaceCount, string scope, List<ParameterData> paramList, string sourceCode, string returnValue, int baseArgCount = -1)
     {
       IndentSpaceCount = indentSpaceCount;
       Scope = scope;
