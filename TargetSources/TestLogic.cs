@@ -16,6 +16,26 @@ namespace DataTransferObjects
     public int propInt { set; get; } = 50;
 
     /// <summary>
+    /// メソッド例
+    /// </summary>
+    public void Method()
+    {
+      int test = 0;
+      if (prop.Length > 0)
+      {
+        test = this.Method2(prop);
+      }
+    }
+
+    /// <summary>
+    /// メソッド例2
+    /// </summary>
+    public int Method2(string src)
+    {
+      return int.Parse(src);
+    }
+
+    /// <summary>
     /// コンストラクタ
     /// /// </summary>
     public TestLogic()
@@ -117,17 +137,5 @@ namespace DataTransferObjects
       param = "コンストラクタ";
     }
 
-    /// <summary>
-    /// メソッド例
-    /// </summary>
-    public void Method()
-    {
-      int test = 0;
-      if (prop.Length > 0)
-      {
-        test = int.Parse(prop);
-        test = 456;
-      }
-    }
   }
 }
