@@ -534,7 +534,8 @@ namespace ConvertCStoTS
           ExpressionSyntaxResult = GetExpressionSyntax(ies);
         }
 
-        if (ExpressionSyntaxResult is PredefinedTypeSyntax)
+        if (ExpressionSyntaxResult is PredefinedTypeSyntax ||
+            ExpressionSyntaxResult is BaseExpressionSyntax)
         {
           return true;
         }
@@ -543,7 +544,8 @@ namespace ConvertCStoTS
       if (es is MemberAccessExpressionSyntax maes)
       {
         var ExpressionSyntaxResult = GetExpressionSyntax(maes);
-        if (ExpressionSyntaxResult is PredefinedTypeSyntax)
+        if (ExpressionSyntaxResult is PredefinedTypeSyntax || 
+            ExpressionSyntaxResult is BaseExpressionSyntax)
         {
           return true;
         }
@@ -594,6 +596,10 @@ namespace ConvertCStoTS
       if (item.Expression is ThisExpressionSyntax)
       {
         return item.Name;
+      }
+      if (item.Expression is BaseExpressionSyntax)
+      {
+        return item.Expression;
       }
       if (item.Expression is IdentifierNameSyntax)
       {
