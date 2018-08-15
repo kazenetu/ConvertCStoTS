@@ -8,6 +8,9 @@ namespace ConvertCStoTS
   /// </summary>
   public class MethodData
   {
+    /// <summary>
+    /// インデント数
+    /// </summary>
     public int IndexSpaceCount { get; }
 
     /// <summary>
@@ -31,6 +34,11 @@ namespace ConvertCStoTS
     public string SourceCode { get; }
 
     /// <summary>
+    /// コンストラクタで設定されたスーパークラスのパラメータ数
+    /// </summary>
+    public int BaseArgCount { get; } 
+
+    /// <summary>
     /// パラメータ数
     /// </summary>
     public int PramCount
@@ -44,15 +52,20 @@ namespace ConvertCStoTS
     /// <summary>
     /// コンストラクタ
     /// </summary>
+    /// <param name="indexSpaceCount">インデント数</param>
+    /// <param name="scope">スコープ</param>
     /// <param name="paramList">パラメータリスト情報</param>
     /// <param name="sourceCode">TypeScriptに変換したソースコード</param>
-    public MethodData(int indexSpaceCount, string scope, List<ParameterData> paramList, string sourceCode,string returnValue)
+    /// <param name="returnValue">戻り値の型</param>
+    /// <param name="baseArgCount">コンストラクタで設定されたスーパークラスのパラメータ数</param>
+    public MethodData(int indexSpaceCount, string scope, List<ParameterData> paramList, string sourceCode, string returnValue, int baseArgCount = 0)
     {
       IndexSpaceCount = indexSpaceCount;
       Scope = scope;
       ParamList = paramList;
       SourceCode = sourceCode;
       ReturnValue = returnValue;
+      BaseArgCount = baseArgCount;
     }
 
     /// <summary>
