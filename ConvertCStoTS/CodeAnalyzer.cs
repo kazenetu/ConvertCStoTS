@@ -210,36 +210,6 @@ namespace ConvertCStoTS
       return string.Join(' ', scopeKeyword);
     }
 
-    /// <summary>
-    /// パラメータの文字列を設定
-    /// </summary>
-    /// <param name="list">解析結果パラメータリスト</param>
-    /// <param name="settingType">型宣言するか否か</param>
-    /// <returns>C#パラメータをTypeScriptに変換した文字列</returns>
-    private string GetParameterList(ParameterListSyntax list, bool settingType)
-    {
-      var result = new StringBuilder();
-
-      var isFirst = true;
-      foreach (var param in list.Parameters)
-      {
-        if (!isFirst)
-        {
-          result.Append(", ");
-        }
-
-        result.Append($"{param.Identifier.ValueText}");
-        if (settingType)
-        {
-          result.Append($":{GetTypeScriptType(param.Type)}");
-        }
-
-        isFirst = false;
-      }
-
-      return result.ToString();
-    }
-
     #region メソッド内処理の取得
 
     /// <summary>
