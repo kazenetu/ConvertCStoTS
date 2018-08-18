@@ -415,18 +415,10 @@ namespace ConvertCStoTS
               invocationExpressionResult = $"{localIes.Expression.ToString()}(";
             }
 
-            var isFrirst = true;
-            foreach (var arg in localIes.ArgumentList.Arguments)
-            {
-              if (!isFrirst)
-              {
-                invocationExpressionResult += ", ";
-              }
+            // パラメータ設定
+            var argsText = localIes.ArgumentList.Arguments.Select(arg => GetExpression(arg.Expression, localDeclarationStatements));
+            invocationExpressionResult += string.Join(", ", argsText);
 
-              invocationExpressionResult += GetExpression(arg.Expression, localDeclarationStatements);
-
-              isFrirst = false;
-            }
             invocationExpressionResult += ")";
           }
           if (condition is MemberAccessExpressionSyntax)
@@ -670,13 +662,9 @@ namespace ConvertCStoTS
           result = $"{GetTypeScriptType(ns.ElementType)} | null";
           break;
         case GenericNameSyntax gs:
-          var arguments = new StringBuilder();
-          foreach (var arg in gs.TypeArgumentList.Arguments)
-          {
-            arguments.Append(GetTypeScriptType(arg) + ", ");
-          }
-          var args = arguments.ToString();
-          result = $"{GetGenericClass(gs.Identifier)}<{args.Remove(args.Length - 2, 2)}>";
+          // パラメータ設定
+          var argsText = gs.TypeArgumentList.Arguments.Select(arg => GetTypeScriptType(arg));
+          result = $"{GetGenericClass(gs.Identifier)}<{string.Join(", ", argsText)}>";
           break;
         case PredefinedTypeSyntax ps:
           switch (ps.ToString())
