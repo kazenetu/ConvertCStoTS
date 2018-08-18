@@ -346,10 +346,10 @@ namespace ConvertCStoTS
       return result.ToString();
     }
 
-    #region 条件式を取得
+    #region 式の変換結果を取得
 
     /// <summary>
-    /// 条件を取得
+    /// 式の変換結果を取得
     /// </summary>
     /// <param name="condition">ExpressionSyntaxインスタンス</param>
     /// <param name="localDeclarationStatements">ローカル変数リスト</param>
@@ -744,7 +744,7 @@ namespace ConvertCStoTS
     /// 代入の右辺をTypeScriptの文字列に変換
     /// </summary>
     /// <param name="CSSyntax">C#の代入情報</param>
-    /// <returns>TypeScriptのの代入文字列</returns>
+    /// <returns>TypeScriptの代入文字列</returns>
     private string GetEqualsValue(EqualsValueClauseSyntax CSSyntax)
     {
       switch (CSSyntax.Value)
