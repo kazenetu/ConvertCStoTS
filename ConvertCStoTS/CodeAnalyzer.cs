@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using static ConvertCStoTS.MethodData;
+using static ConvertCStoTS.Common.AnalyzeUtility;
 
 namespace ConvertCStoTS
 {
@@ -119,7 +120,7 @@ namespace ConvertCStoTS
       var superClass = string.Empty;
       if (item.BaseList != null)
       {
-        superClass = $" extends {GetTypeScriptType(item.BaseList.Types[0].Type)}";
+        superClass = $" extends {GetTypeScriptType(item.BaseList.Types[0].Type,Result.UnknownReferences,RenameClasseNames)}";
       }
 
       // 親クラスがある場合はクラス名に付加する
@@ -172,13 +173,13 @@ namespace ConvertCStoTS
       if (item is MethodDeclarationSyntax mi)
       {
         methodName = mi.Identifier.Text;
-        returnValue = GetTypeScriptType(mi.ReturnType);
+        returnValue = GetTypeScriptType(mi.ReturnType, Result.UnknownReferences, RenameClasseNames);
       }
 
       var parameterDataList = new List<ParameterData>();
       foreach (var param in item.ParameterList.Parameters)
       {
-        parameterDataList.Add(new ParameterData(param.Identifier.ValueText, GetTypeScriptType(param.Type)));
+        parameterDataList.Add(new ParameterData(param.Identifier.ValueText, GetTypeScriptType(param.Type, Result.UnknownReferences, RenameClasseNames)));
       }
 
       // スーパークラスのコンストラクタのパラメータ数を取得
@@ -270,7 +271,7 @@ namespace ConvertCStoTS
           }
           else
           {
-            var tsType = GetTypeScriptType(lds.Declaration.Type);
+            var tsType = GetTypeScriptType(lds.Declaration.Type, Result.UnknownReferences, RenameClasseNames);
             foreach (var v in lds.Declaration.Variables)
             {
               result.AppendLine($"{spaceIndex}let {v.Identifier}:{tsType} {v.Initializer};");
@@ -594,7 +595,7 @@ namespace ConvertCStoTS
     {
       var result = new StringBuilder();
 
-      result.Append($"{GetSpace(index)}{GetModifierText(item.Modifiers)} {item.Identifier.ValueText}: {GetTypeScriptType(item.Type)}");
+      result.Append($"{GetSpace(index)}{GetModifierText(item.Modifiers)} {item.Identifier.ValueText}: {GetTypeScriptType(item.Type, Result.UnknownReferences, RenameClasseNames)}");
 
       // 初期化処理を追加
       result.Append(GetCreateInitializeValue(item.Type, item.Initializer));
@@ -614,7 +615,7 @@ namespace ConvertCStoTS
     {
       if (initializer != null)
       {
-        return $" {GetEqualsValue(initializer)}";
+        return $" {GetEqualsValue(initializer, Result.UnknownReferences, RenameClasseNames)}";
       }
       else
       {
@@ -623,7 +624,7 @@ namespace ConvertCStoTS
           case NullableTypeSyntax nts:
             return " = null";
           case GenericNameSyntax gts:
-            return $" = new {GetTypeScriptType(type)}()";
+            return $" = new {GetTypeScriptType(type, Result.UnknownReferences, RenameClasseNames)}()";
           case PredefinedTypeSyntax ps:
             switch (ps.ToString())
             {
@@ -646,132 +647,6 @@ namespace ConvertCStoTS
         }
       }
       return string.Empty;
-    }
-
-    /// <summary>
-    /// C#の型をTypeScriptの型に変換する
-    /// </summary>
-    /// <param name="CSSyntax">C#の型情報</param>
-    /// <returns>TypeScriptの型に変換した文字列</returns>
-    private string GetTypeScriptType(TypeSyntax CSSyntax)
-    {
-      var result = CSSyntax.ToString();
-      switch (CSSyntax)
-      {
-        case NullableTypeSyntax ns:
-          result = $"{GetTypeScriptType(ns.ElementType)} | null";
-          break;
-        case GenericNameSyntax gs:
-          // パラメータ設定
-          var argsText = gs.TypeArgumentList.Arguments.Select(arg => GetTypeScriptType(arg));
-          result = $"{GetGenericClass(gs.Identifier)}<{string.Join(", ", argsText)}>";
-          break;
-        case PredefinedTypeSyntax ps:
-          switch (ps.ToString())
-          {
-            case "int":
-            case "float":
-            case "double":
-            case "decimal":
-              result = "number";
-              break;
-            case "bool":
-              result = "boolean";
-              break;
-          }
-          break;
-        case IdentifierNameSyntax ins:
-          switch (ins.ToString())
-          {
-            case "DateTime":
-              result = "Date";
-              break;
-            default:
-              if (RenameClasseNames.ContainsKey(result))
-              {
-                return RenameClasseNames[result];
-              }
-
-              result = result.Replace(".", "_", StringComparison.CurrentCulture);
-              if (!Result.UnknownReferences.ContainsKey(ins.ToString()))
-              {
-                Result.UnknownReferences.Add(ins.ToString(), null);
-              }
-              break;
-          }
-          break;
-        default:
-          if (RenameClasseNames.ContainsKey(result))
-          {
-            return RenameClasseNames[result];
-          }
-
-          result = result.Replace(".", "_", StringComparison.CurrentCulture);
-          if (!Result.UnknownReferences.ContainsKey(result))
-          {
-            Result.UnknownReferences.Add(result, null);
-          }
-          break;
-      }
-      return result;
-    }
-
-    /// <summary>
-    /// ジェネリッククラスの変換
-    /// </summary>
-    /// <param name="token">対象</param>
-    /// <returns>変換結果</returns>
-    private string GetGenericClass(SyntaxToken token)
-    {
-      switch (token.ValueText)
-      {
-        case "List":
-          return "Array";
-        case "Dictionary":
-          return "Map";
-        default:
-          if (!Result.UnknownReferences.ContainsKey(token.ValueText))
-          {
-            Result.UnknownReferences.Add(token.ValueText, null);
-          }
-          break;
-      }
-
-      return token.ValueText;
-    }
-
-    /// <summary>
-    /// 代入の右辺をTypeScriptの文字列に変換
-    /// </summary>
-    /// <param name="CSSyntax">C#の代入情報</param>
-    /// <returns>TypeScriptの代入文字列</returns>
-    private string GetEqualsValue(EqualsValueClauseSyntax CSSyntax)
-    {
-      switch (CSSyntax.Value)
-      {
-        case ObjectCreationExpressionSyntax ocs:
-          return $" = new {GetTypeScriptType(ocs.Type)}()";
-      }
-
-      return CSSyntax.ToString();
-    }
-
-    /// <summary>
-    /// インデックススペースを取得
-    /// </summary>
-    /// <param name="index">インデックス数</param>
-    /// <returns>index数分の半角スペース</returns>
-    private string GetSpace(int index)
-    {
-      var result = string.Empty;
-      var spaceCount = index;
-      while (spaceCount > 0)
-      {
-        result += " ";
-        spaceCount--;
-      }
-
-      return result;
     }
 
   }
