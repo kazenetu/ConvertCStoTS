@@ -337,7 +337,7 @@ namespace ConvertCStoTS
         }
         if(statement is ReturnStatementSyntax rss)
         {
-          result.AppendLine($"{spaceIndex}return {GetExpression(rss.Expression, localDeclarationStatements)}");
+          result.AppendLine($"{spaceIndex}return {GetExpression(rss.Expression, localDeclarationStatements)};");
           continue;
         }
 
