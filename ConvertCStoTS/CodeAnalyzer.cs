@@ -141,15 +141,15 @@ namespace ConvertCStoTS
       {
         if (childItem is PropertyDeclarationSyntax pi)
         {
-          result.Append(GetItemText(pi, index + 2));
+          result.Append(GetChildText(pi, index + 2));
         }
         if (childItem is ConstructorDeclarationSyntax ci)
         {
-          result.Append(GetItemText(ci, index + 2));
+          result.Append(GetChildText(ci, index + 2));
         }
         if (childItem is MethodDeclarationSyntax mi)
         {
-          result.Append(GetItemText(mi, index + 2));
+          result.Append(GetChildText(mi, index + 2));
         }
       }
 
@@ -166,7 +166,7 @@ namespace ConvertCStoTS
     /// <param name="item">C#ソースを解析したインスタンス</param>
     /// <param name="index">インデックス数(半角スペース数)</param>
     /// <returns>TypeScriptのコンストラクタに変換した文字列</returns>
-    private string GetItemText(BaseMethodDeclarationSyntax item, int index = 0)
+    private string GetChildText(BaseMethodDeclarationSyntax item, int index = 0)
     {
       var returnValue = string.Empty;
       var methodName = "constructor";
@@ -591,7 +591,7 @@ namespace ConvertCStoTS
     /// <param name="item">C#ソースを解析したインスタンス</param>
     /// <param name="index">インデックス数(半角スペース数)</param>
     /// <returns>TypeScriptのクラスフィールドに変換した文字列</returns>
-    private string GetItemText(PropertyDeclarationSyntax item, int index = 0)
+    private string GetChildText(PropertyDeclarationSyntax item, int index = 0)
     {
       var result = new StringBuilder();
 
