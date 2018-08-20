@@ -139,17 +139,20 @@ namespace ConvertCStoTS
       // 子要素を設定
       foreach (var childItem in item.Members)
       {
-        if (childItem is PropertyDeclarationSyntax pi)
+        // インナークラスの場合は処理をしない
+        if(childItem is ClassDeclarationSyntax)
         {
-          result.Append(GetChildText(pi, index + 2));
+          continue;
         }
-        if (childItem is ConstructorDeclarationSyntax ci)
+
+        try
         {
-          result.Append(GetChildText(ci, index + 2));
+          result.Append(GetChildText((dynamic)childItem, index + 2));
         }
-        if (childItem is MethodDeclarationSyntax mi)
+        catch (Exception ex)
         {
-          result.Append(GetChildText(mi, index + 2));
+          Console.WriteLine($"[{ex.Message}]");
+          Console.WriteLine(childItem.ToString());
         }
       }
 
