@@ -23,15 +23,6 @@ namespace ConvertCStoTS
     };
 
     /// <summary>
-    /// スコープキーワード
-    /// </summary>
-    private readonly List<string> ScopeKeywords = new List<string>()
-    {
-      "public","private","protected"
-    };
-
-
-    /// <summary>
     /// 解析結果
     /// </summary>
     public AnalyzeResult Result { get; } = new AnalyzeResult();
@@ -200,18 +191,6 @@ namespace ConvertCStoTS
       MethodDataManager.AddMethodData(methodName, methodData);
 
       return string.Empty;
-    }
-
-    /// <summary>
-    /// スコープ取得
-    /// </summary>
-    /// <param name="modifiers">スコープキーワード</param>
-    /// <returns>public/private/protectedのキーワード</returns>
-    public string GetModifierText(SyntaxTokenList modifiers)
-    {
-      var scopeKeyword = modifiers.Where(modifier => ScopeKeywords.Contains(modifier.ValueText));
-
-      return string.Join(' ', scopeKeyword);
     }
 
     #region メソッド内処理の取得

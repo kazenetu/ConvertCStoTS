@@ -12,6 +12,15 @@ namespace ConvertCStoTS.Common
   public static class AnalyzeUtility
   {
     /// <summary>
+    /// スコープキーワード
+    /// </summary>
+    private static readonly List<string> ScopeKeywords = new List<string>()
+    {
+      "public","private","protected"
+    };
+
+
+    /// <summary>
     /// C#の型をTypeScriptの型に変換する
     /// </summary>
     /// <param name="CSSyntax">C#の型情報</param>
@@ -140,6 +149,18 @@ namespace ConvertCStoTS.Common
       }
 
       return result;
+    }
+
+    /// <summary>
+    /// スコープ取得
+    /// </summary>
+    /// <param name="modifiers">スコープキーワード</param>
+    /// <returns>public/private/protectedのキーワード</returns>
+    public static string GetModifierText(SyntaxTokenList modifiers)
+    {
+      var scopeKeyword = modifiers.Where(modifier => ScopeKeywords.Contains(modifier.ValueText));
+
+      return string.Join(' ', scopeKeyword);
     }
 
   }
