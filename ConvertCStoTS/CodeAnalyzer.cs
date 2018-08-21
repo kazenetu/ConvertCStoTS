@@ -256,7 +256,7 @@ namespace ConvertCStoTS
             var tsType = GetTypeScriptType(lds.Declaration.Type, Result.UnknownReferences, RenameClasseNames);
             foreach (var v in lds.Declaration.Variables)
             {
-              result.AppendLine($"{spaceIndex}let {v.Identifier}:{tsType} {v.Initializer};");
+              result.AppendLine($"{spaceIndex}let {v.Identifier}: {tsType} {v.Initializer};");
               localDeclarationStatements.Add(v.Identifier.ValueText);
             }
           }
@@ -265,7 +265,7 @@ namespace ConvertCStoTS
 
         if (statement is IfStatementSyntax ifss)
         {
-          result.AppendLine($"{spaceIndex}if({GetExpression(ifss.Condition, localDeclarationStatements)})" + " {");
+          result.AppendLine($"{spaceIndex}if ({GetExpression(ifss.Condition, localDeclarationStatements)})" + " {");
           result.Append(GetMethodText(ifss.Statement as BlockSyntax, index + 2, localDeclarationStatements));
           result.AppendLine($"{spaceIndex}" + "}");
 
@@ -286,7 +286,7 @@ namespace ConvertCStoTS
         if(statement is SwitchStatementSyntax sss)
         {
           result.Append(spaceIndex);
-          result.AppendLine($"switch({GetExpression(sss.Expression, localDeclarationStatements)})" + " {");
+          result.AppendLine($"switch ({GetExpression(sss.Expression, localDeclarationStatements)})" + " {");
           foreach(var section in sss.Sections)
           {
             foreach(var label in section.Labels)
@@ -311,7 +311,7 @@ namespace ConvertCStoTS
             localDeclarationStatements.Add(v.Identifier.ValueText);
           }
 
-          result.AppendLine($"{spaceIndex}for(let {fss.Declaration.Variables}; {GetExpression(fss.Condition, localDeclarationStatements)}; {fss.Incrementors})" + " {");
+          result.AppendLine($"{spaceIndex}for (let {fss.Declaration.Variables}; {GetExpression(fss.Condition, localDeclarationStatements)}; {fss.Incrementors})" + " {");
           result.Append(GetMethodText(fss.Statement as BlockSyntax, index + 2, localDeclarationStatements));
           result.AppendLine(spaceIndex+"}");
 
