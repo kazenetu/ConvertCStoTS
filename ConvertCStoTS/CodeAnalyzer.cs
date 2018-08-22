@@ -232,102 +232,197 @@ namespace ConvertCStoTS
 
       foreach(var statement in statements)
       {
-        if (statement is LocalDeclarationStatementSyntax lds)
+        try
         {
-          if (lds.Declaration.Type.IsVar)
-          {
-            foreach (var v in lds.Declaration.Variables)
-            {
-              localDeclarationStatements.Add(v.Identifier.ValueText);
-            }
-
-            var varStatement = lds.Declaration.Variables.First();
-            var intializeValue = GetExpression(varStatement.Initializer.Value, localDeclarationStatements);
-
-            result.Append($"{spaceIndex}let {varStatement.Identifier.ValueText}");
-            if (!intializeValue.Contains("="))
-            {
-              result.Append(" = ");
-            }
-            result.AppendLine($"{intializeValue};");
-          }
-          else
-          {
-            var tsType = GetTypeScriptType(lds.Declaration.Type, Result.UnknownReferences, RenameClasseNames);
-            foreach (var v in lds.Declaration.Variables)
-            {
-              result.AppendLine($"{spaceIndex}let {v.Identifier}: {tsType} {v.Initializer};");
-              localDeclarationStatements.Add(v.Identifier.ValueText);
-            }
-          }
-          continue;
+          result.Append(ConvertStatement((dynamic)statement, index, localDeclarationStatements));
         }
-
-        if (statement is IfStatementSyntax ifss)
+        catch(Exception ex)
         {
-          result.AppendLine($"{spaceIndex}if ({GetExpression(ifss.Condition, localDeclarationStatements)})" + " {");
-          result.Append(GetMethodText(ifss.Statement as BlockSyntax, index + 2, localDeclarationStatements));
-          result.AppendLine($"{spaceIndex}" + "}");
-
-          // ElseStatement
-          if(ifss.Else != null)
-          {
-            result.AppendLine($"{spaceIndex}" + "else {");
-            result.Append(GetMethodText(ifss.Else.Statement as BlockSyntax, index + 2));
-            result.AppendLine($"{spaceIndex}" + "}");
-          }
-          continue;
+          Console.WriteLine($"[{ex.Message}]");
+          Console.WriteLine(statement.ToString());
         }
-        if (statement is ExpressionStatementSyntax ess)
-        {
-          result.AppendLine($"{spaceIndex}{GetExpression(ess.Expression, localDeclarationStatements)};");
-          continue;
-        }
-        if(statement is SwitchStatementSyntax sss)
-        {
-          result.Append(spaceIndex);
-          result.AppendLine($"switch ({GetExpression(sss.Expression, localDeclarationStatements)})" + " {");
-          foreach(var section in sss.Sections)
-          {
-            foreach(var label in section.Labels)
-            {
-              result.AppendLine($"{GetSpace(index + 2)}{label}");
-            }
-            result.Append(GetMethodText(section.Statements, index + 4,localDeclarationStatements));
-          }
-
-          result.AppendLine(spaceIndex + "}");
-          continue;
-        }
-        if (statement is BreakStatementSyntax bss)
-        {
-          result.AppendLine($"{spaceIndex}break;");
-          continue;
-        }
-        if (statement is ForStatementSyntax fss)
-        {
-          foreach (var v in fss.Declaration.Variables)
-          {
-            localDeclarationStatements.Add(v.Identifier.ValueText);
-          }
-
-          result.AppendLine($"{spaceIndex}for (let {fss.Declaration.Variables}; {GetExpression(fss.Condition, localDeclarationStatements)}; {fss.Incrementors})" + " {");
-          result.Append(GetMethodText(fss.Statement as BlockSyntax, index + 2, localDeclarationStatements));
-          result.AppendLine(spaceIndex+"}");
-
-          continue;
-        }
-        if(statement is ReturnStatementSyntax rss)
-        {
-          result.AppendLine($"{spaceIndex}return {GetExpression(rss.Expression, localDeclarationStatements)};");
-          continue;
-        }
-
-        var a = 123;
       }
 
       return result.ToString();
     }
+
+    #region statementごとの変換処理
+
+    /// <summary>
+    /// ローカル変数宣言のTypeScript変換
+    /// </summary>
+    /// <param name="statement">対象行</param>
+    /// <param name="index">インデックス数</param>
+    /// <param name="localDeclarationStatements">宣言済ローカル変数のリスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string ConvertStatement(LocalDeclarationStatementSyntax statement, int index, List<string> localDeclarationStatements)
+    {
+      var result = new StringBuilder();
+      var spaceIndex = GetSpace(index);
+
+      if (statement.Declaration.Type.IsVar)
+      {
+        foreach (var v in statement.Declaration.Variables)
+        {
+          localDeclarationStatements.Add(v.Identifier.ValueText);
+        }
+
+        var varStatement = statement.Declaration.Variables.First();
+        var intializeValue = GetExpression(varStatement.Initializer.Value, localDeclarationStatements);
+
+        result.Append($"{spaceIndex}let {varStatement.Identifier.ValueText}");
+        if (!intializeValue.Contains("="))
+        {
+          result.Append(" = ");
+        }
+        result.AppendLine($"{intializeValue};");
+      }
+      else
+      {
+        var tsType = GetTypeScriptType(statement.Declaration.Type, Result.UnknownReferences, RenameClasseNames);
+        foreach (var v in statement.Declaration.Variables)
+        {
+          result.AppendLine($"{spaceIndex}let {v.Identifier}: {tsType} {v.Initializer};");
+          localDeclarationStatements.Add(v.Identifier.ValueText);
+        }
+      }
+
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// if構文のTypeScript変換
+    /// </summary>
+    /// <param name="statement">対象行</param>
+    /// <param name="index">インデックス数</param>
+    /// <param name="localDeclarationStatements">宣言済ローカル変数のリスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string ConvertStatement(IfStatementSyntax statement, int index, List<string> localDeclarationStatements)
+    {
+      var result = new StringBuilder();
+      var spaceIndex = GetSpace(index);
+
+      result.AppendLine($"{spaceIndex}if ({GetExpression(statement.Condition, localDeclarationStatements)})" + " {");
+      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, localDeclarationStatements));
+      result.AppendLine($"{spaceIndex}" + "}");
+
+      // ElseStatement
+      if (statement.Else != null)
+      {
+        result.AppendLine($"{spaceIndex}" + "else {");
+        result.Append(GetMethodText(statement.Else.Statement as BlockSyntax, index + 2));
+        result.AppendLine($"{spaceIndex}" + "}");
+      }
+
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// 式のTypeScript変換
+    /// </summary>
+    /// <param name="statement">対象行</param>
+    /// <param name="index">インデックス数</param>
+    /// <param name="localDeclarationStatements">宣言済ローカル変数のリスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string ConvertStatement(ExpressionStatementSyntax statement, int index, List<string> localDeclarationStatements)
+    {
+      var result = new StringBuilder();
+      var spaceIndex = GetSpace(index);
+
+      result.AppendLine($"{spaceIndex}{GetExpression(statement.Expression, localDeclarationStatements)};");
+
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// switch構文のTypeScript変換
+    /// </summary>
+    /// <param name="statement">対象行</param>
+    /// <param name="index">インデックス数</param>
+    /// <param name="localDeclarationStatements">宣言済ローカル変数のリスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string ConvertStatement(SwitchStatementSyntax statement, int index, List<string> localDeclarationStatements)
+    {
+      var result = new StringBuilder();
+      var spaceIndex = GetSpace(index);
+
+      result.Append(spaceIndex);
+      result.AppendLine($"switch ({GetExpression(statement.Expression, localDeclarationStatements)})" + " {");
+      foreach (var section in statement.Sections)
+      {
+        foreach (var label in section.Labels)
+        {
+          result.AppendLine($"{GetSpace(index + 2)}{label}");
+        }
+        result.Append(GetMethodText(section.Statements, index + 4, localDeclarationStatements));
+      }
+
+      result.AppendLine(spaceIndex + "}");
+
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// breakのTypeScript変換
+    /// </summary>
+    /// <param name="statement">対象行</param>
+    /// <param name="index">インデックス数</param>
+    /// <param name="localDeclarationStatements">宣言済ローカル変数のリスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string ConvertStatement(BreakStatementSyntax statement, int index, List<string> localDeclarationStatements)
+    {
+      var result = new StringBuilder();
+      var spaceIndex = GetSpace(index);
+
+      result.AppendLine($"{spaceIndex}break;");
+
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// for構文のTypeScript変換
+    /// </summary>
+    /// <param name="statement">対象行</param>
+    /// <param name="index">インデックス数</param>
+    /// <param name="localDeclarationStatements">宣言済ローカル変数のリスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string ConvertStatement(ForStatementSyntax statement, int index, List<string> localDeclarationStatements)
+    {
+      var result = new StringBuilder();
+      var spaceIndex = GetSpace(index);
+
+      foreach (var v in statement.Declaration.Variables)
+      {
+        localDeclarationStatements.Add(v.Identifier.ValueText);
+      }
+
+      result.AppendLine($"{spaceIndex}for (let {statement.Declaration.Variables}; {GetExpression(statement.Condition, localDeclarationStatements)}; {statement.Incrementors})" + " {");
+      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, localDeclarationStatements));
+      result.AppendLine(spaceIndex + "}");
+
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// returnのTypeScript変換
+    /// </summary>
+    /// <param name="statement">対象行</param>
+    /// <param name="index">インデックス数</param>
+    /// <param name="localDeclarationStatements">宣言済ローカル変数のリスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string ConvertStatement(ReturnStatementSyntax statement, int index, List<string> localDeclarationStatements)
+    {
+      var result = new StringBuilder();
+      var spaceIndex = GetSpace(index);
+
+      result.AppendLine($"{spaceIndex}return {GetExpression(statement.Expression, localDeclarationStatements)};");
+
+      return result.ToString();
+    }
+
+
+    #endregion
+
 
     #region 式の変換結果を取得
 
