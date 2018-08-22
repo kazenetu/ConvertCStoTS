@@ -434,120 +434,229 @@ namespace ConvertCStoTS
     /// <returns>TypeScriptに変換した文字列</returns>
     private string GetExpression(ExpressionSyntax condition, List<string> localDeclarationStatements)
     {
-      var left = string.Empty;
-      var keyword = string.Empty;
-      var right = string.Empty;
-      switch (condition)
+      var result = string.Empty;
+      try
       {
-        case ObjectCreationExpressionSyntax oces:
-          var equalsValueClauseSyntax = oces.Parent as EqualsValueClauseSyntax;
-          if(equalsValueClauseSyntax == null)
-          {
-            return oces.ToString();
-          }
-          return GetCreateInitializeValue(oces.Type, equalsValueClauseSyntax);
-
-        case BinaryExpressionSyntax bss:
-          left = GetExpression(bss.Left, localDeclarationStatements);
-
-          keyword = bss.OperatorToken.ToString();
-
-          right = GetExpression(bss.Right, localDeclarationStatements);
-
-          break;
-        case AssignmentExpressionSyntax ass:
-          left = ass.Left.ToString();
-          if (!IsLocalDeclarationStatement(ass.Left, localDeclarationStatements))
-          {
-            left = "this." + left;
-          }
-
-          keyword = ass.OperatorToken.ToString();
-
-          right = GetExpression(ass.Right, localDeclarationStatements);
-
-          break;
-        case InvocationExpressionSyntax ies:
-        case MemberAccessExpressionSyntax mes:
-          var invocationExpressionResult = condition.ToString();
-
-          MemberAccessExpressionSyntax maes = null;
-          if(condition is InvocationExpressionSyntax)
-          {
-            var localIes = condition as InvocationExpressionSyntax;
-            maes = localIes.Expression as MemberAccessExpressionSyntax;
-
-            if (localIes.Expression is MemberAccessExpressionSyntax || localIes.Expression is InvocationExpressionSyntax)
-            {
-              if(maes.Expression is ThisExpressionSyntax)
-              {
-                invocationExpressionResult = $"{GetExpression(maes.Name, localDeclarationStatements)}(";
-              }
-              else
-              {
-                invocationExpressionResult = $"{GetExpression(maes, localDeclarationStatements)}(";
-              }
-            }
-            else
-            {
-              invocationExpressionResult = $"{localIes.Expression.ToString()}(";
-            }
-
-            // パラメータ設定
-            var argsText = localIes.ArgumentList.Arguments.Select(arg => GetExpression(arg.Expression, localDeclarationStatements));
-            invocationExpressionResult += string.Join(", ", argsText);
-
-            invocationExpressionResult += ")";
-          }
-          if (condition is MemberAccessExpressionSyntax)
-          {
-            maes = condition as MemberAccessExpressionSyntax;
-
-            if(maes.Expression is IdentifierNameSyntax == false)
-            {
-              invocationExpressionResult = $"{GetExpression(maes.Expression, localDeclarationStatements)}{maes.OperatorToken}";
-              invocationExpressionResult += maes.Name;
-            }
-          }
-
-          if (maes != null)
-          {
-            foreach(var convertMethodName in ConvertMethodNames.Keys)
-            {
-              if (invocationExpressionResult.Contains(convertMethodName))
-              {
-                invocationExpressionResult = invocationExpressionResult.Replace(convertMethodName, ConvertMethodNames[convertMethodName], StringComparison.CurrentCulture);
-              }
-            }
-          }
-
-          if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
-          {
-            if (!invocationExpressionResult.StartsWith("this.",StringComparison.CurrentCulture))
-            {
-              return "this." + invocationExpressionResult;
-            }
-          }
-          return invocationExpressionResult;
-
-        case IdentifierNameSyntax ins:
-        case LiteralExpressionSyntax les:
-          if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
-          {
-            return "this." + condition.ToString();
-          }
-          return condition.ToString();
-        case PredefinedTypeSyntax pts:
-        case ThisExpressionSyntax tes:
-          return condition.ToString();
-        case BaseExpressionSyntax bes:
-          return "super";
-        default:
-          return string.Empty;
+        result = ConvertExpression((dynamic)condition, localDeclarationStatements);
       }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[{ex.Message}]");
+        Console.WriteLine(condition.ToString());
+      }
+      return result;
+    }
+
+    #region Expressionごとの変換処理
+
+    /// <summary>
+    /// オブジェクト生成処理のTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(ObjectCreationExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      var equalsValueClauseSyntax = condition.Parent as EqualsValueClauseSyntax;
+      if (equalsValueClauseSyntax == null)
+      {
+        return condition.ToString();
+      }
+      return GetCreateInitializeValue(condition.Type, equalsValueClauseSyntax);
+    }
+
+    /// <summary>
+    /// 2項演算子のTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(BinaryExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      var left = GetExpression(condition.Left, localDeclarationStatements);
+      var keyword = condition.OperatorToken.ToString();
+      var right = GetExpression(condition.Right, localDeclarationStatements);
 
       return $"{left} {keyword} {right}";
     }
+
+    /// <summary>
+    /// 代入式のTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(AssignmentExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      var left = GetExpression(condition.Left, localDeclarationStatements);
+      var keyword = condition.OperatorToken.ToString();
+      var right = GetExpression(condition.Right, localDeclarationStatements);
+
+      return $"{left} {keyword} {right}";
+    }
+
+    /// <summary>
+    /// 呼び出し式構文のTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(InvocationExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      var result = condition.ToString();
+      var memberAccessExpression = condition.Expression as MemberAccessExpressionSyntax;
+
+      if (condition.Expression is MemberAccessExpressionSyntax || condition.Expression is InvocationExpressionSyntax)
+      {
+        if (memberAccessExpression.Expression is ThisExpressionSyntax)
+        {
+          result = $"{GetExpression(memberAccessExpression.Name, localDeclarationStatements)}(";
+        }
+        else
+        {
+          result = $"{GetExpression(memberAccessExpression, localDeclarationStatements)}(";
+        }
+      }
+      else
+      {
+        result = $"{condition.Expression.ToString()}(";
+      }
+
+      // パラメータ設定
+      var argsText = condition.ArgumentList.Arguments.Select(arg => GetExpression(arg.Expression, localDeclarationStatements));
+      result += string.Join(", ", argsText);
+
+      result += ")";
+
+      // メソッドをTypeScript用に置換え
+      result = ReplaceMethodName(result);
+
+      // thisをつけるかの判定
+      if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
+      {
+        if (!result.StartsWith("this.", StringComparison.CurrentCulture))
+        {
+          return "this." + result;
+        }
+      }
+      return result;
+    }
+
+    /// <summary>
+    /// メンバーアクセス式構文のTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(MemberAccessExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      var result = condition.ToString();
+
+      if (condition.Expression is IdentifierNameSyntax == false)
+      {
+        result = $"{GetExpression(condition.Expression, localDeclarationStatements)}{condition.OperatorToken}";
+        result += condition.Name;
+      }
+
+      // メソッドをTypeScript用に置換え
+      result = ReplaceMethodName(result);
+
+      // thisをつけるかの判定
+      if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
+      {
+        if (!result.StartsWith("this.", StringComparison.CurrentCulture))
+        {
+          return "this." + result;
+        }
+      }
+      return result;
+    }
+
+    /// <summary>
+    /// 識別子名構文のTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(IdentifierNameSyntax condition, List<string> localDeclarationStatements)
+    {
+      if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
+      {
+        return "this." + condition.ToString();
+      }
+      return condition.ToString();
+    }
+
+    /// <summary>
+    /// リテラル式構文のTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(LiteralExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
+      {
+        return "this." + condition.ToString();
+      }
+      return condition.ToString();
+    }
+
+    /// <summary>
+    /// 定義済みタイプの構文のTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(PredefinedTypeSyntax condition, List<string> localDeclarationStatements)
+    {
+      return condition.ToString();
+    }
+
+    /// <summary>
+    /// thisのTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(ThisExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      return condition.ToString();
+    }
+
+    /// <summary>
+    /// baseのTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(BaseExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      return "super";
+    }
+
+    /// <summary>
+    /// メソッドをTypeScript用に置換え
+    /// </summary>
+    /// <param name="src"></param>
+    /// <returns></returns>
+    private string ReplaceMethodName(string src)
+    {
+      var result = src;
+
+      foreach (var convertMethodName in ConvertMethodNames.Keys)
+      {
+        if (result.Contains(convertMethodName))
+        {
+          result = result.Replace(convertMethodName, ConvertMethodNames[convertMethodName], StringComparison.CurrentCulture);
+        }
+      }
+
+      return result;
+    }
+
+    #endregion
+
 
     #region ローカル変数判定
 
