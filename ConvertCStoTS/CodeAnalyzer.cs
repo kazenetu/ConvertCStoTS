@@ -13,16 +13,6 @@ namespace ConvertCStoTS
   public class CodeAnalyzer
   {
     /// <summary>
-    /// C#とTypeScriptの変換リスト
-    /// </summary>
-    private readonly Dictionary<string, string> ConvertMethodNames = new Dictionary<string, string>()
-    {
-      {".ToString(",".toString(" },
-      {".Length",".length" },
-      {"int.Parse(","parseInt(" }
-    };
-
-    /// <summary>
     /// 解析結果
     /// </summary>
     public AnalyzeResult Result { get; } = new AnalyzeResult();
@@ -633,26 +623,6 @@ namespace ConvertCStoTS
     public string ConvertExpression(BaseExpressionSyntax condition, List<string> localDeclarationStatements)
     {
       return "super";
-    }
-
-    /// <summary>
-    /// メソッドをTypeScript用に置換え
-    /// </summary>
-    /// <param name="src"></param>
-    /// <returns></returns>
-    private string ReplaceMethodName(string src)
-    {
-      var result = src;
-
-      foreach (var convertMethodName in ConvertMethodNames.Keys)
-      {
-        if (result.Contains(convertMethodName))
-        {
-          result = result.Replace(convertMethodName, ConvertMethodNames[convertMethodName], StringComparison.CurrentCulture);
-        }
-      }
-
-      return result;
     }
 
     #endregion

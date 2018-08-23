@@ -19,6 +19,35 @@ namespace ConvertCStoTS.Common
       "public","private","protected"
     };
 
+    /// <summary>
+    /// C#とTypeScriptの変換リスト
+    /// </summary>
+    private static readonly Dictionary<string, string> ConvertMethodNames = new Dictionary<string, string>()
+    {
+      {".ToString(",".toString(" },
+      {".Length",".length" },
+      {"int.Parse(","parseInt(" }
+    };
+
+    /// <summary>
+    /// メソッドをTypeScript用に置換え
+    /// </summary>
+    /// <param name="src"></param>
+    /// <returns></returns>
+    public static string ReplaceMethodName(string src)
+    {
+      var result = src;
+
+      foreach (var convertMethodName in ConvertMethodNames.Keys)
+      {
+        if (result.Contains(convertMethodName))
+        {
+          result = result.Replace(convertMethodName, ConvertMethodNames[convertMethodName], StringComparison.CurrentCulture);
+        }
+      }
+
+      return result;
+    }
 
     /// <summary>
     /// C#の型をTypeScriptの型に変換する
