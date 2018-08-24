@@ -38,7 +38,7 @@ namespace ConvertCStoTS.Common
     {
       {"<summary>{0}<\\/summary>","{0}" },
       {"<param name=\"{0}\">{0}<\\/param>","@param {0} {1}" },
-      {"<remarks>{0}<\\/remarks>","@return {0}" },
+      {"<returns>{0}</returns>","@return {0}" },
     };
 
     /// <summary>
@@ -241,13 +241,12 @@ namespace ConvertCStoTS.Common
       // コメント取得
       string GetComment(string commentsText, string regexText, string replaceText)
       {
-
         var maches = Regex.Matches(commentsText, $"{string.Format(CultureInfo.CurrentCulture, regexText, "(.+?)")}");
         if (maches.Count > 0)
         {
-          var args = new List<string>();
           foreach (Match match in maches)
           {
+            var args = new List<string>();
             if (match.Groups.Count < 2)
             {
               break;
@@ -257,7 +256,8 @@ namespace ConvertCStoTS.Common
               // カンマ区切りでパラメータリスト作成
               args.Add(match.Groups[i].Value.Trim());
             }
-            //commentsText = Regex.Replace(commentsText, string.Format(CultureInfo.CurrentCulture, regexText, ".*"), string.Format(CultureInfo.CurrentCulture, replaceText, args.ToArray()));
+
+            // 置き換え
             commentsText = Regex.Replace(commentsText, match.Groups[0].Value, string.Format(CultureInfo.CurrentCulture, replaceText, args.ToArray()));
           }
         }
