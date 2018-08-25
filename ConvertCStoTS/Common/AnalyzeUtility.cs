@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ConvertCStoTS.Common
@@ -209,7 +210,7 @@ namespace ConvertCStoTS.Common
     /// </summary>
     /// <param name="src">置き換え対象</param>
     /// <returns>TypeScriptコメント</returns>
-    public static string GetComments(string src)
+    public static string GetComments(string src, string indentSpace = "  ")
     {
       // 文字列が存在しない場合は改行だけを返す
       if (string.IsNullOrEmpty(src.Trim()))
@@ -231,11 +232,16 @@ namespace ConvertCStoTS.Common
       var results = comments.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
 
       // TypeScript用ヘッダコメント用に生成( * コメント)
-      var commentDetails = results.Where(item => !string.IsNullOrEmpty(item.Trim())).Select(item => "   * " + item.Trim()).ToList();
-      comments = $"  /** {Environment.NewLine}{string.Join(Environment.NewLine, commentDetails)}{Environment.NewLine}   */";
+      var commentDetails = results.Where(item => !string.IsNullOrEmpty(item.Trim())).Select(item => $"{indentSpace} * " + item.Trim()).ToList();
+
+      var result = new StringBuilder();
+      result.AppendLine();
+      result.AppendLine($"{indentSpace}/**");
+      result.AppendLine($"{string.Join(Environment.NewLine, commentDetails)}");
+      result.AppendLine($"{indentSpace} */");
 
       // 適度に改行を追加した文字列を返す
-      return Environment.NewLine + comments + Environment.NewLine;
+      return result.ToString();
 
       // コメントタグをTypeScript用コメントに変換
       string ConvertComment(string commentsText, string regexText, string replaceText)
