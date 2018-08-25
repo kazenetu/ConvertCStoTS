@@ -116,7 +116,7 @@ namespace ConvertCStoTS
 
           // 集約メソッド用処理を追加
           summaryMethod.Append($"{spaceIndex}{spaceIndex}");
-          summaryMethod.Append("if(");
+          summaryMethod.Append("if (");
           for(paramIndex = 0; paramIndex < paramCount; paramIndex++)
           {
             var paramType = paramLists[paramIndex][dataListIndex];
