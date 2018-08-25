@@ -751,6 +751,7 @@ namespace ConvertCStoTS
     {
       var result = new StringBuilder();
 
+      result.Append(GetComments(item.GetLeadingTrivia().ToString()));
       result.Append($"{GetSpace(index)}{GetModifierText(item.Modifiers)} {item.Identifier.ValueText}: {GetTypeScriptType(item.Type, Result.UnknownReferences, RenameClasseNames)}");
 
       // 初期化処理を追加
