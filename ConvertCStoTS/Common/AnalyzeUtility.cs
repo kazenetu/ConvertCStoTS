@@ -226,15 +226,9 @@ namespace ConvertCStoTS.Common
 
       string[] delimiter = { "///" };
       var results = comments.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
-      if (results.Count() > 1)
-      {
-        var commentDetails = results.Where(item => !string.IsNullOrEmpty(item.Trim())).Select(item => "   * " + item.Trim()).ToList();
-        comments = $"  /** {Environment.NewLine}{string.Join(Environment.NewLine, commentDetails)}{Environment.NewLine}   */";
-      }
-      else
-      {
-        comments = $"  /** {results.ToString().Trim()} */";
-      }
+
+      var commentDetails = results.Where(item => !string.IsNullOrEmpty(item.Trim())).Select(item => "   * " + item.Trim()).ToList();
+      comments = $"  /** {Environment.NewLine}{string.Join(Environment.NewLine, commentDetails)}{Environment.NewLine}   */";
 
       return Environment.NewLine + comments + Environment.NewLine;
 
