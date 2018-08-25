@@ -38,6 +38,11 @@ namespace ConvertCStoTS
     public int BaseArgCount { get; } 
 
     /// <summary>
+    /// ヘッダーコメント
+    /// </summary>
+    public string HeaderComments { get; }
+
+    /// <summary>
     /// パラメータ数
     /// </summary>
     public int PramCount
@@ -57,7 +62,8 @@ namespace ConvertCStoTS
     /// <param name="sourceCode">TypeScriptに変換したソースコード</param>
     /// <param name="returnValue">戻り値の型</param>
     /// <param name="baseArgCount">コンストラクタで設定されたスーパークラスのパラメータ数</param>
-    public MethodData(int indentSpaceCount, string scope, List<ParameterData> paramList, string sourceCode, string returnValue, int baseArgCount = -1)
+    /// <param name="headerComment">ヘッダーコマンド</param>
+    public MethodData(int indentSpaceCount, string scope, List<ParameterData> paramList, string sourceCode, string returnValue, int baseArgCount = -1,string headerComment="")
     {
       IndentSpaceCount = indentSpaceCount;
       Scope = scope;
@@ -65,6 +71,7 @@ namespace ConvertCStoTS
       SourceCode = sourceCode;
       ReturnValue = returnValue;
       BaseArgCount = baseArgCount;
+      HeaderComments = headerComment;
     }
 
     /// <summary>

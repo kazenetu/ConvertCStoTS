@@ -176,7 +176,7 @@ namespace ConvertCStoTS
       // TSメソッド管理クラスにメソッド情報を追加
       var methodData = new MethodData(index, GetModifierText(item.Modifiers), parameterDataList,
         GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()),
-        returnValue, superMethodArgCount);
+        returnValue, superMethodArgCount, GetComments(item.GetLeadingTrivia().ToString()));
 
       MethodDataManager.AddMethodData(methodName, methodData);
 

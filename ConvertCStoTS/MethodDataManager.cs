@@ -226,6 +226,11 @@ namespace ConvertCStoTS
     private string CreateMethodText(string methodName, string spaceIndex, MethodData item)
     {
       var result = new StringBuilder();
+
+      // ヘッダーコメント
+      result.Append(item.HeaderComments);
+
+      // メソッド設定
       result.Append($"{spaceIndex}{item.Scope} {methodName}(");
 
       var isFirst = true;
