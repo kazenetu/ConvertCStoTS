@@ -217,22 +217,27 @@ namespace ConvertCStoTS.Common
         return Environment.NewLine;
       }
 
+      // 改行を削除
       var comments = src.Replace(Environment.NewLine, string.Empty, StringComparison.CurrentCulture);
 
+      // コメントタグをTypeScript用コメントに変換
       foreach (var commentTag in CommentTagList)
       {
         comments = GetComment(comments, commentTag.Key, commentTag.Value);
       }
 
+      // C#用ヘッダコメントキーワード(///)で文字列配列を作成
       string[] delimiter = { "///" };
       var results = comments.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
 
+      // TypeScript用ヘッダコメント用に生成( * コメント)
       var commentDetails = results.Where(item => !string.IsNullOrEmpty(item.Trim())).Select(item => "   * " + item.Trim()).ToList();
       comments = $"  /** {Environment.NewLine}{string.Join(Environment.NewLine, commentDetails)}{Environment.NewLine}   */";
 
+      // 適度に改行を追加した文字列を返す
       return Environment.NewLine + comments + Environment.NewLine;
 
-      // コメント取得
+      // コメントタグをTypeScript用コメントに変換
       string GetComment(string commentsText, string regexText, string replaceText)
       {
         var maches = Regex.Matches(commentsText, $"{string.Format(CultureInfo.CurrentCulture, regexText, "(.+?)")}");
