@@ -15,7 +15,7 @@ namespace ConvertCStoTS
     /// <summary>
     /// スコープ
     /// </summary>
-    public string Scope { get; }
+    public string Scope { get; set; }
 
     /// <summary>
     /// パラメータリスト情報

@@ -112,6 +112,7 @@ namespace ConvertCStoTS
 
           // 仮メソッド作成
           var tempMethodName = $"{methodName}{dataListIndex}";
+          methodData.Scope = "private";
           result.Append(CreateMethodText(tempMethodName, spaceIndex, methodData));
           retunValue = methodData.ReturnValue;
 
