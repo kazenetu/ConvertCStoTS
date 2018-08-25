@@ -190,7 +190,7 @@ namespace ConvertCStoTS
 
         // 集約メソッド作成
         result.Append($"{spaceIndex}public {methodName}(");
-        result.Append(string.Join(". ", typeScriptComments));
+        result.Append(string.Join(", ", typeScriptComments));
         result.Append(")");
         if (!string.IsNullOrEmpty(retunValue) && retunValue!="void")
         {
