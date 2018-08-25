@@ -223,7 +223,7 @@ namespace ConvertCStoTS.Common
       // コメントタグをTypeScript用コメントに変換
       foreach (var commentTag in CommentTagList)
       {
-        comments = GetComment(comments, commentTag.Key, commentTag.Value);
+        comments = ConvertComment(comments, commentTag.Key, commentTag.Value);
       }
 
       // C#用ヘッダコメントキーワード(///)で文字列配列を作成
@@ -238,7 +238,7 @@ namespace ConvertCStoTS.Common
       return Environment.NewLine + comments + Environment.NewLine;
 
       // コメントタグをTypeScript用コメントに変換
-      string GetComment(string commentsText, string regexText, string replaceText)
+      string ConvertComment(string commentsText, string regexText, string replaceText)
       {
         var maches = Regex.Matches(commentsText, $"{string.Format(CultureInfo.CurrentCulture, regexText, "(.+?)")}");
         if (maches.Count > 0)
