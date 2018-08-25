@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ConvertCStoTS.Common;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -167,20 +168,29 @@ namespace ConvertCStoTS
           dataListIndex++;
         }
 
-        // 集約メソッド作成
-        result.Append($"{spaceIndex}public {methodName}(");
+        // 集約メソッド用パラメータの作成
+        var typeScriptComments = new List<string>();
         var summaryParamIndex = 0;
         while (summaryParamIndex < paramCount)
         {
-          if (summaryParamIndex > 0 && summaryParamIndex < paramCount)
-          {
-            result.Append(", ");
-          }
-          result.Append(GetParam($"p{summaryParamIndex}", paramLists[summaryParamIndex]));
-
+          typeScriptComments.Add(GetParam($"p{summaryParamIndex}", paramLists[summaryParamIndex]));
           summaryParamIndex++;
         }
 
+        // 集約メソッド用コメントの作成
+        var summaryComments = new StringBuilder();
+        summaryComments.AppendLine($"/// <summary>{methodName}</summary>");
+        foreach(var summaryComment in typeScriptComments)
+        {
+          var tsComment = summaryComment.Split(": ");
+          var commentBody = tsComment[1].Replace(" | ", " or ", System.StringComparison.CurrentCulture);
+          summaryComments.AppendLine($"/// <param name=\"{tsComment[0]}\">{commentBody}</param>");
+        }
+        result.Append(AnalyzeUtility.GetComments(summaryComments.ToString()));
+
+        // 集約メソッド作成
+        result.Append($"{spaceIndex}public {methodName}(");
+        result.Append(string.Join(". ", typeScriptComments));
         result.Append(")");
         if (!string.IsNullOrEmpty(retunValue) && retunValue!="void")
         {
