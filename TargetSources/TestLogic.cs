@@ -10,7 +10,6 @@ namespace DataTransferObjects
     /// <summary>
     /// プロパティ例
     /// </summary>
-    /// <value></value>
     public string prop { set; get; } = "";
 
     public int propInt { set; get; } = 50;
@@ -30,6 +29,8 @@ namespace DataTransferObjects
     /// <summary>
     /// メソッド例2 A
     /// </summary>
+    /// <param name="src">文字列</param>
+    /// <returns>戻り値</returns>
     public int Method2(string src)
     {
       return int.Parse(src);
@@ -38,6 +39,8 @@ namespace DataTransferObjects
     /// <summary>
     /// メソッド例2 B
     /// </summary>
+    /// <param name="src">数値</param>
+    /// <returns>戻り値</returns>
     public int Method2(int src)
     {
       return src * 2;
@@ -112,7 +115,7 @@ namespace DataTransferObjects
     /// <summary>
     /// 複数コンストラクタ1
     /// </summary>
-    /// <value></value>
+    /// <param name="paramValue">パラメータ</param>
     public TestLogic(int paramValue)
     {
       prop = paramValue.ToString();
@@ -121,7 +124,7 @@ namespace DataTransferObjects
     /// <summary>
     /// 複数コンストラクタ2
     /// </summary>
-    /// <value></value>
+    /// <param name="param">パラメータ</param>
     public TestLogic(string param)
     {
       prop = "コンストラクタ";
@@ -130,7 +133,8 @@ namespace DataTransferObjects
     /// <summary>
     /// 複数コンストラクタ3
     /// </summary>
-    /// <value></value>
+    /// <param name="param">パラメータ1</param>
+    /// <param name="boolValue">パラメータ2</param>
     public TestLogic(string param,bool boolValue)
     {
       prop = "コンストラクタ";
@@ -139,7 +143,8 @@ namespace DataTransferObjects
     /// <summary>
     /// 複数コンストラクタ4
     /// </summary>
-    /// <value></value>
+    /// <param name="param">パラメータ1</param>
+    /// <param name="dateValue">パラメータ2</param>
     public TestLogic(string param,DateTime dateValue)
     {
       param = "コンストラクタ";
