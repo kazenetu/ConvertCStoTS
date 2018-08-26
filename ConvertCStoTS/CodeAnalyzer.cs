@@ -109,6 +109,11 @@ namespace ConvertCStoTS
       {
         className = parentClass.Identifier + "_" + className;
       }
+
+      // クラスコメント追加
+      result.Append(GetComments(item.GetLeadingTrivia().ToString(), string.Empty));
+
+      // クラス定義追加
       result.AppendLine($"{GetSpace(index)}export class {className}{superClass} {item.OpenBraceToken.ValueText}");
 
       // クラス名を追加
