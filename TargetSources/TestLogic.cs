@@ -24,6 +24,26 @@ namespace DataTransferObjects
       {
         test = this.Method2(prop);
       }
+
+      // while構文(インクリメント)
+      var index = 0;
+      while (index < 9)
+      {
+        propInt = index;
+
+        // 条件用変数をインクリメント
+        index++;
+      }
+
+      // while構文(デクリメント)
+      index = 9;
+      while (index > 0)
+      {
+        test = index;
+
+        // 条件用変数をデクリメント
+        index--;
+      }
     }
 
     /// <summary>
