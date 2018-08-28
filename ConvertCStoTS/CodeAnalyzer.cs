@@ -617,6 +617,17 @@ namespace ConvertCStoTS
     }
 
     /// <summary>
+    /// 単項式構文のPostfixUnaryExpressionSyntax
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(PostfixUnaryExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      return condition.ToString();
+    }
+
+    /// <summary>
     /// 定義済みタイプの構文のTypeScript変換
     /// </summary>
     /// <param name="condition">ExpressionSyntaxインスタンス</param>
