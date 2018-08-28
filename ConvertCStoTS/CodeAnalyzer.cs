@@ -399,6 +399,25 @@ namespace ConvertCStoTS
     }
 
     /// <summary>
+    /// while構文のTypeScript変換
+    /// </summary>
+    /// <param name="statement">対象行</param>
+    /// <param name="index">インデックス数</param>
+    /// <param name="localDeclarationStatements">宣言済ローカル変数のリスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string ConvertStatement(WhileStatementSyntax statement, int index, List<string> localDeclarationStatements)
+    {
+      var result = new StringBuilder();
+      var spaceIndex = GetSpace(index);
+
+      result.AppendLine($"{spaceIndex}while ({GetExpression(statement.Condition, localDeclarationStatements)})" + " {");
+      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, localDeclarationStatements));
+      result.AppendLine(spaceIndex + "}");
+
+      return result.ToString();
+    }
+
+    /// <summary>
     /// returnのTypeScript変換
     /// </summary>
     /// <param name="statement">対象行</param>
