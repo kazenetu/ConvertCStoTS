@@ -45,8 +45,8 @@ namespace ConvertCStoTS.Common
     /// <summary>
     /// メソッドをTypeScript用に置換え
     /// </summary>
-    /// <param name="src"></param>
-    /// <returns></returns>
+    /// <param name="src">ソース文字列</param>
+    /// <returns>置き換え後文字列</returns>
     public static string ReplaceMethodName(string src)
     {
       var result = src;
@@ -55,7 +55,58 @@ namespace ConvertCStoTS.Common
       {
         if (result.Contains(convertMethodName))
         {
-          result = result.Replace(convertMethodName, ConvertMethodNames[convertMethodName], StringComparison.CurrentCulture);
+          result = ReplaceKeyword(result, convertMethodName, ConvertMethodNames[convertMethodName]);
+        }
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// メソッドの置き換え
+    /// </summary>
+    /// <param name="srcText">ソース文字列</param>
+    /// <param name="regexText">正規表現</param>
+    /// <param name="replaceText">置き換え後の対象</param>
+    /// <returns>置き換え後文字列</returns>
+    private static string ReplaceKeyword(string srcText, string regexText, string replaceText)
+    {
+      var result = srcText;
+
+      var replaceCount = Regex.Matches(replaceText, @"\{[0-9]}").Count;
+      if (replaceCount <= 0)
+      {
+        // 置換文字列にパラメータが設定されていない場合は単純な置換え
+        result = srcText.Replace($"{regexText}", replaceText, StringComparison.CurrentCulture);
+      }
+      else
+      {
+        // パラメータの取得
+        var args = new List<string>();
+        foreach (Match match in Regex.Matches(srcText, $"^{regexText}\\((.+?)\\)$"))
+        {
+          if (match.Groups.Count < 2)
+          {
+            break;
+          }
+          // カンマ区切りでパラメータリスト作成
+          args.AddRange(Regex.Split(match.Groups[1].Value, @"\s*,\s*(?=(?:[^""]*""[^""]*"")*[^""]*$)").Select(arg => arg.Trim()).ToList());
+        }
+
+        // 置換文字列のパラメータ数より作成したパラメータ数が少ない場合は元の文字列を返す
+        if (replaceCount > args.Count)
+        {
+          return srcText;
+        }
+
+        try
+        {
+          // 置換を実施
+          result = Regex.Replace(srcText, $"{regexText}\\(.*\\)$", string.Format(CultureInfo.InvariantCulture, replaceText, args.ToArray()));
+        }
+        catch
+        {
+          throw;
         }
       }
 
@@ -145,7 +196,7 @@ namespace ConvertCStoTS.Common
         case "List":
           return "Array";
         case "Dictionary":
-          return "Map";
+          return "Dictionary";
         default:
           if (!unknownReferences.ContainsKey(token.ValueText))
           {
