@@ -628,6 +628,17 @@ namespace ConvertCStoTS
     }
 
     /// <summary>
+    /// 要素アクセス構文のTypeScript変換
+    /// </summary>
+    /// <param name="condition">ExpressionSyntaxインスタンス</param>
+    /// <param name="localDeclarationStatements">ローカル変数リスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    public string ConvertExpression(ElementAccessExpressionSyntax condition, List<string> localDeclarationStatements)
+    {
+      return $"{condition.Expression.ToString()}.get({condition.ArgumentList.Arguments.ToString()})";
+    }
+
+    /// <summary>
     /// 定義済みタイプの構文のTypeScript変換
     /// </summary>
     /// <param name="condition">ExpressionSyntaxインスタンス</param>
