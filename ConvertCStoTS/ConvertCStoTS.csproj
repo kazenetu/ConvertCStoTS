@@ -10,4 +10,10 @@
     <PackageReference Include="Microsoft.NetCore.Analyzers" Version="2.6.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TypeScripts\Dictionary.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
