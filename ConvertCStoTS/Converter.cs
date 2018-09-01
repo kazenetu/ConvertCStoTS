@@ -88,8 +88,11 @@ namespace ConvertCStoTS
             if (reference != null)
             {
               var sub = analyzeResults.Where(result => result.ImportPath == reference).FirstOrDefault();
-              targetReults.Add(sub);
-              AddTargetFile(sub);
+              if(sub != null)
+              {
+                targetReults.Add(sub);
+                AddTargetFile(sub);
+              }
             }
           }
         }
