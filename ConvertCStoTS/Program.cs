@@ -61,6 +61,14 @@ namespace ConvertCStoTS
       // FilePath
       var filePath = argManager.GetOptionArg(new List<string>() { "--file", " -f" });
 
+      // コレクション用クラスをコピー
+      var tsFileNames = new List<string>() { "Dictionary.ts", "List.ts" };
+      foreach(var tsFileName in tsFileNames)
+      {
+        File.Copy($"TypeScripts/{ tsFileName}", Path.Combine(destPath, tsFileName), true);
+      }
+
+      // C#ファイルの変換とファイル出力
       Console.WriteLine("---Convert Start---");
       var converter = new Converter(srcPath, destPath);
       try
