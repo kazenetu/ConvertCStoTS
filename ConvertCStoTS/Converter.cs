@@ -192,8 +192,22 @@ namespace ConvertCStoTS
       // 実行中のメソッド名を設定する
       RunMethodName = MethodBase.GetCurrentMethod().Name;
 
-      var results = analyzeResults;
-      foreach (var analyzeResult in analyzeResults)
+      // 解析ファイルの作成
+      var results = new List<AnalyzeResult>();
+      results.AddRange(analyzeResults);
+
+      var dictionary = new AnalyzeResult();
+      dictionary.ClassNames.Add("Dictionary");
+      dictionary.ImportPath = "Dictionary";
+      results.Add(dictionary);
+
+      var list = new AnalyzeResult();
+      list.ClassNames.Add("List");
+      list.ImportPath = "List";
+      results.Add(list);
+
+      // 未解決の参照を解消する
+      foreach (var analyzeResult in results)
       {
         if (!analyzeResult.UnknownReferences.Any())
         {
