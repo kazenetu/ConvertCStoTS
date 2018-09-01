@@ -288,6 +288,11 @@ namespace ConvertCStoTS
         // ディレクトリの深さに合わせたパスを作成する
         string setImportPath(int directoryLevel, string importPath)
         {
+          if(directoryLevel == 0)
+          {
+            return $"./{importPath}";
+          }
+
           var result = string.Empty;
           while (directoryLevel > 0)
           {
