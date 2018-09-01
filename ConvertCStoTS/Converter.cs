@@ -304,6 +304,13 @@ namespace ConvertCStoTS
       // C#のディレクトリ構成でTSファイルを作成する
       foreach (var analyzeResult in analyzeResults)
       {
+        // ソースコードがない場合はファイル作成を行わない
+        if (string.IsNullOrEmpty(analyzeResult.SourceCode)) 
+        {
+          continue;
+        }
+
+        // ファイル作成
         var filePath = $"{descPath}/{analyzeResult.ImportPath}.ts";
         Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
