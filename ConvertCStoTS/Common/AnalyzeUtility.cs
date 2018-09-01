@@ -191,18 +191,9 @@ namespace ConvertCStoTS.Common
     /// <returns>変換結果</returns>
     private static string GetGenericClass(SyntaxToken token, Dictionary<string, string> unknownReferences)
     {
-      switch (token.ValueText)
+      if (!unknownReferences.ContainsKey(token.ValueText))
       {
-        case "List":
-          return "Array";
-        case "Dictionary":
-          return "Dictionary";
-        default:
-          if (!unknownReferences.ContainsKey(token.ValueText))
-          {
-            unknownReferences.Add(token.ValueText, null);
-          }
-          break;
+        unknownReferences.Add(token.ValueText, null);
       }
 
       return token.ValueText;
