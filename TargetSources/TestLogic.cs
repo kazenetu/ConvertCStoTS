@@ -49,11 +49,16 @@ namespace DataTransferObjects
       var dc = new Dictionary<string,TestLogic>();
       dc.Add("aa",this);
       var value = dc["aa"];
+      foreach(var key in dc.Keys){
+        test = dc[key].propInt;
+      }
       dc.Clear();
-      var keys = dc.Keys;
 
       var lst = new List<string>();
       lst.Add("aaa");
+      foreach(var item in lst){
+        this.prop = item;
+      }
       lst.Remove("aaa");
       lst.Clear();
     }
