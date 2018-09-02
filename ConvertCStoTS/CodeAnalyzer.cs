@@ -386,13 +386,17 @@ namespace ConvertCStoTS
       var result = new StringBuilder();
       var spaceIndex = GetSpace(index);
 
+      // 一時的なローカル変数を作成
+      var tempLocalDeclarationStatements = new List<string>();
+      tempLocalDeclarationStatements.AddRange(localDeclarationStatements);
       foreach (var v in statement.Declaration.Variables)
       {
-        localDeclarationStatements.Add(v.Identifier.ValueText);
+        tempLocalDeclarationStatements.Add(v.Identifier.ValueText);
       }
 
-      result.AppendLine($"{spaceIndex}for (let {statement.Declaration.Variables}; {GetExpression(statement.Condition, localDeclarationStatements)}; {statement.Incrementors})" + " {");
-      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, localDeclarationStatements));
+      // 構文作成
+      result.AppendLine($"{spaceIndex}for (let {statement.Declaration.Variables}; {GetExpression(statement.Condition, tempLocalDeclarationStatements)}; {statement.Incrementors})" + " {");
+      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, tempLocalDeclarationStatements));
       result.AppendLine(spaceIndex + "}");
 
       return result.ToString();
