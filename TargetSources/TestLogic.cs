@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DataTransferObjects
 {
@@ -44,6 +45,17 @@ namespace DataTransferObjects
         // 条件用変数をデクリメント
         index--;
       }
+
+      var dc = new Dictionary<string,TestLogic>();
+      dc.Add("aa",this);
+      var value = dc["aa"];
+      dc.Clear();
+      var keys = dc.Keys;
+
+      var lst = new List<string>();
+      lst.Add("aaa");
+      lst.Remove("aaa");
+      lst.Clear();
     }
 
     /// <summary>
