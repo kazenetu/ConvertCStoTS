@@ -399,6 +399,34 @@ namespace ConvertCStoTS
     }
 
     /// <summary>
+    /// foreach構文のTypeScript変換
+    /// </summary>
+    /// <param name="statement">対象行</param>
+    /// <param name="index">インデックス数</param>
+    /// <param name="localDeclarationStatements">宣言済ローカル変数のリスト</param>
+    /// <returns>TypeScriptに変換した文字列</returns>
+    private string ConvertStatement(ForEachStatementSyntax statement, int index, List<string> localDeclarationStatements)
+    {
+      var result = new StringBuilder();
+      var spaceIndex = GetSpace(index);
+
+      // 一時的なローカル変数を作成
+      var tempLocalDeclarationStatements = new List<string>();
+      tempLocalDeclarationStatements.AddRange(localDeclarationStatements);
+      if (!tempLocalDeclarationStatements.Contains(statement.Identifier.ToString()))
+      {
+        tempLocalDeclarationStatements.Add(statement.Identifier.ToString());
+      }
+
+      // 構文作成
+      result.AppendLine($"{spaceIndex}foreach (let {statement.Identifier} in {GetExpression(statement.Expression, localDeclarationStatements)})" + " {");
+      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, tempLocalDeclarationStatements));
+      result.AppendLine(spaceIndex + "}");
+
+      return result.ToString();
+    }
+
+    /// <summary>
     /// while構文のTypeScript変換
     /// </summary>
     /// <param name="statement">対象行</param>
@@ -576,7 +604,12 @@ namespace ConvertCStoTS
       result = ReplaceMethodName(result);
 
       // thisをつけるかの判定
-      if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
+      var targetCondition = condition as ExpressionSyntax;
+      if(condition.Expression is ElementAccessExpressionSyntax eaes)
+      {
+        targetCondition = eaes.Expression;
+      }
+      if (!IsLocalDeclarationStatement(targetCondition, localDeclarationStatements))
       {
         if (!result.StartsWith("this.", StringComparison.CurrentCulture))
         {
