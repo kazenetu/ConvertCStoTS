@@ -423,7 +423,7 @@ namespace ConvertCStoTS
       }
 
       // 構文作成
-      result.AppendLine($"{spaceIndex}foreach (let {statement.Identifier} in {GetExpression(statement.Expression, tempLocalDeclarationStatements)})" + " {");
+      result.AppendLine($"{spaceIndex}for (let {statement.Identifier} in {GetExpression(statement.Expression, tempLocalDeclarationStatements)})" + " {");
       result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, tempLocalDeclarationStatements));
       result.AppendLine(spaceIndex + "}");
 
