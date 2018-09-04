@@ -815,6 +815,10 @@ namespace ConvertCStoTS
       {
         return GetExpressionSyntax(ies);
       }
+      if (item.Expression is MemberAccessExpressionSyntax maes)
+      {
+        return GetExpressionSyntax(maes);
+      }
       if (item.Expression is ElementAccessExpressionSyntax eaes)
       {
         return eaes.Expression;
