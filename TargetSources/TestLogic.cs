@@ -51,7 +51,9 @@ namespace DataTransferObjects
       var value = dc["aa"];
       foreach(var key in dc.Keys){
         test = dc[key].propInt;
+        var strTest = dc[key].ToString();
       }
+      prop = dc.Keys.ToString();
       dc.Clear();
 
       var lst = new List<string>();
