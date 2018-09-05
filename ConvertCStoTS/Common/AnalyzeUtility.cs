@@ -27,9 +27,9 @@ namespace ConvertCStoTS.Common
     /// </summary>
     private static readonly Dictionary<string, string> ConvertMethodNames = new Dictionary<string, string>()
     {
-      {".ToString(",".toString(" },
-      {".Length",".length" },
-      {"int.Parse(","parseInt(" }
+      {@"\.ToString\(",".toString(" },
+      {@"\.Length",".length" },
+      {@"int\.Parse\(","parseInt(" },
     };
 
     /// <summary>
@@ -53,7 +53,7 @@ namespace ConvertCStoTS.Common
 
       foreach (var convertMethodName in ConvertMethodNames.Keys)
       {
-        if (result.Contains(convertMethodName))
+        if (Regex.IsMatch(result, convertMethodName))
         {
           result = ReplaceKeyword(result, convertMethodName, ConvertMethodNames[convertMethodName]);
         }
@@ -77,7 +77,7 @@ namespace ConvertCStoTS.Common
       if (replaceCount <= 0)
       {
         // 置換文字列にパラメータが設定されていない場合は単純な置換え
-        result = srcText.Replace($"{regexText}", replaceText, StringComparison.CurrentCulture);
+        result = Regex.Replace(srcText, regexText, replaceText);
       }
       else
       {
