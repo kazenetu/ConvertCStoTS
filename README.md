@@ -53,5 +53,5 @@ C#のクラスをTypeScriptのクラスに変換する
 - [X] List,Dictionaryのエミュレート
 - [ ] プロパティ/メソッド/コンストラクタを変換しないコマンドの追加
 - [X] 内部処理：whileのTS変換
-- [ ] 内部処理：foreachのTS変換
+- [X] 内部処理：foreachのTS変換
 
