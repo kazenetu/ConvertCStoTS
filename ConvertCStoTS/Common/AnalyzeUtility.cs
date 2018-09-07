@@ -30,6 +30,7 @@ namespace ConvertCStoTS.Common
       {@"\.ToString\(",".toString(" },
       {@"\.Length",".length" },
       {@"int\.Parse\(","parseInt(" },
+      {@"[s|S]tring\.Empty","''" },
     };
 
     /// <summary>
