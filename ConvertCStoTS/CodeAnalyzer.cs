@@ -232,13 +232,10 @@ namespace ConvertCStoTS
       localDeclarationStatements.Add(nameof(Double));
       localDeclarationStatements.Add(nameof(DateTime));
 
-      
-
-      var result = new StringBuilder();
-
+      // 処理単位の文字列を取得
       var spaceIndex = GetSpace(index);
-
-      foreach(var statement in statements)
+      var result = new StringBuilder();
+      foreach (var statement in statements)
       {
         try
         {
