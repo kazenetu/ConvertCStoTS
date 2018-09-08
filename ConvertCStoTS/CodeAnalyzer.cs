@@ -221,6 +221,19 @@ namespace ConvertCStoTS
         localDeclarationStatements.AddRange(parentLocalDeclarationStatements);
       }
 
+      // ローカル変数に予約語を追加する
+      localDeclarationStatements.Add(nameof(String));
+      localDeclarationStatements.Add(nameof(Decimal));
+      localDeclarationStatements.Add(nameof(Boolean));
+      localDeclarationStatements.Add(nameof(Int16));
+      localDeclarationStatements.Add(nameof(Int32));
+      localDeclarationStatements.Add(nameof(Int64));
+      localDeclarationStatements.Add(nameof(Single));
+      localDeclarationStatements.Add(nameof(Double));
+      localDeclarationStatements.Add(nameof(DateTime));
+
+      
+
       var result = new StringBuilder();
 
       var spaceIndex = GetSpace(index);
