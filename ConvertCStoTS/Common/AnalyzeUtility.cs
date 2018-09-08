@@ -212,7 +212,7 @@ namespace ConvertCStoTS.Common
       switch (CSSyntax.Value)
       {
         case ObjectCreationExpressionSyntax ocs:
-          return $" = new {GetTypeScriptType(ocs.Type, unknownReferences, renameClasseNames)}()";
+          return $"= new {GetTypeScriptType(ocs.Type, unknownReferences, renameClasseNames)}()";
       }
 
       return CSSyntax.ToString();
