@@ -63,6 +63,9 @@ namespace DataTransferObjects
       }
       lst.Remove("aaa");
       lst.Clear();
+
+      prop = string.Empty;
+      prop = String.Empty;
     }
 
     /// <summary>
