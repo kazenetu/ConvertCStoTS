@@ -239,6 +239,18 @@ namespace ConvertCStoTS
       {
         try
         {
+          // コメント出力
+          var comments = statement.GetLeadingTrivia().Where(trivia => trivia.Kind() != SyntaxKind.WhitespaceTrivia);
+          foreach (var comment in comments)
+          {
+            if (comment.IsKind(SyntaxKind.SingleLineCommentTrivia))
+            {
+              result.Append(spaceIndex);
+            }
+            result.Append($"{comment}");
+          }
+
+          // TypeScript変換
           result.Append(ConvertStatement((dynamic)statement, index, localDeclarationStatements));
         }
         catch(Exception ex)
