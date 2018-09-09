@@ -273,12 +273,12 @@ namespace ConvertCStoTS
           if (impoertPath == null)
           {
             // 解決していない場合は「未参照クラスが格納されたTSファイル」に投げる
-            sb.AppendLine($"import {{{referenceName}}} from '{setImportPath(directoryLevel, otherReferencesPath)}'");
+            sb.AppendLine($"import {{ {referenceName} }} from '{setImportPath(directoryLevel, otherReferencesPath)}'");
           }
           else
           {
             // 解決した場合はその結果を設定する
-            sb.AppendLine($"import {{{referenceName}}} from '{setImportPath(directoryLevel, impoertPath)}'");
+            sb.AppendLine($"import {{ {referenceName} }} from '{setImportPath(directoryLevel, impoertPath)}'");
           }
         }
 
