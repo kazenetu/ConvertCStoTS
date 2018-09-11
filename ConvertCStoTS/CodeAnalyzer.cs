@@ -29,6 +29,20 @@ namespace ConvertCStoTS
     private MethodDataManager MethodDataManager = new MethodDataManager();
 
     /// <summary>
+    /// メソッド出力フラグ
+    /// </summary>
+    private readonly bool IsOutputMethod;
+
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    /// <param name="isOutputMethod">メソッド出力フラグ</param>
+    public CodeAnalyzer(bool isOutputMethod = true)
+    {
+      IsOutputMethod = isOutputMethod;
+    }
+
+    /// <summary>
     /// 解析処理
     /// </summary>
     /// <param name="targetCode">C#ソース</param>
@@ -157,6 +171,12 @@ namespace ConvertCStoTS
     /// <returns>TypeScriptのコンストラクタに変換した文字列</returns>
     private string GetChildText(BaseMethodDeclarationSyntax item, int index = 0)
     {
+      // メソッド出力しない場合はそのまま終了
+      if (!IsOutputMethod)
+      {
+        return string.Empty;
+      }
+
       var returnValue = string.Empty;
       var methodName = "constructor";
       if (item is MethodDeclarationSyntax mi)
