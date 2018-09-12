@@ -28,14 +28,21 @@ namespace ConvertCStoTS
     private readonly string DestPath;
 
     /// <summary>
+    /// メソッド出力フラグ
+    /// </summary>
+    private readonly bool IsOutputMethod;
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="srcPath">C＃ファイルの入力ディレクトリ</param>
     /// <param name="destPath">TSファイルの出力ディレクトリ</param>
-    public Converter(string srcPath,string destPath)
+    /// <param name="isOutputMethod">メソッド出力フラグ</param>
+    public Converter(string srcPath, string destPath, bool isOutputMethod = true)
     {
       SrcPath = srcPath;
       DestPath = destPath;
+      IsOutputMethod = isOutputMethod;
     }
 
     /// <summary>
@@ -167,7 +174,7 @@ namespace ConvertCStoTS
       // 実行中のメソッド名を設定する
       RunMethodName = MethodBase.GetCurrentMethod().Name;
 
-      var codeAnalyzer = new CodeAnalyzer();
+      var codeAnalyzer = new CodeAnalyzer(IsOutputMethod);
 
       // ファイル単位でソース解析
       foreach (var filePath in targetFiles)
