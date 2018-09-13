@@ -36,6 +36,7 @@ namespace ConvertCStoTS
         Console.WriteLine("-f, --file  <FilePath>       Input C# Path");
         Console.WriteLine("-o, --out   <OutputPath>     Output TypeScript Path");
         Console.WriteLine("-r, --ref   <ReferencesPath> References TypeScript Path");
+        Console.WriteLine("--no_method_output           No Method Output");
         Console.WriteLine("-h, --help  view this page");
         return 0;
       }
@@ -61,6 +62,9 @@ namespace ConvertCStoTS
       // FilePath
       var filePath = argManager.GetOptionArg(new List<string>() { "--file", " -f" });
 
+      // Output Method
+      var isOutputMethod = !argManager.ExistsOptionArg("--no_method_output");
+
       // コレクション用クラスをコピー
       var tsFileNames = new List<string>() { "Dictionary.ts", "List.ts" };
       foreach(var tsFileName in tsFileNames)
@@ -70,7 +74,7 @@ namespace ConvertCStoTS
 
       // C#ファイルの変換とファイル出力
       Console.WriteLine("---Convert Start---");
-      var converter = new Converter(srcPath, destPath);
+      var converter = new Converter(srcPath, destPath, isOutputMethod);
       try
       {
         if (string.IsNullOrEmpty(filePath))
