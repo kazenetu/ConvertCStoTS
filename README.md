@@ -20,6 +20,7 @@ C#のクラスをTypeScriptのクラスに変換する
 |```-f, --file``` | ```<C#ファイルパス>```    |SourcePath以降のC#ファイルまでのパス<br>単体のCSファイルだけ変換する場合に利用|
 |```--o, --out``` | ```<TSファイル出力パス>```|TypeScriptを出力する起点ディレクトリ|
 |```--r, --ref``` |```<参照TSファイルパス>``` |参照解決できない場合のTSファイルのパス|
+|```--no_method_output``` |  |コンストラクタ・メソッドは出力対象外|
 |```--h, --help```|                         | ヘルプページを表示する|
 
 # 実行例
@@ -30,6 +31,7 @@ C#のクラスをTypeScriptのクラスに変換する
 * 参照TSファイルパス:**base**  
   (TargetSources/dist/base)  
   ※デフォルト設定
+* コンストラクタ・メソッド出力:行う
 
 ```dotnet publish/ConvertCStoTS.dll TargetSources --out TargetSources/dist --file Response/OrderList/SearchResponse.cs```  
 または  
@@ -41,17 +43,29 @@ C#のクラスをTypeScriptのクラスに変換する
 * TypeScriptを出力する起点ディレクトリ:**TargetSources/dist**
 * 参照TSファイルパス:**baseclass**  
   (TargetSources/dist/baseclass)
+* コンストラクタ・メソッド出力:行う
 
 ```dotnet publish/ConvertCStoTS.dll TargetSources --out TargetSources/dist --ref baseclass```  
 または  
 ```dotnet publish/ConvertCStoTS.dll TargetSources -o TargetSources/dist -r baseclass```
+
+## C#ファイルのTypeScript一括変換：プロパティのみ
+* C#ファイルのベースディレクトリ:**TargetSources**
+* TypeScriptを出力する起点ディレクトリ:**TargetSources/dist**
+* 参照TSファイルパス:**baseclass**  
+  (TargetSources/dist/baseclass)
+* コンストラクタ・メソッド出力:**行わない**
+
+```dotnet publish/ConvertCStoTS.dll TargetSources --out TargetSources/dist --ref baseclass --no_method_output```  
+または  
+```dotnet publish/ConvertCStoTS.dll TargetSources -o TargetSources/dist -r baseclass --no_method_output```
 
 # 未実装
 - [X] 複数のコンストラクタのTS変換対応
 - [X] メソッドのTS変換
 - [X] ヘッダーコメントの出力
 - [X] List,Dictionaryのエミュレート
-- [ ] プロパティ/メソッド/コンストラクタを変換しないコマンドの追加
+- [X] メソッド・コンストラクタを変換しないコマンドの追加
 - [X] 内部処理：whileのTS変換
 - [X] 内部処理：foreachのTS変換
 
