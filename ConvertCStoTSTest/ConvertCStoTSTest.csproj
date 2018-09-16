@@ -12,4 +12,14 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ConvertCStoTS\ConvertCStoTS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ExpectedTypeScriptFiles\TestLogicFull.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
