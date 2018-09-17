@@ -187,7 +187,7 @@ namespace ConvertCStoTS
       result.Append($"{GetSpace(index)}{GetModifierText(item.Modifiers)} {item.Identifier.ValueText}: {GetTypeScriptType(item.Type, Result.UnknownReferences, RenameClasseNames)}");
 
       // 初期化処理を追加
-      result.Append(GetCreateInitializeValue(item.Type, item.Initializer, Result.UnknownReferences, Result.UnknownReferences));
+      result.Append(GetCreateInitializeValue(item.Type, item.Initializer, Result.UnknownReferences, RenameClasseNames));
 
       result.AppendLine(";");
 
