@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvertCStoTS", "ConvertCStoTS\ConvertCStoTS.csproj", "{D93D215E-E418-4FB0-AE0B-3D58039462DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertCStoTSTest", "ConvertCStoTSTest\ConvertCStoTSTest.csproj", "{CFA0A571-75F2-441F-B417-618E0400AC94}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D93D215E-E418-4FB0-AE0B-3D58039462DA} = {D93D215E-E418-4FB0-AE0B-3D58039462DA}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
