@@ -314,5 +314,51 @@ namespace ConvertCStoTS.Common
       }
     }
 
+    /// <summary>
+    /// フィールド宣言時の初期化を設定する
+    /// </summary>
+    /// <param name="type">フィールドの型</param>
+    /// <param name="initializer">初期化情報</param>
+    /// <param name="unknownReferences">未解決の参照データ</param>
+    /// <param name="renameClasseNames">内部クラスの名称変更データ</param>
+    /// <returns>TypeScriptの初期化文字列</returns>
+    public static string GetCreateInitializeValue(TypeSyntax type, EqualsValueClauseSyntax initializer, Dictionary<string, string> unknownReferences, Dictionary<string, string> renameClasseNames)
+    {
+      if (initializer != null)
+      {
+        return $" {GetEqualsValue(initializer, unknownReferences, renameClasseNames)}";
+      }
+      else
+      {
+        switch (type)
+        {
+          case NullableTypeSyntax nts:
+            return " = null";
+          case GenericNameSyntax gts:
+            return $" = new {GetTypeScriptType(type, unknownReferences, renameClasseNames)}()";
+          case PredefinedTypeSyntax ps:
+            switch (ps.ToString())
+            {
+              case "int":
+              case "float":
+              case "double":
+              case "decimal":
+                return " = 0";
+              case "bool":
+                return " = false";
+            }
+            break;
+          case IdentifierNameSyntax ins:
+            switch (ins.ToString())
+            {
+              case "DateTime":
+                return " = new Date(0)";
+            }
+            break;
+        }
+      }
+      return string.Empty;
+    }
+
   }
 }
