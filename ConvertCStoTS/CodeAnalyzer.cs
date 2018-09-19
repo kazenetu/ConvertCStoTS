@@ -92,6 +92,7 @@ namespace ConvertCStoTS
         }
       }
 
+      // 戻り値用クラスインスタンスを作成
       var analyzeResult = new AnalyzeResult();
       analyzeResult.SourceCode = result.ToString();
       Result.CopyUnknownReferences(ref analyzeResult);
