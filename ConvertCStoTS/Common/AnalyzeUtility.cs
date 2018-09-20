@@ -15,6 +15,11 @@ namespace ConvertCStoTS.Common
   public static class AnalyzeUtility
   {
     /// <summary>
+    /// インデントサイズ
+    /// </summary>
+    public const int IndentSize = 2;
+
+    /// <summary>
     /// スコープキーワード
     /// </summary>
     private static readonly List<string> ScopeKeywords = new List<string>()
