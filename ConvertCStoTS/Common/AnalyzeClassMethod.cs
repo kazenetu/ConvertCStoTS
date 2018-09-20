@@ -91,7 +91,7 @@ namespace ConvertCStoTS.Common
 
       // TSメソッド管理クラスにメソッド情報を追加
       var methodData = new MethodData(index, GetModifierText(item.Modifiers), parameterDataList,
-        GetMethodText(item.Body, index + 2, parameterDataList.Select(p => p.Name).ToList()),
+        GetMethodText(item.Body, index + IndentSize, parameterDataList.Select(p => p.Name).ToList()),
         returnValue, superMethodArgCount, GetComments(item.GetLeadingTrivia().ToString()));
 
       methodDataManager.AddMethodData(methodName, methodData);
@@ -231,14 +231,14 @@ namespace ConvertCStoTS.Common
       var spaceIndex = GetSpace(index);
 
       result.AppendLine($"{spaceIndex}if ({GetExpression(statement.Condition, localDeclarationStatements)})" + " {");
-      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, localDeclarationStatements));
+      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + IndentSize, localDeclarationStatements));
       result.AppendLine($"{spaceIndex}" + "}");
 
       // ElseStatement
       if (statement.Else != null)
       {
         result.AppendLine($"{spaceIndex}" + "else {");
-        result.Append(GetMethodText(statement.Else.Statement as BlockSyntax, index + 2));
+        result.Append(GetMethodText(statement.Else.Statement as BlockSyntax, index + IndentSize));
         result.AppendLine($"{spaceIndex}" + "}");
       }
 
@@ -280,7 +280,7 @@ namespace ConvertCStoTS.Common
       {
         foreach (var label in section.Labels)
         {
-          result.AppendLine($"{GetSpace(index + 2)}{label}");
+          result.AppendLine($"{GetSpace(index + IndentSize)}{label}");
         }
         result.Append(GetMethodText(section.Statements, index + 4, localDeclarationStatements));
       }
@@ -329,7 +329,7 @@ namespace ConvertCStoTS.Common
 
       // 構文作成
       result.AppendLine($"{spaceIndex}for (let {statement.Declaration.Variables}; {GetExpression(statement.Condition, tempLocalDeclarationStatements)}; {statement.Incrementors})" + " {");
-      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, tempLocalDeclarationStatements));
+      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + IndentSize, tempLocalDeclarationStatements));
       result.AppendLine(spaceIndex + "}");
 
       return result.ToString();
@@ -357,7 +357,7 @@ namespace ConvertCStoTS.Common
 
       // 構文作成
       result.AppendLine($"{spaceIndex}for (let {statement.Identifier} in {GetExpression(statement.Expression, tempLocalDeclarationStatements)})" + " {");
-      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, tempLocalDeclarationStatements));
+      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + IndentSize, tempLocalDeclarationStatements));
       result.AppendLine(spaceIndex + "}");
 
       return result.ToString();
@@ -376,7 +376,7 @@ namespace ConvertCStoTS.Common
       var spaceIndex = GetSpace(index);
 
       result.AppendLine($"{spaceIndex}while ({GetExpression(statement.Condition, localDeclarationStatements)})" + " {");
-      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + 2, localDeclarationStatements));
+      result.Append(GetMethodText(statement.Statement as BlockSyntax, index + IndentSize, localDeclarationStatements));
       result.AppendLine(spaceIndex + "}");
 
       return result.ToString();

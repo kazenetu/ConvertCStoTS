@@ -152,11 +152,11 @@ namespace ConvertCStoTS
           switch (childItem)
           {
             case PropertyDeclarationSyntax prop:
-              result.Append(GetPropertyText(prop, index + 2));
+              result.Append(GetPropertyText(prop, index + IndentSize));
               break;
             case BaseMethodDeclarationSyntax method:
               var methodInstance = new AnalyzeClassMethod(Result, RenameClasseNames, IsOutputMethod);
-              methodInstance.GetMethodText(method, ref MethodDataManager, index + 2);
+              methodInstance.GetMethodText(method, ref MethodDataManager, index + IndentSize);
               break;
           }
         }
