@@ -94,10 +94,10 @@ namespace ConvertCStoTS.Analyze
         switch (CSSyntax.Value)
         {
           case ObjectCreationExpressionSyntax ocs:
-            return $"= new {GetTypeScriptType(ocs.Type)}()";
+            return $" = new {GetTypeScriptType(ocs.Type)}()";
         }
 
-        return CSSyntax.ToString();
+        return $" = {CSSyntax.Value}";
       }
       else
       {
