@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConvertCStoTS.Analyze;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -174,7 +175,7 @@ namespace ConvertCStoTS
       // 実行中のメソッド名を設定する
       RunMethodName = MethodBase.GetCurrentMethod().Name;
 
-      var codeAnalyzer = new CodeAnalyzer(IsOutputMethod);
+      var codeAnalyze = new CodeAnalyze(IsOutputMethod);
 
       // ファイル単位でソース解析
       foreach (var filePath in targetFiles)
@@ -186,7 +187,7 @@ namespace ConvertCStoTS
         // C＃ファイル読み込み
         using (var sr = new StreamReader(filePath))
         {
-          var tsInfo = codeAnalyzer.Analyze(sr.ReadToEnd());
+          var tsInfo = codeAnalyze.Analyze(sr.ReadToEnd());
           tsInfo.ImportPath = importPath;
           analyzeResults.Add(tsInfo);
         }
