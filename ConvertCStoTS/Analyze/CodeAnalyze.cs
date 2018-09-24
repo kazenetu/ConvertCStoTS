@@ -95,7 +95,7 @@ namespace ConvertCStoTS.Analyze
       var result = new StringBuilder();
 
       // TSメソッド管理クラス生成
-      var MethodDataManager = new Methods.MethodDataManager();
+      var MethodDataManager = new MethodDataManager();
 
       var className = item.Identifier.ValueText;
       var superClass = string.Empty;
