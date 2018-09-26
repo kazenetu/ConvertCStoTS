@@ -125,6 +125,8 @@ namespace ConvertCStoTS.Analyze.Methods
         {
           Console.WriteLine($"[{ex.Message}]");
           Console.WriteLine(statement.ToString());
+          Console.WriteLine($".............Type[{statement.GetType().Name}]");
+          Console.WriteLine("------------------------------------------------");
         }
       }
 

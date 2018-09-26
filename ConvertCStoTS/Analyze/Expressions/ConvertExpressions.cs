@@ -28,6 +28,8 @@ namespace ConvertCStoTS.Analyze.Expressions
       {
         Console.WriteLine($"[{ex.Message}]");
         Console.WriteLine(condition.ToString());
+        Console.WriteLine($".............Type[{condition.GetType().Name}]");
+        Console.WriteLine("------------------------------------------------");
       }
       return result;
     }
