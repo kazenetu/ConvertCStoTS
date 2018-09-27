@@ -38,8 +38,8 @@ export class Dictionary<K, V>
      * 値取得
      * @param key 取得キー
      */
-    public get(key: K): V {
-        return this.instance.get(key);
+    public get(key: K): V | null {
+        return this.instance.get(key) as V;
     }
 
     /**
@@ -85,7 +85,7 @@ export class Dictionary<K, V>
      * @param key 削除対象のキー
      * @param value 削除対象の値(省略時null)
      */
-    public Remove(key: K, value: V = null): boolean {
+    public Remove(key: K, value: V | null = null): boolean {
 
         // キーがない場合はfalseを返す
         if (!this.instance.has(key)) {
