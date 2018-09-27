@@ -18,7 +18,13 @@ export class TestLogic {
    * メソッド例
    */
   public Method(): void {
-    let test: number = 0;
+    let a = (arg: number): number => {
+      let b = arg;
+      b += arg;
+      return b;
+    }
+
+    let test: number = a(10);
     if (this.prop.length > 0) {
       test = this.Method2(this.prop);
     }
