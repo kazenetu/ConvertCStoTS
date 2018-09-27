@@ -20,7 +20,13 @@ namespace DataTransferObjects
     /// </summary>
     public void Method()
     {
-      int test = 0;
+      int a(int arg){
+        var b = arg;
+        b += arg;
+        return b;
+      }
+
+      int test = a(10);
       if (prop.Length > 0)
       {
         test = this.Method2(prop);
