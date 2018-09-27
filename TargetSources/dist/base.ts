@@ -8,14 +8,20 @@ export class TableBase {
   }
 }
 
+interface IPropertyInfo {
+    [key: string]: object;
+}
+
 export class PropertyInfo {
 
   public GetValue(): object {
-      return this.instance[this.propertyName];
+      let instance = this.instance as IPropertyInfo;
+      return instance[this.propertyName];
   }
 
   public SetValue(value: object) {
-      this.instance[this.propertyName] = value;
+    let instance = this.instance as IPropertyInfo;
+    instance[this.propertyName] = value;
   }
 
   public get PropertyName() {
@@ -29,9 +35,9 @@ export class PropertyInfo {
 
 export class ResponseBase<T>
 {
-  public ResponseData: T;
-  constructor(result?: Results, errorMessage?: string, responseData?: T) {
-
+  public ResponseData: null | T;
+  constructor(result: null | Results, errorMessage: null | string, responseData: null | T) {
+    this.ResponseData = responseData;
   }
 }
 
