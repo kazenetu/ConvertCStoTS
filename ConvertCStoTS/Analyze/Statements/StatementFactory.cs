@@ -109,5 +109,16 @@ namespace ConvertCStoTS.Analyze.Statement
       return new ReturnStatement(method, statement);
     }
 
+    /// <summary>
+    /// ローカル関数のTypeScript変換
+    /// </summary>
+    /// <param name="method">メソッドインスタンス</param>
+    /// <param name="statement">構文インスタンス</param>
+    /// <returns>TypeScript変換クラス</returns>
+    public static BaseStatement GetStatement(IMethod method, LocalFunctionStatementSyntax statement)
+    {
+      return new LocalFunctionStatement(method, statement);
+    }
+
   }
 }
