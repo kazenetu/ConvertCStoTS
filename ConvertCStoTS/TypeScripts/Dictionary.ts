@@ -38,7 +38,7 @@ export class Dictionary<K, V>
      * 値取得
      * @param key 取得キー
      */
-    public get(key: K): V | null {
+    public get(key: K): V {
         return this.instance.get(key) as V;
     }
 
