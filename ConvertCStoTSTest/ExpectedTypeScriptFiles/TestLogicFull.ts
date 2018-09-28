@@ -88,7 +88,7 @@ export class TestLogic {
   }
 
   /**
-   * Method2
+   * Method2 Summary Method
    * @param p0 string or number
    */
   public Method2(p0: string | number): number {
@@ -195,7 +195,7 @@ export class TestLogic {
   }
 
   /**
-   * constructor
+   * constructor Summary Method
    * @param p0 null or number or string
    * @param p1 null or boolean or Date
    */
