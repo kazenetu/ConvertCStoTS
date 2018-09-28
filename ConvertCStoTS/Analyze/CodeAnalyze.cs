@@ -173,11 +173,19 @@ namespace ConvertCStoTS.Analyze
       var classObject = ClassObject.GetInstance();
       var result = new StringBuilder();
 
-      result.Append(GetComments(item.GetLeadingTrivia().ToString()));
-      result.Append($"{GetSpace(index)}{GetModifierText(item.Modifiers)} {item.Identifier.ValueText}: {classObject.GetTypeScriptType(item.Type)}");
-
-      // 初期化処理を追加
+      // 初期化処理を取得
+      var defineAssignmentAssertion = string.Empty;
       var createInitializeValue = classObject.GetCreateInitializeValue(item.Type, item.Initializer);
+      if (string.IsNullOrEmpty(createInitializeValue))
+      {
+        // 初期化情報がない場合は限定代入アサーションを設定
+        defineAssignmentAssertion = "!";
+      }
+
+      result.Append(GetComments(item.GetLeadingTrivia().ToString()));
+      result.Append($"{GetSpace(index)}{GetModifierText(item.Modifiers)} {item.Identifier.ValueText}{defineAssignmentAssertion}: {classObject.GetTypeScriptType(item.Type)}");
+
+      // 初期化処理を設定
       result.Append(ReplaceMethodName(createInitializeValue));
 
       result.AppendLine(";");
