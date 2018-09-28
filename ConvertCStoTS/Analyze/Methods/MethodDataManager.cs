@@ -180,7 +180,7 @@ namespace ConvertCStoTS.Analyze.Methods
 
         // 集約メソッド用コメントの作成
         var summaryComments = new StringBuilder();
-        summaryComments.AppendLine($"/// <summary>{methodName}</summary>");
+        summaryComments.AppendLine($"/// <summary>{methodName} Summary Method</summary>");
         foreach (var summaryComment in typeScriptComments)
         {
           var tsComment = summaryComment.Split(": ");
