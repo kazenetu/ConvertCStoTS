@@ -98,6 +98,7 @@ export class TestLogic {
     if (typeof p0 === 'number') {
       return this.Method21(p0);
     }
+    return 0;
   }
 
   /**
