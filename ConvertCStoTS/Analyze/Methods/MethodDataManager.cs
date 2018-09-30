@@ -221,6 +221,7 @@ namespace ConvertCStoTS.Analyze.Methods
         }
 
         result.Append(summaryMethod.ToString());
+        result.Append(GetDefaultReturnValue(spaceIndex,retunValue));
         result.AppendLine($"{spaceIndex}" + "}");
       }
 
@@ -301,6 +302,37 @@ namespace ConvertCStoTS.Analyze.Methods
       }
 
       return result.ToString();
+    }
+
+    /// <summary>
+    /// 集約メソッドのデフォルト戻り値の取得
+    /// </summary>
+    /// <param name="spaceIndex">スペース</param>
+    /// <param name="returnValue">TypeScriptの戻り値の型</param>
+    /// <returns>TypeScriptの戻り値文字列(改行あり)</returns>
+    /// <remarks>戻り値なし・voidの場合はstring.Empty</remarks>
+    private string GetDefaultReturnValue(string spaceIndex,string returnValue)
+    {
+      if (string.IsNullOrEmpty(returnValue) || returnValue == "void")
+      {
+        return string.Empty;
+      }
+
+      var result = $"new {returnValue}()";
+      switch (returnValue)
+      {
+        case "number":
+          result = "0";
+          break;
+        case "string":
+          result = "''";
+          break;
+        case "boolean":
+          result = "false";
+          break;
+      }
+
+      return $"{spaceIndex}{spaceIndex}return {result};" + System.Environment.NewLine;
     }
   }
 }
