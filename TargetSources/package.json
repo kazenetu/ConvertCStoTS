@@ -4,6 +4,7 @@
     "http-server": "*"
   },
   "scripts": {
+    "build": "build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "kazenetu",
