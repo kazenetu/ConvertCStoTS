@@ -1,3 +1,4 @@
 dist/**/*.js
 dist/**/*.ts
+package-lock.json
 !dist/base.ts
