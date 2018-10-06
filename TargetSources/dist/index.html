@@ -1,15 +1,31 @@
 <html>
-    <head>
-    </head>
-    <body>
-        <script type="module">
-            import {TestLogic} from './testlogic.js';
-            let testLogic = new TestLogic();
 
-            alert(testLogic.propInt);
-            testLogic.Method();
+<head>
+</head>
 
-            alert(testLogic.propInt);
-        </script>
-    </body>
+<body>
+    <h1>TestLogicクラスの動作確認</h1>
+    <div>
+        <label for="before">値変更前</label>
+        <input type="text" id="before" readonly />
+
+    </div>
+    <div>
+        <label for="after">値変更後</label>
+        <input type="text" id="after" readonly />
+    </div>
+
+
+    <script type="module">
+        import { TestLogic } from './testlogic.js';
+        let testLogic = new TestLogic();
+
+        document.getElementById('before').setAttribute('value', testLogic.propInt);
+
+        testLogic.Method();
+
+        document.getElementById('after').setAttribute('value', testLogic.propInt);
+    </script>
+</body>
+
 </html>
