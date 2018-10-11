@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using static ConvertCStoTS.Common.AnalyzeUtility;
 
@@ -135,6 +136,9 @@ namespace ConvertCStoTS.Analyze
         {
           switch (childItem)
           {
+            case FieldDeclarationSyntax fieldDeclaration:
+              result.Append(GetFieldDeclarationText(fieldDeclaration, index + IndentSize));
+              break;
             case PropertyDeclarationSyntax prop:
               result.Append(GetPropertyText(prop, index + IndentSize));
               break;
@@ -159,6 +163,51 @@ namespace ConvertCStoTS.Analyze
       result.Append(MethodDataManager.GetMethodText());
 
       result.AppendLine($"{GetSpace(index)}{item.CloseBraceToken.ValueText}");
+      return result.ToString();
+    }
+
+    /// <summary>
+    /// フィールド類取得
+    /// </summary>
+    /// <param name="item">C#ソースを解析したインスタンス</param>
+    /// <param name="index">インデックス数(半角スペース数)</param>
+    /// <returns>TypeScriptのクラスフィールドに変換した文字列</returns>
+    private string GetFieldDeclarationText(FieldDeclarationSyntax item, int index = 0)
+    {
+      var classObject = ClassObject.GetInstance();
+      var result = new StringBuilder();
+
+      var variable = item.Declaration.Variables[0];
+      //初期化処理を取得
+      var defineAssignmentAssertion = string.Empty;
+      var createInitializeValue = classObject.GetCreateInitializeValue(item.Declaration.Type, variable.Initializer);
+      if (string.IsNullOrEmpty(createInitializeValue))
+      {
+        // 初期化情報がない場合は限定代入アサーションを設定
+        defineAssignmentAssertion = "!";
+      }
+
+      // キーワード設定
+      var modifiers = new List<string>();
+      modifiers.Add(GetModifierText(item.Modifiers));
+      foreach(var modifer in item.Modifiers)
+      {
+        switch (modifer.Text)
+        {
+          case "const":
+            modifiers.Add("readonly");
+            break;
+        }
+      }
+
+      result.Append(GetComments(item.GetLeadingTrivia().ToString()));
+      result.Append($"{GetSpace(index)}{string.Join(' ',modifiers)} {variable.Identifier.ValueText}{defineAssignmentAssertion}: {classObject.GetTypeScriptType(item.Declaration.Type)}");
+
+      // 初期化処理を設定
+      result.Append(ReplaceMethodName(createInitializeValue));
+
+      result.AppendLine(";");
+
       return result.ToString();
     }
 
