@@ -8,6 +8,11 @@ import { List } from './List'
 export class TestLogic {
 
   /**
+   * 定数フィールド
+   */
+  public readonly ConstField: string = "123";
+
+  /**
    * プロパティ例
    */
   public prop: string = "";
@@ -66,7 +71,7 @@ export class TestLogic {
     lst.Clear();
 
     this.prop = '';
-    this.prop = '';
+    this.prop = this.ConstField;
   }
 
   /**
