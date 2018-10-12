@@ -9,6 +9,11 @@ namespace DataTransferObjects
   public class TestLogic
   {
     /// <summary>
+    /// 定数フィールド
+    /// </summary>
+    public const string ConstField = "123";
+
+    /// <summary>
     /// プロパティ例
     /// </summary>
     public string prop { set; get; } = "";
@@ -71,7 +76,7 @@ namespace DataTransferObjects
       lst.Clear();
 
       prop = string.Empty;
-      prop = String.Empty;
+      prop = ConstField;
     }
 
     /// <summary>
