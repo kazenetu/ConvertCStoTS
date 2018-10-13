@@ -192,15 +192,14 @@ namespace ConvertCStoTS
         {
           csFiles.Add(new CSFileInfo() { ImportPath = importPath, SourceCode = sr.ReadToEnd() });
         }
+      }
 
-        // C#ファイル情報からTypeScript変換を実施
-        foreach(var csFileInfo in csFiles)
-        {
-          var tsInfo = codeAnalyze.Analyze(csFileInfo.SourceCode);
-          tsInfo.ImportPath = csFileInfo.ImportPath;
-          analyzeResults.Add(tsInfo);
-        }
-
+      // C#ファイル情報からTypeScript変換を実施
+      foreach (var csFileInfo in csFiles)
+      {
+        var tsInfo = codeAnalyze.Analyze(csFileInfo.SourceCode);
+        tsInfo.ImportPath = csFileInfo.ImportPath;
+        analyzeResults.Add(tsInfo);
       }
     }
 
