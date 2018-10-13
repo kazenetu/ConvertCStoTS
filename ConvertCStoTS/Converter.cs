@@ -177,6 +177,9 @@ namespace ConvertCStoTS
 
       var codeAnalyze = new CodeAnalyze(IsOutputMethod);
 
+      // C#ファイル情報リスト
+      var csFiles = new List<CSFileInfo>();
+
       // ファイル単位でソース解析
       foreach (var filePath in targetFiles)
       {
@@ -187,10 +190,17 @@ namespace ConvertCStoTS
         // C＃ファイル読み込み
         using (var sr = new StreamReader(filePath))
         {
-          var tsInfo = codeAnalyze.Analyze(sr.ReadToEnd());
-          tsInfo.ImportPath = importPath;
+          csFiles.Add(new CSFileInfo() { ImportPath = importPath, SourceCode = sr.ReadToEnd() });
+        }
+
+        // C#ファイル情報からTypeScript変換を実施
+        foreach(var csFileInfo in csFiles)
+        {
+          var tsInfo = codeAnalyze.Analyze(csFileInfo.SourceCode);
+          tsInfo.ImportPath = csFileInfo.ImportPath;
           analyzeResults.Add(tsInfo);
         }
+
       }
     }
 
