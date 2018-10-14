@@ -33,6 +33,29 @@ namespace ConvertCStoTS.Analyze
     public List<string> ClassNames { get; } = new List<string>();
 
     /// <summary>
+    /// 処理中のTypeScriptのクラス名
+    /// </summary>
+    public string ProcessClassName { set; get; } = string.Empty;
+
+    /// <summary>
+    /// 前処理モード
+    /// </summary>
+    /// <remarks>
+    /// クラス名変換とクラスメンバの格納のみ実施
+    /// </remarks>
+    public bool IsPreAnalyze { set; get; } = true;
+
+    /// <summary>
+    /// インスタンスフィールド・プロパティ・メソッドのリスト
+    /// </summary>
+    public List<string> InstanceMembers { set; get; } = new List<string>();
+
+        /// <summary>
+    /// クラス単位のクラスメンバ
+    /// </summary>
+    public Dictionary<string, List<string>> StaticMembers = new Dictionary<string, List<string>>();
+
+    /// <summary>
     /// メソッド出力フラグ
     /// </summary>
     public readonly bool IsOutputMethod;
@@ -77,9 +100,10 @@ namespace ConvertCStoTS.Analyze
     /// </summary>
     public void Clear()
     {
-      RenameClasseNames.Clear();
+      InstanceMembers.Clear();
       UnknownReferences.Clear();
       ClassNames.Clear();
+      ProcessClassName = string.Empty;
     }
 
     /// <summary>
@@ -197,6 +221,26 @@ namespace ConvertCStoTS.Analyze
           break;
       }
       return result;
+    }
+
+    /// <summary>
+    /// クラスメンバの格納
+    /// </summary>
+    /// <param name="className">クラス名</param>
+    /// <param name="memberName">メンバ名</param>
+    public void AddStaticMember(string memberName)
+    {
+      // クラス名が存在しない場合は要素追加
+      if (!StaticMembers.ContainsKey(ProcessClassName))
+      {
+        StaticMembers.Add(ProcessClassName, new List<string>());
+      }
+
+      // メンバ名はが存在しない場合は追加
+      if (!StaticMembers[ProcessClassName].Contains(memberName))
+      {
+        StaticMembers[ProcessClassName].Add(memberName);
+      }
     }
 
     /// <summary>
