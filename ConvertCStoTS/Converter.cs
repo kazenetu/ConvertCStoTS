@@ -194,6 +194,12 @@ namespace ConvertCStoTS
         }
       }
 
+      // 解析前処理
+      codeAnalyze.PreAnalyze(csFiles);
+
+      // 出力モードに変更
+      ClassObject.GetInstance().IsPreAnalyze = false;
+
       // C#ファイル情報からTypeScript変換を実施
       foreach (var csFileInfo in csFiles)
       {
