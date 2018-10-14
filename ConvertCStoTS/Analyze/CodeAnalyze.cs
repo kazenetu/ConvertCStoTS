@@ -1,8 +1,10 @@
 ﻿using ConvertCStoTS.Analyze.Methods;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using static ConvertCStoTS.Common.AnalyzeUtility;
 
@@ -25,6 +27,26 @@ namespace ConvertCStoTS.Analyze
     public CodeAnalyze(bool isOutputMethod = true)
     {
       IsOutputMethod = isOutputMethod;
+    }
+
+    /// <summary>
+    /// 解析前処理
+    /// </summary>
+    /// <param name="csInfos">C#ファイル情報リスト</param>
+    /// <remarks>クラス名変換とクラスメンバの格納</remarks>
+    public void PreAnalyze(List<CSFileInfo> csInfos)
+    {
+      // ClassObjectインスタンス取得
+      var classObject = ClassObject.GetInstance();
+
+      // モードを前処理に設定
+      classObject.IsPreAnalyze = true;
+
+      // 解析によってクラス名変更とクラスメンバの格納を行う
+      foreach(var csInfo in csInfos)
+      {
+        Analyze(csInfo.SourceCode);
+      }
     }
 
     /// <summary>
@@ -52,15 +74,18 @@ namespace ConvertCStoTS.Analyze
       // ルート取得
       var root = tree.GetRoot();
 
-      // クラス名取得
-      foreach (CSharpSyntaxNode item in root.DescendantNodes())
+      // 前処理の場合はクラス名変更確認と格納
+      if (classObject.IsPreAnalyze)
       {
-        if (item is ClassDeclarationSyntax cds)
+        foreach (CSharpSyntaxNode item in root.DescendantNodes())
         {
-          if (cds.Parent is ClassDeclarationSyntax parentClass)
+          if (item is ClassDeclarationSyntax cds)
           {
-            var renameClassName = parentClass.Identifier + "_" + cds.Identifier.ValueText;
-            classObject.RenameClasseNames.Add(cds.Identifier.ValueText, renameClassName);
+            if (cds.Parent is ClassDeclarationSyntax parentClass)
+            {
+              var renameClassName = parentClass.Identifier + "_" + cds.Identifier.ValueText;
+              classObject.RenameClasseNames.Add(cds.Identifier.ValueText, renameClassName);
+            }
           }
         }
       }
@@ -122,6 +147,47 @@ namespace ConvertCStoTS.Analyze
       {
         classObject.ClassNames.Add(className);
       }
+      classObject.ProcessClassName = className;
+
+      // インスタンス要素を格納
+      foreach (var childItem in item.Members)
+      {
+        // インナークラスの場合は処理をしない
+        if (childItem is ClassDeclarationSyntax)
+        {
+          continue;
+        }
+
+        SyntaxTokenList? tokenList = null;
+        switch (childItem)
+        {
+          case FieldDeclarationSyntax fieldDeclaration:
+            tokenList = fieldDeclaration.Modifiers;
+            break;
+          case PropertyDeclarationSyntax prop:
+            tokenList = prop.Modifiers;
+            break;
+          case BaseMethodDeclarationSyntax method:
+            if (!method.IsKind(SyntaxKind.ConstructorDeclaration))
+            {
+              tokenList = method.Modifiers;
+            }
+            break;
+        }
+
+        // インスタンス要素の場合は要素名を格納
+        if (tokenList.HasValue)
+        {
+          var targetName = childItem.DescendantTokens().Where(token => token.IsKind(SyntaxKind.IdentifierToken)).FirstOrDefault();
+          if (targetName != null && !tokenList.Value.Any(token => token.ValueText == "static"))
+          {
+            if (!classObject.InstanceMembers.Contains(targetName.ValueText))
+            {
+              classObject.InstanceMembers.Add(targetName.ValueText);
+            }
+          }
+        }
+      }
 
       // 子要素を設定
       foreach (var childItem in item.Members)
@@ -144,8 +210,8 @@ namespace ConvertCStoTS.Analyze
               break;
             case BaseMethodDeclarationSyntax method:
               var methodInstance = new Method();
-              var methodData = methodInstance.GetMethodText(method,IsOutputMethod, index + IndentSize);
-              if(methodData != null)
+              var methodData = methodInstance.GetMethodText(method, IsOutputMethod, index + IndentSize);
+              if (methodData != null)
               {
                 MethodDataManager.AddMethodData(methodData);
               }
@@ -157,6 +223,12 @@ namespace ConvertCStoTS.Analyze
           Console.WriteLine($"[{ex.Message}]");
           Console.WriteLine(childItem.ToString());
         }
+      }
+
+      // 前処理の場合は終了
+      if (classObject.IsPreAnalyze)
+      {
+        return string.Empty;
       }
 
       // メソッドを出力
@@ -175,9 +247,20 @@ namespace ConvertCStoTS.Analyze
     private string GetFieldDeclarationText(FieldDeclarationSyntax item, int index = 0)
     {
       var classObject = ClassObject.GetInstance();
+      var variable = item.Declaration.Variables[0];
+
+      // 前処理の場合はメソッドチェックと格納のみ
+      if (classObject.IsPreAnalyze)
+      {
+        if(item.Modifiers.Any(modifier => modifier.Kind() == SyntaxKind.StaticKeyword))
+        {
+          classObject.AddStaticMember(variable.Identifier.ValueText);
+        }
+        return string.Empty;
+      }
+
       var result = new StringBuilder();
 
-      var variable = item.Declaration.Variables[0];
       //初期化処理を取得
       var defineAssignmentAssertion = string.Empty;
       var createInitializeValue = classObject.GetCreateInitializeValue(item.Declaration.Type, variable.Initializer);
@@ -196,6 +279,9 @@ namespace ConvertCStoTS.Analyze
         {
           case "const":
             modifiers.Add("readonly");
+            break;
+          case "static":
+            modifiers.Add("static");
             break;
         }
       }
@@ -220,6 +306,17 @@ namespace ConvertCStoTS.Analyze
     private string GetPropertyText(PropertyDeclarationSyntax item, int index = 0)
     {
       var classObject = ClassObject.GetInstance();
+
+      // 前処理の場合はメソッドチェックと格納のみ
+      if (classObject.IsPreAnalyze)
+      {
+        if (item.Modifiers.Any(modifier => modifier.Kind() == SyntaxKind.StaticKeyword))
+        {
+          classObject.AddStaticMember(item.Identifier.ValueText);
+        }
+        return string.Empty;
+      }
+
       var result = new StringBuilder();
 
       // 初期化処理を取得

@@ -21,18 +21,31 @@ namespace ConvertCStoTS.Analyze.Methods
     /// <returns>TypeScriptのコンストラクタに変換した文字列</returns>
     public MethodData GetMethodText(BaseMethodDeclarationSyntax item, bool isOutputMethod, int index = 0)
     {
-      // メソッド出力しない場合はそのまま終了
-      if (!isOutputMethod)
-      {
-        return null;
-      }
+      var classObject = ClassObject.GetInstance();
 
+      // メソッド名と戻り値を設定
       var returnValue = string.Empty;
       var methodName = "constructor";
       if (item is MethodDeclarationSyntax mi)
       {
         methodName = mi.Identifier.Text;
         returnValue = ClassObject.GetInstance().GetTypeScriptType(mi.ReturnType);
+      }
+
+      // 前処理の場合はメソッドチェックと格納のみ
+      if (classObject.IsPreAnalyze)
+      {
+        if (item.Modifiers.Any(modifier => modifier.Kind() == SyntaxKind.StaticKeyword))
+        {
+          classObject.AddStaticMember(methodName);
+        }
+        return null;
+      }
+
+      // メソッド出力しない場合はそのまま終了
+      if (!isOutputMethod)
+      {
+        return null;
       }
 
       var parameterDataList = new List<MethodData.ParameterData>();
