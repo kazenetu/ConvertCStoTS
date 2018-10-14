@@ -176,15 +176,31 @@ namespace ConvertCStoTS.Analyze.Expressions
         var classObject = ClassObject.GetInstance();
 
         // クラスメンバの場合はそのまま返す
-        if (classObject.StaticMembers.ContainsKey(identifierName))
+        if (classObject.StaticMembers.Where(item => item.Key == classObject.ProcessClassName).
+                                      Any(item => item.Value.Contains(identifierName)))
         {
           return result;
         }
 
         // 別クラスの場合はクラス名置換えを実施
-        if (classObject.RenameClasseNames.Keys.Contains(identifierName))
+        var otherClassNames = new List<string>()
         {
-          result = result.Replace($"{identifierName}.", $"{classObject.RenameClasseNames[identifierName]}.", StringComparison.CurrentCulture);
+          identifierName,
+          condition.ToString(),
+          $"{classObject.ProcessClassName}.{identifierName}"
+        };
+        foreach(var className in otherClassNames)
+        {
+          if (classObject.RenameClasseNames.Keys.Contains(className))
+          {
+            result = classObject.RenameClasseNames[className];
+            if (className.StartsWith($"{classObject.ProcessClassName}.",StringComparison.CurrentCulture))
+            {
+              result += $".{condition.Name}";
+            }
+
+            return result;
+          }
         }
       }
 
@@ -366,16 +382,27 @@ namespace ConvertCStoTS.Analyze.Expressions
       if (es is MemberAccessExpressionSyntax)
       {
         // 内部クラスの名称置換え
-        var className = localDeclarationStatement;
-        if (classObject.RenameClasseNames.Keys.Contains(className))
+        var tempClassName = (es as MemberAccessExpressionSyntax)?.Expression.ToString();
+        var otherClassNames = new List<string>()
         {
-          className = classObject.RenameClasseNames[className];
+          es.ToString(),
+          tempClassName,
+          $"{classObject.ProcessClassName}.{tempClassName}"
+        };
+
+        var unknownReferenceClass = tempClassName;
+        foreach (var className in otherClassNames)
+        {
+          if (classObject.RenameClasseNames.Keys.Contains(className))
+          {
+            unknownReferenceClass = classObject.RenameClasseNames[className];
+          }
         }
 
         // 未解決リストにない場合は追加
-        if (!classObject.UnknownReferences.Keys.Contains(className))
+        if (!classObject.UnknownReferences.Keys.Contains(unknownReferenceClass))
         {
-          classObject.UnknownReferences.Add(className, null);
+          classObject.UnknownReferences.Add(unknownReferenceClass, null);
         }
         return true;
       }
