@@ -42,6 +42,13 @@ namespace ConvertCStoTS.Analyze.Methods
         return null;
       }
 
+      // staticキーワードがあればメソッド名に追加する
+      if (item.Modifiers.Any(modifier => modifier.Kind() == SyntaxKind.StaticKeyword))
+      {
+        methodName = "static " + methodName;
+      }
+
+
       // メソッド出力しない場合はそのまま終了
       if (!isOutputMethod)
       {
