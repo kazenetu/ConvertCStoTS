@@ -236,7 +236,7 @@ namespace ConvertCStoTS.Analyze
         StaticMembers.Add(ProcessClassName, new List<string>());
       }
 
-      // メンバ名はが存在しない場合は追加
+      // メンバ名が存在しない場合は追加
       if (!StaticMembers[ProcessClassName].Contains(memberName))
       {
         StaticMembers[ProcessClassName].Add(memberName);
