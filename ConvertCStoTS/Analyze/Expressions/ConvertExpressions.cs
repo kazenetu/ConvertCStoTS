@@ -106,7 +106,7 @@ namespace ConvertCStoTS.Analyze.Expressions
       }
       else
       {
-        result = $"{condition.Expression.ToString()}(";
+        result = $"{GetExpression(condition.Expression, localDeclarationStatements)}(";
       }
 
       // パラメータ設定
@@ -175,13 +175,6 @@ namespace ConvertCStoTS.Analyze.Expressions
 
         var classObject = ClassObject.GetInstance();
 
-        // クラスメンバの場合はそのまま返す
-        if (classObject.StaticMembers.Where(item => item.Key == classObject.ProcessClassName).
-                                      Any(item => item.Value.Contains(identifierName)))
-        {
-          return result;
-        }
-
         // 別クラスの場合はクラス名置換えを実施
         var otherClassNames = new List<string>()
         {
@@ -202,6 +195,23 @@ namespace ConvertCStoTS.Analyze.Expressions
             return result;
           }
         }
+
+        // クラスメンバの場合はそのまま返す
+        var myMethodNames = new List<string>()
+        {
+          identifierName,
+          condition.Name.ToString()
+        };
+
+        foreach (var methodName in myMethodNames)
+        {
+          if (classObject.StaticMembers.Where(item => item.Key == classObject.ProcessClassName).
+                                        Any(item => item.Value.Contains(methodName)))
+          {
+            return result;
+          }
+        }
+
       }
 
       return result;
@@ -371,13 +381,6 @@ namespace ConvertCStoTS.Analyze.Expressions
         return false;
       }
 
-      // 自クラスメンバの確認
-      if (classObject.StaticMembers.Where(item => item.Key == classObject.ProcessClassName).
-                                    Any(item => item.Value.Contains(localDeclarationStatement)))
-      {
-        return true;
-      }
-      
       // 他のクラスメンバ確認
       if (es is MemberAccessExpressionSyntax)
       {
@@ -405,6 +408,30 @@ namespace ConvertCStoTS.Analyze.Expressions
           classObject.UnknownReferences.Add(unknownReferenceClass, null);
         }
         return true;
+      }
+
+      // 自クラスメンバの確認
+      var myMethodNames = new List<string>()
+      {
+        localDeclarationStatement,
+        es.ToString(),
+      };
+      if (es is MemberAccessExpressionSyntax)
+      {
+        myMethodNames.Add((es as MemberAccessExpressionSyntax).Name.ToString());
+      }
+      if (es is InvocationExpressionSyntax && (es as InvocationExpressionSyntax).Expression is MemberAccessExpressionSyntax ma)
+      {
+        myMethodNames.Add(ma.Name.ToString());
+      }
+
+      foreach (var methodName in myMethodNames)
+      {
+        if (classObject.StaticMembers.Where(item => item.Key == classObject.ProcessClassName).
+                                      Any(item => item.Value.Contains(methodName)))
+        {
+          return true;
+        }
       }
 
       return false;
