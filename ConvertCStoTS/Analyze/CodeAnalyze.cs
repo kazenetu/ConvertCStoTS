@@ -84,7 +84,8 @@ namespace ConvertCStoTS.Analyze
             if (cds.Parent is ClassDeclarationSyntax parentClass)
             {
               var renameClassName = parentClass.Identifier + "_" + cds.Identifier.ValueText;
-              classObject.RenameClasseNames.Add(cds.Identifier.ValueText, renameClassName);
+              var csClassName = parentClass.Identifier + "." + cds.Identifier.ValueText;
+              classObject.RenameClasseNames.Add(csClassName, renameClassName);
             }
           }
         }
