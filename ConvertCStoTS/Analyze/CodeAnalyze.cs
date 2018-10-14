@@ -329,8 +329,22 @@ namespace ConvertCStoTS.Analyze
         defineAssignmentAssertion = "!";
       }
 
+      // コメント出力
       result.Append(GetComments(item.GetLeadingTrivia().ToString()));
-      result.Append($"{GetSpace(index)}{GetModifierText(item.Modifiers)} {item.Identifier.ValueText}{defineAssignmentAssertion}: {classObject.GetTypeScriptType(item.Type)}");
+
+      // キーワード設定
+      var modifiers = new List<string>();
+      modifiers.Add(GetModifierText(item.Modifiers));
+      foreach (var modifer in item.Modifiers)
+      {
+        switch (modifer.Text)
+        {
+          case "static":
+            modifiers.Add("static");
+            break;
+        }
+      }
+      result.Append($"{GetSpace(index)}{string.Join(' ', modifiers)} {item.Identifier.ValueText}{defineAssignmentAssertion}: {classObject.GetTypeScriptType(item.Type)}");
 
       // 初期化処理を設定
       result.Append(ReplaceMethodName(createInitializeValue));
