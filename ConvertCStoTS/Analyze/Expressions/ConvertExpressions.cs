@@ -161,6 +161,33 @@ namespace ConvertCStoTS.Analyze.Expressions
           return "this." + result;
         }
       }
+
+      // 内部クラスのクラス名変更
+      if (condition.Expression is IdentifierNameSyntax identifier)
+      {
+        var identifierName = identifier.Identifier.ValueText;
+
+        // ローカルフィールドの場合はそのまま返す
+        if (localDeclarationStatements.Contains(identifierName))
+        {
+          return result;
+        }
+
+        var classObject = ClassObject.GetInstance();
+
+        // クラスメンバの場合はそのまま返す
+        if (classObject.StaticMembers.ContainsKey(identifierName))
+        {
+          return result;
+        }
+
+        // 別クラスの場合はクラス名置換えを実施
+        if (classObject.RenameClasseNames.Keys.Contains(identifierName))
+        {
+          result = result.Replace($"{identifierName}.", $"{classObject.RenameClasseNames[identifierName]}.", StringComparison.CurrentCulture);
+        }
+      }
+
       return result;
     }
 
@@ -172,11 +199,22 @@ namespace ConvertCStoTS.Analyze.Expressions
     /// <returns>TypeScriptに変換した文字列</returns>
     private string ConvertExpression(IdentifierNameSyntax condition, List<string> localDeclarationStatements)
     {
+      var identifierName = condition.ToString();
+
+      // インスタンスメンバの場合はthisを付けて返す
       if (!IsLocalDeclarationStatement(condition, localDeclarationStatements))
       {
-        return "this." + condition.ToString();
+        return "this." + identifierName;
       }
-      return condition.ToString();
+
+      // クラスメンバの場合はクラス名を付ける
+      var className = ClassObject.GetInstance().ProcessClassName;
+      if (ClassObject.GetInstance().StaticMembers.Where(item=> item.Key == className).Any(item => item.Value.Contains(identifierName)))
+      {
+        identifierName = $"{ className}.{identifierName}";
+      }
+
+      return identifierName;
     }
 
     /// <summary>
@@ -303,7 +341,46 @@ namespace ConvertCStoTS.Analyze.Expressions
         return true;
       }
 
-      return localDeclarationStatements.Contains(localDeclarationStatement);
+      // ローカルフィールド確認
+      if (localDeclarationStatements.Contains(localDeclarationStatement))
+      {
+        return true;
+      }
+
+      var classObject = ClassObject.GetInstance();
+
+      // インスタンスメンバ確認
+      if (classObject.InstanceMembers.Any(item => item == localDeclarationStatement))
+      {
+        return false;
+      }
+
+      // 自クラスメンバの確認
+      if (classObject.StaticMembers.Where(item => item.Key == classObject.ProcessClassName).
+                                    Any(item => item.Value.Contains(localDeclarationStatement)))
+      {
+        return true;
+      }
+      
+      // 他のクラスメンバ確認
+      if (es is MemberAccessExpressionSyntax)
+      {
+        // 内部クラスの名称置換え
+        var className = localDeclarationStatement;
+        if (classObject.RenameClasseNames.Keys.Contains(className))
+        {
+          className = classObject.RenameClasseNames[className];
+        }
+
+        // 未解決リストにない場合は追加
+        if (!classObject.UnknownReferences.Keys.Contains(className))
+        {
+          classObject.UnknownReferences.Add(className, null);
+        }
+        return true;
+      }
+
+      return false;
     }
 
     /// <summary>
