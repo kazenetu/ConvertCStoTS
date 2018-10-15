@@ -187,7 +187,7 @@ namespace ConvertCStoTS.Analyze.Expressions
           if (classObject.RenameClasseNames.Keys.Contains(className))
           {
             result = classObject.RenameClasseNames[className];
-            if (className.StartsWith($"{classObject.ProcessClassName}.",StringComparison.CurrentCulture))
+            if (className.StartsWith($"{classObject.ProcessClassName}.",StringComparison.CurrentCulture) && condition.Name.ToString() != identifierName && classObject.ProcessClassName!= identifierName)
             {
               result += $".{condition.Name}";
             }
@@ -382,10 +382,14 @@ namespace ConvertCStoTS.Analyze.Expressions
       }
 
       // 他のクラスメンバ確認
-      if (es is MemberAccessExpressionSyntax)
+      var otherClassSyntax = es as MemberAccessExpressionSyntax;
+      if(otherClassSyntax ==null && es is InvocationExpressionSyntax){
+        otherClassSyntax = (es as InvocationExpressionSyntax).Expression as MemberAccessExpressionSyntax;
+      }
+      if (otherClassSyntax != null)
       {
         // 内部クラスの名称置換え
-        var tempClassName = (es as MemberAccessExpressionSyntax)?.Expression.ToString();
+        var tempClassName = otherClassSyntax.Expression.ToString();
         var otherClassNames = new List<string>()
         {
           es.ToString(),
