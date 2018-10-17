@@ -259,7 +259,7 @@ namespace ConvertCStoTS.Analyze.Expressions
     }
 
     /// <summary>
-    /// 単項式構文のPostfixUnaryExpressionSyntax
+    /// 単項式構文のTypeScript変換
     /// </summary>
     /// <param name="condition">ExpressionSyntaxインスタンス</param>
     /// <param name="localDeclarationStatements">ローカル変数リスト</param>
