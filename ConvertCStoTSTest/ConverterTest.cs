@@ -28,6 +28,28 @@ namespace ConvertCStoTSTest
       Assert.True(expectedResult == outputFlieResult, "変換エラー");
     }
 
+    [Fact]
+    public void TestMethodTest()
+    {
+      var srcPath = "../../../../TargetSources";
+      var destPath = "./dist";
+      var isOutputMethod = true;
+      var filePath = "testmethod";
+      var otherReferencesPath = "base";
+
+      // TypeScriptファイル出力
+      var converter = new Converter(srcPath, destPath, isOutputMethod);
+      converter.ConvertTS($"{filePath}.cs", otherReferencesPath);
+
+      // ファイル読み込み
+      var expectedFilePath = "./ExpectedTypeScriptFiles/TestMethod.ts";
+      var expectedResult = ReadFile(expectedFilePath);
+      var outputFlieResult = ReadFile($"{destPath}/{filePath}.ts");
+
+      // ファイル比較
+      Assert.True(expectedResult == outputFlieResult, "変換エラー");
+    }
+
     /// <summary>
     /// ファイル読み込み
     /// </summary>
