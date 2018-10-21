@@ -20,6 +20,9 @@
     <None Update="ExpectedTypeScriptFiles\TestLogicFull.ts">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="ExpectedTypeScriptFiles\TestMethod.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
