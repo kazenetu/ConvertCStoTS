@@ -386,7 +386,7 @@ namespace ConvertCStoTS.Analyze.Expressions
       if(otherClassSyntax ==null && es is InvocationExpressionSyntax){
         otherClassSyntax = (es as InvocationExpressionSyntax).Expression as MemberAccessExpressionSyntax;
       }
-      if (otherClassSyntax != null)
+      if (otherClassSyntax != null && !(otherClassSyntax.Expression is ThisExpressionSyntax || otherClassSyntax.Expression is BaseExpressionSyntax))
       {
         // 内部クラスの名称置換え
         var tempClassName = otherClassSyntax.Expression.ToString();
