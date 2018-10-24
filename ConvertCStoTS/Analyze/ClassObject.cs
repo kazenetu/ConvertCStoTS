@@ -194,9 +194,19 @@ namespace ConvertCStoTS.Analyze
               result = "Date";
               break;
             default:
-              if (RenameClasseNames.ContainsKey(result))
+              // 置換えクラス名の確認
+              var renameClassName = result;
+              var renameClassNames = new List<string>()
               {
-                return RenameClasseNames[result];
+                result,
+                $"{ProcessClassName}.{result}"
+              };
+              foreach(var className in renameClassNames)
+              {
+                if (RenameClasseNames.ContainsKey(className))
+                {
+                  return RenameClasseNames[className];
+                }
               }
 
               result = result.Replace(".", "_", StringComparison.CurrentCulture);
