@@ -218,16 +218,17 @@ namespace ConvertCStoTS.Analyze
           }
           break;
         default:
-          if (RenameClasseNames.ContainsKey(result))
-          {
-            return RenameClasseNames[result];
-          }
-
           result = result.Replace(".", "_", StringComparison.CurrentCulture);
           if (!UnknownReferences.ContainsKey(result))
           {
             UnknownReferences.Add(result, null);
           }
+
+          if (RenameClasseNames.ContainsKey(result))
+          {
+            return RenameClasseNames[result];
+          }
+
           break;
       }
       return result;
