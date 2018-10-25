@@ -36,7 +36,9 @@ export class PropertyInfo {
 export class ResponseBase<T>
 {
   public ResponseData: null | T;
+  public Results:null | Results;
   constructor(result: null | Results, errorMessage: null | string, responseData: null | T) {
+    this.Results = result;
     this.ResponseData = responseData;
   }
 }
