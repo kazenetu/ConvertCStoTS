@@ -14,10 +14,21 @@
         <label for="after">値変更後</label>
         <input type="text" id="after" readonly />
     </div>
+    <div>
+        <label for="json">json文字列</label>
+        <input type="text" id="json" readonly size="100" />
+    </div>
+    <div>
+        <label for="jsonOtherClass">json文字列(SearchResponseクラス)</label>
+        <input type="text" id="jsonOtherClass" readonly size="100" />
+    </div>
 
 
     <script type="module">
         import { TestLogic } from './testlogic.js';
+        import { CustomTOrder } from './customtables/customtorder.js';
+        import { SearchResponse,SearchResponse_SearchResponseParam } from './response/orderlist/searchresponse.js';
+        import { Results } from './base.js';
         let testLogic = new TestLogic();
 
         document.getElementById('before').setAttribute('value', testLogic.propInt);
@@ -25,6 +36,19 @@
         testLogic.Method();
 
         document.getElementById('after').setAttribute('value', testLogic.propInt);
+
+        document.getElementById('json').setAttribute('value', JSON.stringify(testLogic));
+
+        let param = new SearchResponse_SearchResponseParam();
+        param.test.Add(0,1);
+        param.test.Add(3,4);
+
+        param.test2.Add(10,["a","b"]);
+        param.test2.Add(5,["D"]);
+
+        let target = new SearchResponse(Results.OK,null,param);
+
+        document.getElementById('jsonOtherClass').setAttribute('value', JSON.stringify(target));
     </script>
 </body>
 
