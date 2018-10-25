@@ -4,7 +4,7 @@
     "http-server": "*"
   },
   "scripts": {
-    "build": "build.js",
+    "build": "node build.js",
     "serv": "http-server ./dist -U",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
