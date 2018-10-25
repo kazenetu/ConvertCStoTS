@@ -90,4 +90,10 @@ export class List<V>
         // trueを返す
         return true;
     }
+    toJSON() {
+        return this.instance;
+    }
+    fromJSON(value:any) {
+        this.instance = new Array(value);
+    }
 }

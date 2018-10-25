@@ -100,4 +100,15 @@ export class Dictionary<K, V>
         // 削除結果を返す
         return this.instance.delete(key);
     }
+    toJSON(){
+        let result = new Array();
+        this.instance.forEach((value,key)=>{
+            result.push([key,value]);
+        });
+
+        return result;
+    }
+    fromJSON(value:any){
+        this.instance = new Map(value);
+    }
 }
