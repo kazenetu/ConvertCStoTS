@@ -48,7 +48,10 @@
 
         let target = new SearchResponse(Results.OK,null,param);
 
-        document.getElementById('jsonOtherClass').setAttribute('value', JSON.stringify(target));
+        let jsonText = JSON.stringify(target);
+        document.getElementById('jsonOtherClass').setAttribute('value', jsonText);
+
+        console.log(JSON.parse(jsonText));
     </script>
 </body>
 
