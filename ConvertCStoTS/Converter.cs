@@ -197,13 +197,20 @@ namespace ConvertCStoTS
       // 解析前処理
       codeAnalyze.PreAnalyze(csFiles);
 
+      // HACK 解析用Compilationインスタンス設定
+      SymbolManage.SetCompilation(csFiles);
+
       // 出力モードに変更
       ClassObject.GetInstance().IsPreAnalyze = false;
 
       // C#ファイル情報からTypeScript変換を実施
       foreach (var csFileInfo in csFiles)
       {
-        var tsInfo = codeAnalyze.Analyze(csFileInfo.SourceCode);
+        // HACK Model設定
+        SymbolManage.SetSemanticModel(csFileInfo);
+
+        var tsInfo = codeAnalyze.Analyze(SymbolManage.GetSyntaxTree(csFileInfo.SourceCode));
+        // var tsInfo = codeAnalyze.Analyze(csFileInfo.SourceCode);
         tsInfo.ImportPath = csFileInfo.ImportPath;
         analyzeResults.Add(tsInfo);
       }

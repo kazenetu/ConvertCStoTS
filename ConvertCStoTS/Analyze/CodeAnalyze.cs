@@ -56,14 +56,23 @@ namespace ConvertCStoTS.Analyze
     /// <returns>TypeScript情報</returns>
     public AnalyzeResult Analyze(string targetCode)
     {
+      // C#解析
+      var tree = CSharpSyntaxTree.ParseText(targetCode) as CSharpSyntaxTree;
+      return Analyze(tree);
+    }
+
+    /// <summary>
+    /// 解析処理
+    /// </summary>
+    /// <param name="targetCode">C#ソース</param>
+    /// <returns>TypeScript情報</returns>
+    public AnalyzeResult Analyze(SyntaxTree tree)
+    {
       var classObject = ClassObject.GetInstance();
       var analyzeResult = new AnalyzeResult();
 
       // クリア
       classObject.Clear();
-
-      // C#解析
-      var tree = CSharpSyntaxTree.ParseText(targetCode) as CSharpSyntaxTree;
 
       // 構文エラーチェック
       foreach (var item in tree.GetDiagnostics())
