@@ -71,3 +71,5 @@ C#のクラスをTypeScriptのクラスに変換する
 - [X] 内部処理：ローカル関数のTS変換
 - [X] 内部処理：定数フィールドのTS変換
 - [X] クラスメンバ(static)のTS変換
+- [ ] C#ファイルの解析とTypeScriptへの変換の切り分け  
+      [再設計案](BaseDesign.md)
