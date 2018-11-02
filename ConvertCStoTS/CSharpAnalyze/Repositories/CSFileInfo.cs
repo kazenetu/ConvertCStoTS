@@ -39,9 +39,9 @@ namespace CSharpAnalyze.Repositories
     /// <summary>
     /// C#ファイルデータリストを取得する
     /// </summary>
-    /// <param name="srcPath">ルートパス</param>
+    /// <param name="rootPath">ルートパス</param>
     /// <returns>C#ファイルデータのリスト</returns>
-    public static List<CSFileInfo> GetCSFileInfoList(string srcPath)
+    public static List<CSFileInfo> GetCSFileInfoList(string rootPath)
     {
       // 除外フォルダ
       var exclusionKeywords = new List<string>() {
@@ -52,7 +52,7 @@ namespace CSharpAnalyze.Repositories
       var result = new List<CSFileInfo>();
 
       // ディレクトリ内のファイルリストを作成
-      var csFilePaths = Directory.GetFiles(srcPath, "*.cs", SearchOption.AllDirectories);
+      var csFilePaths = Directory.GetFiles(rootPath, "*.cs", SearchOption.AllDirectories);
 
       // 対象ファイルリストを作成
       var targetFilePaths = csFilePaths.Where(filePath => !exclusionKeywords.Any(keyword => filePath.Contains(keyword))).ToList();
@@ -61,7 +61,7 @@ namespace CSharpAnalyze.Repositories
       foreach (var filePath in targetFilePaths)
       {
         // 相対パスを作成
-        var relativePath = Path.GetRelativePath(srcPath, filePath);
+        var relativePath = Path.GetRelativePath(rootPath, filePath);
         relativePath = relativePath.Replace(Path.DirectorySeparatorChar, '/');
 
         // C＃ファイル読み込み
