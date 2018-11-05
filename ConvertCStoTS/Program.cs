@@ -77,6 +77,9 @@ namespace ConvertCStoTS
       var converter = new Converter(srcPath, destPath, isOutputMethod);
       try
       {
+        // HACK 設計し直し版のテスト実行
+        var csAnalyze = new CSharpAnalyze.Analyze(srcPath);
+
         if (string.IsNullOrEmpty(filePath))
         {
           converter.ConvertAll(otherReferencesPath);
