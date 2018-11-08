@@ -28,7 +28,7 @@ namespace CSharpAnalyze.Repositories
       switch (nodeType)
       {
         case SyntaxKind.ClassDeclaration:
-          Console.WriteLine(target.GetSymbolInfo(node));
+          Console.WriteLine(target.GetDeclaredSymbol(node));
           foreach(var childSyntax in node.ChildNodes())
           {
             GetMember(childSyntax, target);
