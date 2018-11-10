@@ -1,6 +1,7 @@
-﻿using System;
+﻿using CSharpAnalyze.Infrastructure;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Linq;
 
 namespace CSharpAnalyze.DomainModel
 {
@@ -28,6 +29,29 @@ namespace CSharpAnalyze.DomainModel
     /// ソースファイル
     /// </summary>
     public string SourceCode { get; }
+
+    #endregion
+
+    #region クラスメソッド
+
+    /// <summary>
+    /// C#ファイルリストを取得
+    /// </summary>
+    /// <param name="rootPath">ルートパス</param>
+    /// <returns></returns>
+    /// <returns>C#ファイルデータのリスト</returns>
+    public static List<CSFile> GetCSFileList(string rootPath, ICSFileRepository fileRepository)
+    {
+      // 除外フォルダ
+      var exclusionKeywords = new List<string>() {
+        $"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}",
+        $"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"
+      };
+
+      return fileRepository.GetCSFileList(rootPath, exclusionKeywords).
+              Select(fileData => new CSFile(fileData.relativePath, fileData.source)).
+              ToList();
+    }
 
     #endregion
   }
