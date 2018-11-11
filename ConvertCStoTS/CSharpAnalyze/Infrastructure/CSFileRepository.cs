@@ -1,4 +1,4 @@
-﻿using CSharpAnalyze.DomainModel;
+﻿using CSharpAnalyze.Domain.Model;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
