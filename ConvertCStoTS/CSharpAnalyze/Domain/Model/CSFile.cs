@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace CSharpAnalyze.DomainModel
+namespace CSharpAnalyze.Domain.Model
 {
   public class CSFile
   {
