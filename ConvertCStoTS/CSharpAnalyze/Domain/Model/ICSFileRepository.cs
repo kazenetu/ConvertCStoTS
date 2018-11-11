@@ -1,7 +1,6 @@
-﻿using CSharpAnalyze.DomainModel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace CSharpAnalyze.Infrastructure
+namespace CSharpAnalyze.Domain.Model
 {
   /// <summary>
   /// C#ファイルデータ読み込み
