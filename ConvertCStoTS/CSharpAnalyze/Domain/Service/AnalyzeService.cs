@@ -57,7 +57,7 @@ namespace CSharpAnalyze.Domain.Service
       // 解析処理収集
       foreach (var model in models)
       {
-        // HACK まずとはTestLogicだけ確認
+        // HACK まずTestLogicだけ確認
         if (model.SyntaxTree.FilePath.Contains("TestLogic"))
         {
           result.Add(new SemanticModelAnlayze(model));
