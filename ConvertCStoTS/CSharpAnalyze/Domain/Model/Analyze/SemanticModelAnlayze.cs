@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace CSharpAnalyze.Domain.Model
+namespace CSharpAnalyze.Domain.Model.Analyze
 {
   /// <summary>
   /// セマンティックモデル解析クラス(実装中)

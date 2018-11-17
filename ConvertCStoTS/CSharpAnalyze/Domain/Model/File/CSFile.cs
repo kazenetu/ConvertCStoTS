@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace CSharpAnalyze.Domain.Model
+namespace CSharpAnalyze.Domain.Model.File
 {
   public class CSFile
   {

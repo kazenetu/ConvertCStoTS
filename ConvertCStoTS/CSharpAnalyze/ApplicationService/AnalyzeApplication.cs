@@ -1,4 +1,5 @@
 ﻿using CSharpAnalyze.Domain.Model;
+using CSharpAnalyze.Domain.Model.Analyze;
 using CSharpAnalyze.Domain.Service;
 using CSharpAnalyze.Infrastructure;
 using System.Collections.Generic;

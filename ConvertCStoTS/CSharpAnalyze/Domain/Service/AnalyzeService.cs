@@ -1,12 +1,10 @@
-﻿using CSharpAnalyze.Domain.Model;
-using CSharpAnalyze.Infrastructure;
+﻿using CSharpAnalyze.Domain.Model.Analyze;
+using CSharpAnalyze.Domain.Model.File;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace CSharpAnalyze.Domain.Service
 {
