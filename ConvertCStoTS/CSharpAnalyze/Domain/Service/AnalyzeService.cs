@@ -41,9 +41,9 @@ namespace CSharpAnalyze.Domain.Service
     /// 解析結果を返す
     /// </summary>
     /// <returns>解析結果モデルリスト</returns>
-    public List<SemanticModelAnlayze> GetAnalyzeResult()
+    public List<SemanticModelAnalyze> GetAnalyzeResult()
     {
-      var result = new List<SemanticModelAnlayze>();
+      var result = new List<SemanticModelAnalyze>();
 
       // セマンティックモデルのリストを作成する
       var models = CreateModels();
@@ -58,7 +58,7 @@ namespace CSharpAnalyze.Domain.Service
         // HACK まずTestLogicだけ確認
         if (model.SyntaxTree.FilePath.Contains("TestLogic"))
         {
-          result.Add(new SemanticModelAnlayze(model));
+          result.Add(new SemanticModelAnalyze(model));
           break;
         }
       }

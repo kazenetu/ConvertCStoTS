@@ -11,9 +11,9 @@ namespace CSharpAnalyze.Domain.Model.Analyze
   /// <summary>
   /// セマンティックモデル解析クラス(実装中)
   /// </summary>
-  public class SemanticModelAnlayze
+  public class SemanticModelAnalyze
   {
-    public SemanticModelAnlayze(SemanticModel target)
+    public SemanticModelAnalyze(SemanticModel target)
     {
       var rootNode = target.SyntaxTree.GetRoot().ChildNodes().Where(syntax=> syntax.IsKind(SyntaxKind.NamespaceDeclaration)).First();
       foreach (var item in (rootNode as NamespaceDeclarationSyntax).Members)

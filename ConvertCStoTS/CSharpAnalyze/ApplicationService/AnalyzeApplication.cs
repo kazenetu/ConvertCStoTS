@@ -13,7 +13,7 @@ namespace CSharpAnalyze.ApplicationService
   /// <remarks>リクエストとレスポンスの変換アダプタなどを行う</remarks>
   public class AnalyzeApplication
   {
-    public List<SemanticModelAnlayze> GetAnalyzeResult(string rootPath)
+    public List<SemanticModelAnalyze> GetAnalyzeResult(string rootPath)
     {
       var fileRepository = new CSFileRepository();
       var analizeService = new AnalyzeService(rootPath, fileRepository);
