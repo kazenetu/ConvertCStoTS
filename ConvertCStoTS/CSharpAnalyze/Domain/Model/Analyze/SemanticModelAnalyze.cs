@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items;
+using ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze;
 
 namespace CSharpAnalyze.Domain.Model.Analyze
 {
@@ -28,14 +30,16 @@ namespace CSharpAnalyze.Domain.Model.Analyze
       switch (nodeType)
       {
         case SyntaxKind.ClassDeclaration:
-          Console.WriteLine(target.GetDeclaredSymbol(node));
+          var item = ItemFactory.Create(node, target);
+          Console.WriteLine(item.ToString());
+
           foreach(var childSyntax in node.ChildNodes())
           {
             GetMember(childSyntax, target);
           }
           break;
         default:
-          Console.WriteLine(node);
+          //Console.WriteLine(node);
           break;
       }
 
