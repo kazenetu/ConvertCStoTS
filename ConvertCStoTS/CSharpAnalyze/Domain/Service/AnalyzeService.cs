@@ -55,11 +55,10 @@ namespace CSharpAnalyze.Domain.Service
       // 解析処理収集
       foreach (var model in models)
       {
-        // HACK まずTestLogicだけ確認
-        if (model.SyntaxTree.FilePath.Contains("TestLogic"))
+        // HACK まずTestLogic・SearchResponseだけ確認
+        if (model.SyntaxTree.FilePath.Contains("TestLogic") || model.SyntaxTree.FilePath.Contains("SearchResponse"))
         {
           result.Add(new SemanticModelAnalyze(model));
-          break;
         }
       }
 
