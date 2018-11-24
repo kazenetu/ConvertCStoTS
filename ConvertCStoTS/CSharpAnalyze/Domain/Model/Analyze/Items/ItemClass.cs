@@ -93,7 +93,7 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     /// </summary>
     /// <param name="index">前スペース数</param>
     /// <returns>文字列</returns>
-    public string ToString(int index)
+    public string ToString(int index = 0)
     {
       var result = new StringBuilder();
       var indexSpace = string.Concat(Enumerable.Repeat("  ", index));
