@@ -39,9 +39,9 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     public List<string> Comments  { get; } = new List<string>();
 
     /// <summary>
-    /// スーパークラス
+    /// スーパークラスリスト
     /// </summary>
-    public string SuperClass { get; } = string.Empty;
+    public List<Expression> SuperClass { get; } = new List<Expression>();
 
     /// <summary>
     /// コンストラクタ
@@ -69,34 +69,59 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
       // スーパークラス設定
       if (node.BaseList != null)
       {
-        SuperClass = node.BaseList.Types[0].ToString();
+        var displayParts = declaredClass.BaseType.ToDisplayParts(SymbolDisplayFormat.MinimallyQualifiedFormat);
+        foreach(var part in displayParts)
+        {
+          var name = $"{part}";
+          var type = part.Kind.ToString();
+          if(part.Symbol != null)
+          {
+            type = part.Symbol.GetType().Name;
+            if (!string.IsNullOrEmpty(part.Symbol.ContainingNamespace.Name))
+            {
+              name = $"{part.Symbol}".Replace($"{part.Symbol.ContainingNamespace}.", string.Empty, StringComparison.CurrentCulture);
+            }
+          }
+
+          SuperClass.Add(new Expression(name, type));
+        }
       }
     }
 
     /// <summary>
     /// 文字列取得
     /// </summary>
+    /// <param name="index">前スペース数</param>
     /// <returns>文字列</returns>
-    public override string ToString()
+    public string ToString(int index)
     {
       var result = new StringBuilder();
+      var indexSpace = string.Concat(Enumerable.Repeat("  ", index));
 
       foreach (var comment in Comments)
       {
+        result.Append(indexSpace);
         result.AppendLine($"{comment}");
       }
 
       foreach (var modifier in Modifiers)
       {
+        result.Append(indexSpace);
         result.Append($"{modifier} ");
       }
       result.Append($"class {Name}");
-      if (!string.IsNullOrEmpty(SuperClass))
+      if (SuperClass.Any())
       {
-        result.Append($" : {SuperClass}");
+        result.Append(" : ");
+        SuperClass.ForEach(item => result.Append(item.Name));
       }
       result.AppendLine();
+      result.Append(indexSpace);
       result.AppendLine("{");
+
+      Members.ForEach(member => result.AppendLine(member.ToString(index + 1)));
+
+      result.Append(indexSpace);
       result.AppendLine("}");
 
       return result.ToString();
