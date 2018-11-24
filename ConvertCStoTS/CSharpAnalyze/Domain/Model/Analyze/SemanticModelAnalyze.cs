@@ -17,11 +17,18 @@ namespace CSharpAnalyze.Domain.Model.Analyze
   {
     public SemanticModelAnalyze(SemanticModel target)
     {
+      var analyzeResults = new List<ISemanticModelAnalyzeItem>();
+
       var rootNode = target.SyntaxTree.GetRoot().ChildNodes().Where(syntax => syntax.IsKind(SyntaxKind.NamespaceDeclaration)).First();
       foreach (var item in (rootNode as NamespaceDeclarationSyntax).Members)
       {
-        GetMember(item, target);
+        var analyzeItem = GetMember(item, target);
+
+        analyzeResults.Add(analyzeItem);
       }
+
+      Console.WriteLine($"[{rootNode.SyntaxTree.FilePath}]");
+      analyzeResults.ForEach(item => Console.WriteLine(item.ToString()));
     }
 
     private ISemanticModelAnalyzeItem GetMember(SyntaxNode node, SemanticModel target)
@@ -32,7 +39,6 @@ namespace CSharpAnalyze.Domain.Model.Analyze
       {
         case SyntaxKind.ClassDeclaration:
           result = ItemFactory.Create(node, target);
-          Console.WriteLine(result.ToString());
 
           foreach (var childSyntax in node.ChildNodes())
           {
