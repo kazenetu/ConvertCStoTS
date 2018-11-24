@@ -45,7 +45,7 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
   /// </summary>
   public enum ItemTypes
   {
-    NameSpace,
+    Root,
     Class,
     Field,
     Property,
