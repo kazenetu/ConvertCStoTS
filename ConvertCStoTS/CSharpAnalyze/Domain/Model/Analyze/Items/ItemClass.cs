@@ -11,7 +11,7 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
   /// <summary>
   /// アイテム：クラス
   /// </summary>
-  public class ItemClass: ISemanticModelAnalyzeItem
+  public class ItemClass : ISemanticModelAnalyzeItem
   {
     /// <summary>
     /// 子メンバ
@@ -36,7 +36,7 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     /// <summary>
     /// コメント
     /// </summary>
-    public List<string> Comments  { get; } = new List<string>();
+    public List<string> Comments { get; } = new List<string>();
 
     /// <summary>
     /// スーパークラスリスト
@@ -58,7 +58,7 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
       Name = declaredClass.Name;
 
       // 識別子リスト設定
-      Modifiers.AddRange(node.Modifiers.Select(item=>item.Text));
+      Modifiers.AddRange(node.Modifiers.Select(item => item.Text));
 
       // コメント設定
       var targerComments = node.GetLeadingTrivia().ToString().Split(Environment.NewLine).
@@ -70,11 +70,11 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
       if (node.BaseList != null)
       {
         var displayParts = declaredClass.BaseType.ToDisplayParts(SymbolDisplayFormat.MinimallyQualifiedFormat);
-        foreach(var part in displayParts)
+        foreach (var part in displayParts)
         {
           var name = $"{part}";
           var type = part.Kind.ToString();
-          if(part.Symbol != null)
+          if (part.Symbol != null)
           {
             type = part.Symbol.GetType().Name;
             if (!string.IsNullOrEmpty(part.Symbol.ContainingNamespace.Name))
