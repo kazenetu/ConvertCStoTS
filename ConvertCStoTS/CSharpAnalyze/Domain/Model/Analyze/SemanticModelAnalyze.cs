@@ -17,10 +17,10 @@ namespace CSharpAnalyze.Domain.Model.Analyze
   {
     public SemanticModelAnalyze(SemanticModel target)
     {
-      var rootNode = target.SyntaxTree.GetRoot().ChildNodes().Where(syntax=> syntax.IsKind(SyntaxKind.NamespaceDeclaration)).First();
+      var rootNode = target.SyntaxTree.GetRoot().ChildNodes().Where(syntax => syntax.IsKind(SyntaxKind.NamespaceDeclaration)).First();
       foreach (var item in (rootNode as NamespaceDeclarationSyntax).Members)
       {
-        GetMember(item,target);
+        GetMember(item, target);
       }
     }
 
@@ -34,10 +34,10 @@ namespace CSharpAnalyze.Domain.Model.Analyze
           result = ItemFactory.Create(node, target);
           Console.WriteLine(result.ToString());
 
-          foreach(var childSyntax in node.ChildNodes())
+          foreach (var childSyntax in node.ChildNodes())
           {
             var memberResult = GetMember(childSyntax, target);
-            if(memberResult != null)
+            if (memberResult != null)
             {
               result.Members.Add(memberResult);
             }
