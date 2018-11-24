@@ -35,8 +35,9 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     /// <summary>
     /// 文字列取得
     /// </summary>
+    /// <param name="index">前スペース数</param>
     /// <returns>文字列</returns>
-    string ToString();
+    string ToString(int index = 0);
   }
 
   /// <summary>
