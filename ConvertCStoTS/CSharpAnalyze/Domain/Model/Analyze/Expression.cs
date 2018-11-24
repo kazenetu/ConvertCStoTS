@@ -13,19 +13,19 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze
     public string Name { get; }
 
     /// <summary>
-    /// Type
+    /// 変数型名
     /// </summary>
-    public Type ExpressionType { get; }
+    public string TypeName { get; }
 
     /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="name">名前</param>
-    /// <param name="expressionType">Type</param>
-    public Expression(string name, Type expressionType)
+    /// <param name="typeName">変数型名</param>
+    public Expression(string name, string typeName)
     {
       Name = name;
-      ExpressionType = expressionType;
+      TypeName = typeName;
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return Name == other.Name && ExpressionType.Name == other.ExpressionType.Name;
+      return Name == other.Name && TypeName == other.TypeName;
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze
     /// <returns>ハッシュ値</returns>
     public override int GetHashCode()
     {
-      return Name.GetHashCode(StringComparison.CurrentCulture) + ExpressionType.GetHashCode();
+      return Name.GetHashCode(StringComparison.CurrentCulture) + TypeName.GetHashCode(StringComparison.CurrentCulture);
     }
   }
 }
