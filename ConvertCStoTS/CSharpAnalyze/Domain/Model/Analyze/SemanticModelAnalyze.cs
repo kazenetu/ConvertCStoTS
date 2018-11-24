@@ -24,25 +24,30 @@ namespace CSharpAnalyze.Domain.Model.Analyze
       }
     }
 
-    private void GetMember(SyntaxNode node, SemanticModel target)
+    private ISemanticModelAnalyzeItem GetMember(SyntaxNode node, SemanticModel target)
     {
+      ISemanticModelAnalyzeItem result = null;
       var nodeType = node.Kind();
       switch (nodeType)
       {
         case SyntaxKind.ClassDeclaration:
-          var item = ItemFactory.Create(node, target);
-          Console.WriteLine(item.ToString());
+          result = ItemFactory.Create(node, target);
+          Console.WriteLine(result.ToString());
 
           foreach(var childSyntax in node.ChildNodes())
           {
-            GetMember(childSyntax, target);
+            var memberResult = GetMember(childSyntax, target);
+            if(memberResult != null)
+            {
+              result.Members.Add(memberResult);
+            }
           }
           break;
         default:
           //Console.WriteLine(node);
           break;
       }
-
+      return result;
     }
   }
 }
