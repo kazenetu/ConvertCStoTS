@@ -17,18 +17,20 @@ namespace CSharpAnalyze.Domain.Model.Analyze
   {
     public SemanticModelAnalyze(SemanticModel target)
     {
-      var analyzeResults = new List<ISemanticModelAnalyzeItem>();
+      var analyzeResult = new ItemRoot();
 
       var rootNode = target.SyntaxTree.GetRoot().ChildNodes().Where(syntax => syntax.IsKind(SyntaxKind.NamespaceDeclaration)).First();
       foreach (var item in (rootNode as NamespaceDeclarationSyntax).Members)
       {
-        var analyzeItem = GetMember(item, target);
-
-        analyzeResults.Add(analyzeItem);
+        var memberResult = GetMember(item, target);
+        if (memberResult != null)
+        {
+          analyzeResult.Members.Add(memberResult);
+        }
       }
 
       Console.WriteLine($"[{rootNode.SyntaxTree.FilePath}]");
-      analyzeResults.ForEach(item => Console.WriteLine(item.ToString()));
+      Console.WriteLine(analyzeResult.ToString());
     }
 
     private ISemanticModelAnalyzeItem GetMember(SyntaxNode node, SemanticModel target)
