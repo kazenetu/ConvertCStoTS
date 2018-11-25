@@ -1,12 +1,11 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
+﻿using ConvertCStoTS.CSharpAnalyze.Domain.Event;
+using ConvertCStoTS.CSharpAnalyze.Domain.Event.Analyze;
+using ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze;
+using ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items;
-using ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze;
+using System.Linq;
 
 namespace CSharpAnalyze.Domain.Model.Analyze
 {
@@ -29,8 +28,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze
         }
       }
 
-      Console.WriteLine($"[{rootNode.SyntaxTree.FilePath}]");
-      Console.WriteLine(analyzeResult.ToString());
+      // イベント発行：解析完了
+      EventContainer.Raise(new Analyzed($"[{rootNode.SyntaxTree.FilePath}]", analyzeResult));
     }
 
     private ISemanticModelAnalyzeItem GetMember(SyntaxNode node, SemanticModel target)
