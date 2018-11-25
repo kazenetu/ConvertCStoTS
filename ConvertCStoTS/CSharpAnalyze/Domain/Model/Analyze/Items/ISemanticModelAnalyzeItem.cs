@@ -49,6 +49,7 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     Class,
     Field,
     Property,
+    Constructor,
     Method,
     MethodStatement
   }
