@@ -1,7 +1,10 @@
-﻿using CSharpAnalyze.Domain.Model;
+﻿using ConvertCStoTS.CSharpAnalyze.Domain.Event;
+using ConvertCStoTS.CSharpAnalyze.Domain.Event.Analyze;
+using CSharpAnalyze.Domain.Model;
 using CSharpAnalyze.Domain.Model.Analyze;
 using CSharpAnalyze.Domain.Service;
 using CSharpAnalyze.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +20,13 @@ namespace CSharpAnalyze.ApplicationService
     {
       var fileRepository = new CSFileRepository();
       var analizeService = new AnalyzeService(rootPath, fileRepository);
+
+      // HACK Domainイベントハンドラ設定
+      EventContainer.Register<Analyzed>((ev) =>
+      {
+        Console.WriteLine($"[{ev.FilePath}]");
+        Console.WriteLine(ev.AnalyzeResult.ToString());
+      });
 
       return analizeService.GetAnalyzeResult();
     }
