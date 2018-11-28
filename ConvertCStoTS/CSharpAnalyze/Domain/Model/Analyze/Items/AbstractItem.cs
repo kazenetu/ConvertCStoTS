@@ -47,8 +47,10 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
       }
 
       var targetNodeFilePath = targetNode.SyntaxTree.FilePath;
-
-      foreach (var referenceFilePath in targetSymbol.DeclaringSyntaxReferences.Select(item => item.SyntaxTree.FilePath != targetNodeFilePath))
+      var referenceFilePaths = targetSymbol.DeclaringSyntaxReferences.
+                                Where(item => item.SyntaxTree.FilePath != targetNodeFilePath).
+                                Select(item => item.SyntaxTree.FilePath);
+      foreach (var referenceFilePath in referenceFilePaths)
       {
         // TODO ファイルパスありでイベント送信
       }
