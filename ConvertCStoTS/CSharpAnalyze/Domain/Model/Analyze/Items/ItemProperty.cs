@@ -130,7 +130,49 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     /// <returns>文字列</returns>
     public string ToString(int index = 0)
     {
-      return string.Empty;
+      var result = new StringBuilder();
+      var indexSpace = string.Concat(Enumerable.Repeat("  ", index));
+
+      foreach (var comment in Comments)
+      {
+        result.Append(indexSpace);
+        result.AppendLine($"{comment}");
+      }
+
+      foreach (var modifier in Modifiers)
+      {
+        result.Append(indexSpace);
+        result.Append($"{modifier} ");
+      }
+
+      // プロパティの型
+      PropertyTypes.ForEach(type => result.Append(type.Name));
+
+      // プロパティ名
+      result.Append($" {Name}");
+
+      // アクセサ
+      result.Append(" {");
+      AccessorList.ForEach(accessor => result.Append($" {accessor};"));
+      result.Append(" }");
+
+      if (DefaultValues.Any())
+      {
+        // デフォルト値
+        result.Append(" = ");
+
+        foreach(var value in DefaultValues)
+        {
+          result.Append($"{value.Name}");
+          if (value.Name == "new")
+          {
+            result.Append(" ");
+          }
+        }
+        result.Append(";");
+      }
+
+      return result.ToString();
     }
   }
 }
