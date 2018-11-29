@@ -48,6 +48,11 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     public List<Expression> DefaultValues { get; } = new List<Expression>();
 
     /// <summary>
+    /// アクセサリスト
+    /// </summary>
+    public List<string> AccessorList { get; } = new List<string>();
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="node">対象Node</param>
@@ -85,6 +90,9 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
         PropertyTypes.Add(new Expression(name, type));
       }
 
+      // アクセサ設定
+      AccessorList.AddRange(node.AccessorList.Accessors.Select(accessor => $"{accessor.Keyword}"));
+
       // デフォルト設定
       if (node.Initializer == null)
       {
@@ -113,9 +121,6 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
           }
         }
       }
-
-      // TODO アクセサ設定
-
     }
 
     /// <summary>
