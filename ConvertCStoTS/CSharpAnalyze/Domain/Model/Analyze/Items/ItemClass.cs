@@ -11,7 +11,7 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
   /// <summary>
   /// アイテム：クラス
   /// </summary>
-  public class ItemClass : ISemanticModelAnalyzeItem
+  public class ItemClass : AbstractItem, ISemanticModelAnalyzeItem
   {
     /// <summary>
     /// 子メンバ
@@ -73,13 +73,19 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
         foreach (var part in displayParts)
         {
           var name = $"{part}";
-          var type = part.Kind.ToString();
+          var type = GetSymbolTypeName(part.Symbol);
           if (part.Symbol != null)
           {
             type = part.Symbol.GetType().Name;
             if (!string.IsNullOrEmpty(part.Symbol.ContainingNamespace.Name))
             {
               name = $"{part.Symbol}".Replace($"{part.Symbol.ContainingNamespace}.", string.Empty, StringComparison.CurrentCulture);
+            }
+
+            if (part.Kind == SymbolDisplayPartKind.ClassName)
+            {
+              // 外部ファイル参照イベント発行
+              RaiseOtherFileReferenced(node, part.Symbol);
             }
           }
 
