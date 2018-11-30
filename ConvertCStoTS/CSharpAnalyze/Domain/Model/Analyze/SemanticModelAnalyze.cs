@@ -50,6 +50,9 @@ namespace CSharpAnalyze.Domain.Model.Analyze
             }
           }
           break;
+        case SyntaxKind.PropertyDeclaration:
+          result = new ItemProperty(node as PropertyDeclarationSyntax, target);
+          break;
         default:
           //Console.WriteLine(node);
           break;
