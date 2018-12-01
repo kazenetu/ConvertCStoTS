@@ -26,6 +26,17 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Event
     }
 
     /// <summary>
+    /// イベントの削除
+    /// </summary>
+    /// <param name="instance">登録対象のインスタンス</param>
+    /// <param name="callback">イベントハンドラ</param>
+    public static void Unregister<T>(object instance) where T : IEvent
+    {
+      var targets = Handles.Where(handle => handle.instance == instance && handle.callback is Action<T>).ToList();
+      targets.ForEach(item => Handles.Remove((item.instance, item.callback)));
+    }
+
+    /// <summary>
     /// イベント発行
     /// </summary>
     /// <param name="args">発行イベント</param>
