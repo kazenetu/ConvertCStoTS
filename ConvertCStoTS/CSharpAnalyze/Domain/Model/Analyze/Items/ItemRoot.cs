@@ -34,6 +34,11 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     public List<string> Comments { get; } = new List<string>();
 
     /// <summary>
+    /// 外部参照のクラス名とファイルパスのリスト
+    /// </summary>
+    public Dictionary<string, string> OtherFiles { get; } = new Dictionary<string, string>();
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     public ItemRoot()
@@ -49,6 +54,14 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     public string ToString(int index = 0)
     {
       var result = new StringBuilder();
+
+      // 外部参照ファイル
+      foreach (var otherFile in OtherFiles)
+      {
+        result.AppendLine($"OtherFileReference：[{otherFile.Key}] in [{otherFile.Value}]");
+      }
+
+      // メンバー
       Members.ForEach(member => result.AppendLine(member.ToString(index)));
       return result.ToString();
     }
