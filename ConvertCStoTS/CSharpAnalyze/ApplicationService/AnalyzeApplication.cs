@@ -22,7 +22,7 @@ namespace CSharpAnalyze.ApplicationService
       var analizeService = new AnalyzeService(rootPath, fileRepository);
 
       // HACK Domainイベントハンドラ設定
-      EventContainer.Register<Analyzed>((ev) =>
+      EventContainer.Register<Analyzed>(this,(ev) =>
       {
         Console.WriteLine($"[{ev.FilePath}]");
         Console.WriteLine(ev.AnalyzeResult.ToString());

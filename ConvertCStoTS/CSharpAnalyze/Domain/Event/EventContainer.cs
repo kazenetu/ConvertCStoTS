@@ -13,27 +13,28 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Event
     /// <summary>
     /// イベントハンドラリスト
     /// </summary>
-    private static List<Delegate> Handles = new List<Delegate>();
+    private static List<(object instance, Delegate callback)> Handles = new List<(object instance, Delegate callback)>();
 
     /// <summary>
     /// イベントの登録
     /// </summary>
+    /// <param name="instance">登録対象のインスタンス</param>
     /// <param name="callback">イベントハンドラ</param>
-    public static void Register<T>(Action<T> callback) where T : IEvent
+    public static void Register<T>(object instance, Action<T> callback) where T : IEvent
     {
-      Handles.Add(callback);
+      Handles.Add((instance, callback));
     }
 
     /// <summary>
     /// イベント発行
     /// </summary>
     /// <param name="args">発行イベント</param>
-    public static void Raise<T>(T args) 
+    public static void Raise<T>(T args)
     {
-      var targets = Handles.Where(handle => handle is Action<T>);
-      foreach(var target in targets)
+      var targets = Handles.Where(handle => handle.callback is Action<T>);
+      foreach (var target in targets)
       {
-        ((Action<T>) target)(args);
+        ((Action<T>)target.callback)(args);
       }
     }
   }
