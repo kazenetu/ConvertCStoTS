@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using ConvertCStoTS.CSharpAnalyze.Domain.Event;
+using ConvertCStoTS.CSharpAnalyze.Domain.Event.Analyze;
+using Microsoft.CodeAnalysis;
 using System.Linq;
 
 namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
@@ -39,20 +41,20 @@ namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
     /// </summary>
     /// <param name="targetNode">対象Node</param>
     /// <param name="targetSymbol">比較対象のSymbol</param>
-    protected void RaiseOtherFileReferenced(SyntaxNode targetNode,ISymbol targetSymbol)
+    protected void RaiseOtherFileReferenced(SyntaxNode targetNode, ISymbol targetSymbol)
     {
       if (!targetSymbol.DeclaringSyntaxReferences.Any())
       {
-        // TODO ファイルパスなしでイベント送信
+        // ファイルパスなしでイベント送信
+        EventContainer.Raise(new OtherFileReferenced(string.Empty, targetSymbol.Name));
       }
 
       var targetNodeFilePath = targetNode.SyntaxTree.FilePath;
-      var referenceFilePaths = targetSymbol.DeclaringSyntaxReferences.
-                                Where(item => item.SyntaxTree.FilePath != targetNodeFilePath).
-                                Select(item => item.SyntaxTree.FilePath);
-      foreach (var referenceFilePath in referenceFilePaths)
+      var ReferenceFilePaths = targetSymbol.DeclaringSyntaxReferences.Select(item => item.SyntaxTree.FilePath).Where(filePath => filePath != targetNodeFilePath);
+      foreach (var referenceFilePath in ReferenceFilePaths)
       {
-        // TODO ファイルパスありでイベント送信
+        // ファイルパスありでイベント送信
+        EventContainer.Raise(new OtherFileReferenced(referenceFilePath, targetSymbol.Name));
       }
     }
   }
