@@ -63,11 +63,8 @@ namespace Domain.Model.Analyze
             }
           }
           break;
-        case SyntaxKind.PropertyDeclaration:
-          result = new ItemProperty(node as PropertyDeclarationSyntax, target);
-          break;
         default:
-          //Console.WriteLine(node);
+          result = ItemFactory.Create(node, target);
           break;
       }
       return result;
