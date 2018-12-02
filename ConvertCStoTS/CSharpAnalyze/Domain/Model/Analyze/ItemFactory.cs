@@ -21,6 +21,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze
       return Create((dynamic)node, semanticModel);
     }
 
+    #region クラスアイテム
+
     /// <summary>
     /// クラスアイテム作成
     /// </summary>
@@ -31,5 +33,7 @@ namespace CSharpAnalyze.Domain.Model.Analyze
     {
       return new ItemClass(node, semanticModel);
     }
+
+    #endregion
   }
 }
