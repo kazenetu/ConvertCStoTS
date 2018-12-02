@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
+namespace CSharpAnalyze.Domain.Model.Analyze.Items
 {
   /// <summary>
   /// C#ファイル解析結果 詳細情報

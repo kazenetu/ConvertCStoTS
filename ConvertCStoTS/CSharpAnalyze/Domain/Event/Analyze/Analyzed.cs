@@ -1,6 +1,6 @@
-﻿using ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items;
+﻿using CSharpAnalyze.Domain.Model.Analyze.Items;
 
-namespace ConvertCStoTS.CSharpAnalyze.Domain.Event.Analyze
+namespace CSharpAnalyze.Domain.Event.Analyze
 {
   /// <summary>
   /// 解析完了イベント

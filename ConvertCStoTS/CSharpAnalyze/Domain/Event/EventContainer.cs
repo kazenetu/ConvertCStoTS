@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ConvertCStoTS.CSharpAnalyze.Domain.Event
+namespace CSharpAnalyze.Domain.Event
 {
   /// <summary>
   /// イベントコンテナ

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
+namespace CSharpAnalyze.Domain.Model.Analyze.Items
 {
   /// <summary>
   /// アイテム：クラス

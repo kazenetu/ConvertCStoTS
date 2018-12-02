@@ -1,4 +1,4 @@
-﻿namespace ConvertCStoTS.CSharpAnalyze.Domain.Event.Analyze
+﻿namespace CSharpAnalyze.Domain.Event.Analyze
 {
   /// <summary>
   /// 外部ファイル参照イベント

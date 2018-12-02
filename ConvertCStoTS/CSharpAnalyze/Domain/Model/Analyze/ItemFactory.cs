@@ -1,8 +1,8 @@
-﻿using ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items;
+﻿using CSharpAnalyze.Domain.Model.Analyze.Items;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze
+namespace CSharpAnalyze.Domain.Model.Analyze
 {
   /// <summary>
   /// ISemanticModelAnalyzeItemインスタンス作成クラス

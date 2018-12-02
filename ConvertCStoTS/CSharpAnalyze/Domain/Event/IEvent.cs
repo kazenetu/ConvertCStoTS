@@ -1,4 +1,4 @@
-﻿namespace ConvertCStoTS.CSharpAnalyze.Domain.Event
+﻿namespace CSharpAnalyze.Domain.Event
 {
   /// <summary>
   /// イベントインターフェース

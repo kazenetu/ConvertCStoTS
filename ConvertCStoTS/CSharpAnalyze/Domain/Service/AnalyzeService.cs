@@ -1,5 +1,6 @@
 ﻿using CSharpAnalyze.Domain.Model.Analyze;
 using CSharpAnalyze.Domain.Model.File;
+using Domain.Model.Analyze;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Generic;

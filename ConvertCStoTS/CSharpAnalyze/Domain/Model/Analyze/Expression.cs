@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze
+namespace CSharpAnalyze.Domain.Model.Analyze
 {
   /// <summary>
   /// Expression ValueObject

@@ -1,9 +1,9 @@
-﻿using ConvertCStoTS.CSharpAnalyze.Domain.Event;
-using ConvertCStoTS.CSharpAnalyze.Domain.Event.Analyze;
+﻿using CSharpAnalyze.Domain.Event;
+using CSharpAnalyze.Domain.Event.Analyze;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 
-namespace ConvertCStoTS.CSharpAnalyze.Domain.Model.Analyze.Items
+namespace CSharpAnalyze.Domain.Model.Analyze.Items
 {
   /// <summary>
   /// Item系クラスのスーパークラス

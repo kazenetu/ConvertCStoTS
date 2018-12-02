@@ -1,9 +1,10 @@
-﻿using ConvertCStoTS.CSharpAnalyze.Domain.Event;
-using ConvertCStoTS.CSharpAnalyze.Domain.Event.Analyze;
+﻿using CSharpAnalyze.Domain.Event;
+using CSharpAnalyze.Domain.Event.Analyze;
 using CSharpAnalyze.Domain.Model;
 using CSharpAnalyze.Domain.Model.Analyze;
 using CSharpAnalyze.Domain.Service;
 using CSharpAnalyze.Infrastructure;
+using Domain.Model.Analyze;
 using System;
 using System.Collections.Generic;
 using System.Linq;
