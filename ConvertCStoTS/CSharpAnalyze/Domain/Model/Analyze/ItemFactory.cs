@@ -26,6 +26,9 @@ namespace CSharpAnalyze.Domain.Model.Analyze
         case ClassDeclarationSyntax classDeclarationSyntax:
           result = Create(classDeclarationSyntax, semanticModel);
           break;
+        case PropertyDeclarationSyntax propertyDeclarationSyntax:
+          result = Create(propertyDeclarationSyntax, semanticModel);
+          break;
       }
 
       return result;
@@ -42,6 +45,17 @@ namespace CSharpAnalyze.Domain.Model.Analyze
     private static ISemanticModelAnalyzeItem Create(ClassDeclarationSyntax node, SemanticModel semanticModel)
     {
       return new ItemClass(node, semanticModel);
+    }
+
+    /// <summary>
+    /// クラスアイテム作成:property
+    /// </summary>
+    /// <param name="node">対象Node</param>
+    /// <param name="target">対象ソースのsemanticModel</param>
+    /// <returns>ISemanticModelAnalyzeItemインスタンス</returns>
+    private static ISemanticModelAnalyzeItem Create(PropertyDeclarationSyntax node, SemanticModel semanticModel)
+    {
+      return new ItemProperty(node, semanticModel);
     }
 
     #endregion
