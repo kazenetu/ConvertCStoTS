@@ -104,9 +104,9 @@ namespace CSharpAnalyze.Domain.Model.Analyze.Items
         // 値型
         var targetValue = propertyInitializer.ConstantValue;
         var name = targetValue.Value.ToString();
-        if (string.IsNullOrEmpty(name))
+        if (targetValue.Value is string)
         {
-          name = "\"\"";
+          name = $"\"{name}\"";
         }
         DefaultValues.Add(new Expression(name, targetValue.Value.GetType().Name));
       }
