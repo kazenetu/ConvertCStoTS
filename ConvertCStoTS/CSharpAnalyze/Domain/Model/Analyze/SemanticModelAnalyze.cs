@@ -18,6 +18,16 @@ namespace CSharpAnalyze.Domain.Model.Analyze
     {
       var analyzeResult = new ItemRoot();
 
+      // 外部参照イベント登録
+      EventContainer.Register<OtherFileReferenced>(this, (ev) =>
+      {
+        if (!analyzeResult.OtherFiles.ContainsKey(ev.ClassName))
+        {
+          analyzeResult.OtherFiles.Add(ev.ClassName, ev.FilePath);
+        }
+      });
+
+      // 解析処理
       var rootNode = target.SyntaxTree.GetRoot().ChildNodes().Where(syntax => syntax.IsKind(SyntaxKind.NamespaceDeclaration)).First();
       foreach (var item in (rootNode as NamespaceDeclarationSyntax).Members)
       {
@@ -27,6 +37,9 @@ namespace CSharpAnalyze.Domain.Model.Analyze
           analyzeResult.Members.Add(memberResult);
         }
       }
+
+      // 外部参照イベント登録解除
+      EventContainer.Unregister<OtherFileReferenced>(this);
 
       // イベント発行：解析完了
       EventContainer.Raise(new Analyzed($"[{rootNode.SyntaxTree.FilePath}]", analyzeResult));
