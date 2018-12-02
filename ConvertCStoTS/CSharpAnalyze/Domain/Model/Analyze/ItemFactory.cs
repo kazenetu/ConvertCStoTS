@@ -18,13 +18,23 @@ namespace CSharpAnalyze.Domain.Model.Analyze
     /// <returns>ISemanticModelAnalyzeItemインスタンス</returns>
     public static ISemanticModelAnalyzeItem Create(SyntaxNode node, SemanticModel semanticModel)
     {
-      return Create((dynamic)node, semanticModel);
+      ISemanticModelAnalyzeItem result = null;
+
+      // nodeの種類によって取得メソッドを実行
+      switch (node)
+      {
+        case ClassDeclarationSyntax classDeclarationSyntax:
+          result = Create(classDeclarationSyntax, semanticModel);
+          break;
+      }
+
+      return result;
     }
 
     #region クラスアイテム
 
     /// <summary>
-    /// クラスアイテム作成
+    /// クラスアイテム作成:class
     /// </summary>
     /// <param name="node">対象Node</param>
     /// <param name="target">対象ソースのsemanticModel</param>
