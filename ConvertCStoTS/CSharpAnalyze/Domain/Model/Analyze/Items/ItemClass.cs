@@ -13,6 +13,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze.Items
   /// </summary>
   public class ItemClass : AbstractItem, ISemanticModelAnalyzeItem
   {
+    #region 基本インターフェース実装：プロパティ
+
     /// <summary>
     /// 子メンバ
     /// </summary>
@@ -37,6 +39,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze.Items
     /// コメント
     /// </summary>
     public List<string> Comments { get; } = new List<string>();
+
+    #endregion
 
     /// <summary>
     /// スーパークラスリスト
@@ -94,6 +98,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze.Items
       }
     }
 
+    #region 基本インターフェース実装：メソッド
+
     /// <summary>
     /// 文字列取得
     /// </summary>
@@ -132,5 +138,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze.Items
 
       return result.ToString();
     }
+
+    #endregion
+
   }
 }

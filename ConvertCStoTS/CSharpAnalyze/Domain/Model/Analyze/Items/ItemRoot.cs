@@ -8,6 +8,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze.Items
   /// </summary>
   public class ItemRoot : ISemanticModelAnalyzeItem
   {
+    #region 基本インターフェース実装：プロパティ
+
     /// <summary>
     /// 子メンバ
     /// </summary>
@@ -33,6 +35,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze.Items
     /// </summary>
     public List<string> Comments { get; } = new List<string>();
 
+    #endregion
+
     /// <summary>
     /// 外部参照のクラス名とファイルパスのリスト
     /// </summary>
@@ -45,6 +49,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze.Items
     {
       ItemType = ItemTypes.Root;
     }
+
+    #region 基本インターフェース実装：メソッド
 
     /// <summary>
     /// 文字列取得
@@ -65,5 +71,8 @@ namespace CSharpAnalyze.Domain.Model.Analyze.Items
       Members.ForEach(member => result.AppendLine(member.ToString(index)));
       return result.ToString();
     }
+
+    #endregion
+
   }
 }
