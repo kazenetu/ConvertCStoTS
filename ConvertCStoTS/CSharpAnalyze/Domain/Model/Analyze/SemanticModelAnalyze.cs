@@ -1,13 +1,12 @@
 ﻿using CSharpAnalyze.Domain.Event;
 using CSharpAnalyze.Domain.Event.Analyze;
-using CSharpAnalyze.Domain.Model.Analyze;
 using CSharpAnalyze.Domain.Model.Analyze.Items;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 
-namespace Domain.Model.Analyze
+namespace CSharpAnalyze.Domain.Model.Analyze
 {
   /// <summary>
   /// セマンティックモデル解析クラス(実装中)
