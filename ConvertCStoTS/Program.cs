@@ -1,5 +1,4 @@
 ﻿using Common;
-using CSharpAnalyze.ApplicationService;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -78,10 +77,6 @@ namespace ConvertCStoTS
       var converter = new Converter(srcPath, destPath, isOutputMethod);
       try
       {
-        // HACK 設計し直し版のテスト実行
-        var csAnalyze = new AnalyzeApplication();
-        csAnalyze.GetAnalyzeResult(srcPath);
-
         if (string.IsNullOrEmpty(filePath))
         {
           converter.ConvertAll(otherReferencesPath);
